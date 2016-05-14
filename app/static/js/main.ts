@@ -162,20 +162,10 @@ class Land {
 }
 
 // Set up pixi.js
-// Create an new instance of a pixi stage with a grey background
-var stage = new PIXI.Stage(0x888888);
-// Create a renderer instance width=640 height=480
-var renderer = PIXI.autoDetectRenderer(640,480);
-// Importing a texture atlas
-var tileAtlas = ["images.json"];
-var loader = new PIXI.AssetLoader(tileAtlas);
-var gameContainer = new PIXI.DisplayObjectContainer();
-stage.addChild(gameContainer);
+var renderer = PIXI.autoDetectRenderer(256, 256);
 document.body.appendChild(renderer.view);
-// Use callback
-loader.onComplete = onTilesLoaded
-loader.load();
-
+var stage = new PIXI.Container();
+renderer.render(stage);
 
 var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
 littleLand.tileArray = [];
