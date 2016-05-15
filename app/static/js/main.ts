@@ -57,20 +57,96 @@ enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied }
 
 enum eLAND { Grassy, Shore, Forested, Rocky, Desert, Sea }
 
+// Global gameplay variables
+var glbBoundary = 14;
+var glbOrigin = [508, 268];
+var glbHHeight = 30;
+var glbHWidth = 60;
+
+// ~~~~ Hex functions ~~~~
+
+	function hexToCube(tHex: [number, number]) {
+		let axialRow = tHex[0]; let axialCol = tHex[1];
+		let zPos = axialCol;
+		let xPos = axialRow;
+		let yPos = -xPos - zPos;
+		return [xPos, yPos, zPos];
+	}
+
+	function cubeToHex(tCube: number[]) {
+		let xPos = tCube[0]; let yPos = tCube[1]; let zPos = tCube[2];
+		let axialCol = xPos;
+		let axialRow = zPos;
+		return [axialRow, axialCol];
+	}
+
+	function cubeRound(tCube: number[]) {
+		let xPos = tCube[0]; let yPos = tCube[1]; let zPos = tCube[2];
+		let rX = Math.round(xPos);
+		let rY = Math.round(yPos);
+		let rZ = Math.round(zPos);
+
+		let xDiff = Math.abs(rX - xPos);
+		let yDiff = Math.abs(rY - yPos);
+		let zDiff = Math.abs(rZ - zPos);
+
+		if ((xDiff > yDiff) && (xDiff > zDiff)) {
+			rX = -rY - rZ;
+		} 
+		else if (yDiff > zDiff) {
+			rY = -rX - rZ;
+		} 
+		else {
+			rZ = -rX - rY;
+		}
+		return [rX, rY, rZ];
+	}
+
+	function hexRound(tHex: [number, number]) {
+		let tCube = hexToCube(tHex);
+		let roundedCube = cubeRound(tCube);
+		let roundedHex = cubeToHex(roundedCube);
+		return roundedHex;
+	}
+
+	// Function to convert a hex poision into an anchor point for a tile sprite
+	function hexToPoint(tHex: number[]) {
+		let axialRow = tHex[0]; let axialCol = tHex[1];
+
+		// Set sprite width and height, to accomidate for pixel rounding?
+		let sWidth = glbHWidth;
+		let sHeight = glbHHeight * 1.15;
+		let xPos = this.glbOrigin[0] + ((sWidth/2) * 1.5 * axialRow);
+		let yPos = this.glbOrigin[1] + ((sHeight/2) * Math.sqrt(3) * (axialCol+axialRow/2));
+		return [xPos, yPos];
+	}
+
+	// Function to convert an x,y point into corresponding hex
+	function pointToHex(tPoint: number[]) {
+		let xPos = tPoint[0]; let yPos = tPoint[1];
+
+		// Set sprite width and height, to accomidate for pixel rounding?
+		let sWidth = glbHWidth;
+		let sHeight = glbHHeight * 1.15;
+		let axialCol = xPos * (2/3) / sWidth;
+		let axialRow = (-xPos/3 + Math.sqrt(3)/3 * yPos) / sHeight;
+		return hexRound([axialRow, axialCol]);
+	}
+
 class Hex {
 	// Defines the graphical height/width of all hexagons in game
-	height: number;
-	width: number;
+	height: number = 30;
+	width: number = 60;
+
+	scale: number = 0.2;
 
 	// Axial column and axial row define individual hexagon position
 	axialRow: number;
 	axialCol: number;
-	hexID: string;
 
 	constructor(setPos: [number, number]) {
 		this.axialRow = setPos[0];
 		this.axialCol = setPos[1];
-		this.hexID = setPos[0] + "," + setPos[1];
 	}
 
 	// method to return the expected hexID of the instance's six neighbors.  Non-existant
@@ -129,20 +205,10 @@ class Land {
 	tileArray: Tile[][];
 	spriteArray: Sprite[][];
 
-	constructor(setSize: number, setShape: number, setClimate: number) {
-		this.lSize = setSize;
-		this.lShape = setShape;
-		this.lClimate = setClimate;
-	}
-
-	debugLand() {
-		console.log("This island's numbers are: " + this.lSize + " + " + this.lShape + 
-			" + " + this.lClimate);
-	}
-
-	describeLand() {
-		console.log("This island is " + eSIZE[this.lSize] + ", " + eSHAPE[this.lShape] + 
-			", and " + eCLIMATE[this.lClimate]);
+	constructor(sentSettings: [number, number, number]) {
+		this.lSize = sentSettings[0];
+		this.lShape = sentSettings[1];
+		this.lClimate = sentSettings[2];
 	}
 
 	readLand() {
@@ -180,9 +246,8 @@ class Land {
 			}
 		}
 		// Fill the rest with sea
-		let boundary = 14;
-		for (var currX = (-1*boundary); currX < boundary; currX++) {
-			for (var currY = (-1*boundary); currY < boundary; currY++) {
+		for (var currX = (-1*glbBoundary); currX < glbBoundary; currX++) {
+			for (var currY = (-1*glbBoundary); currY < glbBoundary; currY++) {
 				if (landTiles[currX] === undefined) {
 					landTiles[currX] = [];
 				}
@@ -198,12 +263,10 @@ class Land {
 	displayLand() {
 		// Create an intermediate sprite ID alias
 		let sprId = loader.resources["static/img/images.json"].textures;
-		let boundary = 14;
-		let origin = [508, 268];
 		let lTiles = this.tileArray;
 		let landSprites = [];
-		for (var currX=(-1 * boundary); currX < boundary; currX++) {
-			for (var currY=(-1 * boundary); currY < boundary; currY++) {
+		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
+			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let tTile = lTiles[currX][currY];
 				let tSprite = null;
 				if (tTile.landscape === eLAND.Sea) {
@@ -218,12 +281,11 @@ class Land {
 				else {
 					tSprite = new Sprite(sprId["hex.png"]);
 				}
-				tSprite.scale.set(0.2, 0.2);
-				let sWidth = tSprite.width;
-				let sHeight = tSprite.height * 1.15;
-				let xPos = origin[0] + ((sWidth/2) * 1.5 * currX);
-				let yPos = origin[1] + ((sHeight/2) * Math.sqrt(3) * (currY+currX/2));
-				tSprite.position.set(xPos, yPos);
+				tSprite.scale.set(tTile.scale, tTile.scale);
+
+				let sPos = hexToPoint([currX, currY]);
+
+				tSprite.position.set(sPos[0], sPos[1]);
 				stage.addChild(tSprite);
 				if (landSprites[currX] === undefined) {
 					landSprites[currX] = [];
@@ -268,7 +330,7 @@ var tb = null;
 var state = play;
 var pointer = null;
 
-let littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
+let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
 
 function onImageLoad() {
 
@@ -279,8 +341,6 @@ function onImageLoad() {
 	// This code runs when the texture atlas has loaded
 	littleLand.genTestLand();
 	littleLand.displayLand();
-
-	tb.makeInteractive(littleLand.spriteArray[0][0]);
 	
 	// Start the game loop
 	gameLoop();
@@ -293,7 +353,7 @@ function gameLoop() {
 	// Update Tink
 	tb.update();
 
-	// Utilize the game state
+	// Utilize the current game state
 	state();
 
 	renderer.render(stage);
@@ -301,7 +361,9 @@ function gameLoop() {
 
 // Executes on loop when game is in 'play' state
 function play() {
-	littleLand.spriteArray[0][0].press = () => {
-		console.log("Clicked the grassy space.");
-	};
+
+	// Highlight hovered hex
+	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
+	let hovAxial = pointToHex(corPoint);
+	littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x000000;
 }

@@ -85,11 +85,85 @@ var eLAND;
     eLAND[eLAND["Desert"] = 4] = "Desert";
     eLAND[eLAND["Sea"] = 5] = "Sea";
 })(eLAND || (eLAND = {}));
+// Global gameplay variables
+var glbBoundary = 14;
+var glbOrigin = [508, 268];
+var glbHHeight = 30;
+var glbHWidth = 60;
+// ~~~~ Hex functions ~~~~
+function hexToCube(tHex) {
+    var axialRow = tHex[0];
+    var axialCol = tHex[1];
+    var zPos = axialCol;
+    var xPos = axialRow;
+    var yPos = -xPos - zPos;
+    return [xPos, yPos, zPos];
+}
+function cubeToHex(tCube) {
+    var xPos = tCube[0];
+    var yPos = tCube[1];
+    var zPos = tCube[2];
+    var axialCol = xPos;
+    var axialRow = zPos;
+    return [axialRow, axialCol];
+}
+function cubeRound(tCube) {
+    var xPos = tCube[0];
+    var yPos = tCube[1];
+    var zPos = tCube[2];
+    var rX = Math.round(xPos);
+    var rY = Math.round(yPos);
+    var rZ = Math.round(zPos);
+    var xDiff = Math.abs(rX - xPos);
+    var yDiff = Math.abs(rY - yPos);
+    var zDiff = Math.abs(rZ - zPos);
+    if ((xDiff > yDiff) && (xDiff > zDiff)) {
+        rX = -rY - rZ;
+    }
+    else if (yDiff > zDiff) {
+        rY = -rX - rZ;
+    }
+    else {
+        rZ = -rX - rY;
+    }
+    return [rX, rY, rZ];
+}
+function hexRound(tHex) {
+    var tCube = hexToCube(tHex);
+    var roundedCube = cubeRound(tCube);
+    var roundedHex = cubeToHex(roundedCube);
+    return roundedHex;
+}
+// Function to convert a hex poision into an anchor point for a tile sprite
+function hexToPoint(tHex) {
+    var axialRow = tHex[0];
+    var axialCol = tHex[1];
+    // Set sprite width and height, to accomidate for pixel rounding?
+    var sWidth = glbHWidth;
+    var sHeight = glbHHeight * 1.15;
+    var xPos = this.glbOrigin[0] + ((sWidth / 2) * 1.5 * axialRow);
+    var yPos = this.glbOrigin[1] + ((sHeight / 2) * Math.sqrt(3) * (axialCol + axialRow / 2));
+    return [xPos, yPos];
+}
+// Function to convert an x,y point into corresponding hex
+function pointToHex(tPoint) {
+    var xPos = tPoint[0];
+    var yPos = tPoint[1];
+    // Set sprite width and height, to accomidate for pixel rounding?
+    var sWidth = glbHWidth;
+    var sHeight = glbHHeight * 1.15;
+    var axialCol = xPos * (2 / 3) / sWidth;
+    var axialRow = (-xPos / 3 + Math.sqrt(3) / 3 * yPos) / sHeight;
+    return hexRound([axialRow, axialCol]);
+}
 var Hex = (function () {
     function Hex(setPos) {
+        // Defines the graphical height/width of all hexagons in game
+        this.height = 30;
+        this.width = 60;
+        this.scale = 0.2;
         this.axialRow = setPos[0];
         this.axialCol = setPos[1];
-        this.hexID = setPos[0] + "," + setPos[1];
     }
     // method to return the expected hexID of the instance's six neighbors.  Non-existant
     //  hexIDs are included in this.  The method starts with the horizontal-right nieghbor
@@ -139,19 +213,11 @@ var Player = (function () {
     return Player;
 }());
 var Land = (function () {
-    function Land(setSize, setShape, setClimate) {
-        this.lSize = setSize;
-        this.lShape = setShape;
-        this.lClimate = setClimate;
+    function Land(sentSettings) {
+        this.lSize = sentSettings[0];
+        this.lShape = sentSettings[1];
+        this.lClimate = sentSettings[2];
     }
-    Land.prototype.debugLand = function () {
-        console.log("This island's numbers are: " + this.lSize + " + " + this.lShape +
-            " + " + this.lClimate);
-    };
-    Land.prototype.describeLand = function () {
-        console.log("This island is " + eSIZE[this.lSize] + ", " + eSHAPE[this.lShape] +
-            ", and " + eCLIMATE[this.lClimate]);
-    };
     Land.prototype.readLand = function () {
         // Read land tile data from json file
     };
@@ -182,9 +248,8 @@ var Land = (function () {
             }
         }
         // Fill the rest with sea
-        var boundary = 14;
-        for (var currX = (-1 * boundary); currX < boundary; currX++) {
-            for (var currY = (-1 * boundary); currY < boundary; currY++) {
+        for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
+            for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 if (landTiles[currX] === undefined) {
                     landTiles[currX] = [];
                 }
@@ -199,12 +264,10 @@ var Land = (function () {
     Land.prototype.displayLand = function () {
         // Create an intermediate sprite ID alias
         var sprId = loader.resources["static/img/images.json"].textures;
-        var boundary = 14;
-        var origin = [508, 268];
         var lTiles = this.tileArray;
         var landSprites = [];
-        for (var currX = (-1 * boundary); currX < boundary; currX++) {
-            for (var currY = (-1 * boundary); currY < boundary; currY++) {
+        for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
+            for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var tTile = lTiles[currX][currY];
                 var tSprite = null;
                 if (tTile.landscape === eLAND.Sea) {
@@ -219,12 +282,9 @@ var Land = (function () {
                 else {
                     tSprite = new Sprite(sprId["hex.png"]);
                 }
-                tSprite.scale.set(0.2, 0.2);
-                var sWidth = tSprite.width;
-                var sHeight = tSprite.height * 1.15;
-                var xPos = origin[0] + ((sWidth / 2) * 1.5 * currX);
-                var yPos = origin[1] + ((sHeight / 2) * Math.sqrt(3) * (currY + currX / 2));
-                tSprite.position.set(xPos, yPos);
+                tSprite.scale.set(tTile.scale, tTile.scale);
+                var sPos = hexToPoint([currX, currY]);
+                tSprite.position.set(sPos[0], sPos[1]);
                 stage.addChild(tSprite);
                 if (landSprites[currX] === undefined) {
                     landSprites[currX] = [];
@@ -258,7 +318,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = play;
 var pointer = null;
-var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
+var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
 function onImageLoad() {
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
@@ -266,7 +326,6 @@ function onImageLoad() {
     // This code runs when the texture atlas has loaded
     littleLand.genTestLand();
     littleLand.displayLand();
-    tb.makeInteractive(littleLand.spriteArray[0][0]);
     // Start the game loop
     gameLoop();
 }
@@ -274,13 +333,14 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
     // Update Tink
     tb.update();
-    // Utilize the game state
+    // Utilize the current game state
     state();
     renderer.render(stage);
 }
 // Executes on loop when game is in 'play' state
 function play() {
+    // Highlight hovered hex
+    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
+    var hovAxial = pointToHex(corPoint);
+    littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x000000;
 }
-littleLand.spriteArray[0][0].press = function () {
-    console.log("Clicked the grassy space.");
-};
