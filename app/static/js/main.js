@@ -83,6 +83,7 @@ var eLAND;
     eLAND[eLAND["Forested"] = 2] = "Forested";
     eLAND[eLAND["Rocky"] = 3] = "Rocky";
     eLAND[eLAND["Desert"] = 4] = "Desert";
+    eLAND[eLAND["Sea"] = 5] = "Sea";
 })(eLAND || (eLAND = {}));
 var Hex = (function () {
     function Hex(setPos) {
@@ -155,24 +156,100 @@ var Land = (function () {
         // Read land tile data from json file
     };
     Land.prototype.generateLand = function () {
-        // Procedurally generatre land tiles based on selected land properties
+        // Procedurally generate land tiles based on selected land properties
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
-        var landWidth = 3;
+        var landWidth = 2;
+        var landTiles = [];
+        for (var currWidth = 0; currWidth < landWidth; currWidth++) {
+            // Make grassy center
+            if (currWidth === 0) {
+                landTiles[0] = [];
+                landTiles[0][0] = new Tile([0, 0]);
+                landTiles[0][0].landscape = eLAND.Grassy;
+            }
+            else if (currWidth === 1) {
+                var centerNeighbors = landTiles[0][0].getNeighbors();
+                for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
+                    var tNbr = centerNeighbors[currNbr];
+                    if (landTiles[tNbr[0]] === undefined) {
+                        landTiles[tNbr[0]] = [];
+                    }
+                    landTiles[tNbr[0]][tNbr[1]] = new Tile([tNbr[0], tNbr[1]]);
+                    landTiles[tNbr[0]][tNbr[1]].landscape = eLAND.Shore;
+                }
+            }
+        }
+        // Fill the rest with sea
+        var boundary = 14;
+        for (var currX = (-1 * boundary); currX < boundary; currX++) {
+            for (var currY = (-1 * boundary); currY < boundary; currY++) {
+                if (landTiles[currX] === undefined) {
+                    landTiles[currX] = [];
+                }
+                if (landTiles[currX][currY] === undefined) {
+                    landTiles[currX][currY] = new Tile([currX, currY]);
+                    landTiles[currX][currY].landscape = eLAND.Sea;
+                }
+            }
+        }
+        this.tileArray = landTiles;
+    };
+    Land.prototype.displayLand = function () {
+        // Create an intermediate sprite ID alias
+        var sprId = loader.resources["static/img/images.json"].textures;
+        var boundary = 14;
+        var origin = [508, 268];
+        var lTiles = this.tileArray;
+        for (var currX = (-1 * boundary); currX < boundary; currX++) {
+            for (var currY = (-1 * boundary); currY < boundary; currY++) {
+                var tTile = lTiles[currX][currY];
+                var tSprite = null;
+                if (tTile.landscape === eLAND.Sea) {
+                    tSprite = new Sprite(sprId["sea.png"]);
+                }
+                else if (tTile.landscape === eLAND.Shore) {
+                    tSprite = new Sprite(sprId["shore.png"]);
+                }
+                else if (tTile.landscape === eLAND.Grassy) {
+                    tSprite = new Sprite(sprId["grassy.png"]);
+                }
+                else {
+                    tSprite = new Sprite(sprId["hex.png"]);
+                }
+                tSprite.scale.set(0.2, 0.2);
+                var sWidth = tSprite.width;
+                var sHeight = tSprite.height * 1.15;
+                var xPos = origin[0] + ((sWidth / 2) * 1.5 * currX);
+                var yPos = origin[1] + ((sHeight / 2) * Math.sqrt(3) * (currY + currX / 2));
+                tSprite.position.set(xPos, yPos);
+                stage.addChild(tSprite);
+            }
+        }
+        renderer.render(stage);
     };
     return Land;
 }());
-// Set up pixi.js
-var renderer = PIXI.autoDetectRenderer(256, 256);
+// ~~~~ Set up pixi.js ~~~~
+// PIXI Aliases
+var Container = PIXI.Container, autoDetectRenderer = PIXI.autoDetectRenderer, loader = PIXI.loader, resources = PIXI.loader.resources, Sprite = PIXI.Sprite, TextureCache = PIXI.utils.TextureCache;
+// Create renderer
+var renderer = autoDetectRenderer(1216, 576);
+renderer.backgroundColor = 0x061639;
+renderer.view.style.position = "absolute";
+renderer.view.style.display = "block";
+renderer.autoResize = true;
+renderer.resize(window.innerWidth, window.innerHeight);
+// Apply renderer
 document.body.appendChild(renderer.view);
-var stage = new PIXI.Container();
-renderer.render(stage);
-var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
-littleLand.tileArray = [];
-littleLand.tileArray[0] = [];
-littleLand.tileArray[0][0] = new Tile([7, 7]);
-littleLand.tileArray[-1] = [];
-littleLand.tileArray[-1][6] = new Tile([-1, 6]);
-console.log(littleLand.tileArray[0][0].getNeighbors());
-console.log(littleLand.tileArray[-1][6].getNeighbors());
+var stage = new Container();
+loader
+    .add("static/img/images.json")
+    .load(onImageLoad);
+function onImageLoad() {
+    // This code runs when the texture atlas has loaded
+    var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
+    littleLand.genTestLand();
+    littleLand.displayLand();
+}

@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>C:/Users/cmatthews/Documents/JS/Archipelago/img/images.tps</string>
+        <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -34,7 +34,7 @@
         <key>dpi</key>
         <uint>72</uint>
         <key>dataFormat</key>
-        <string>json-array</string>
+        <string>json</string>
         <key>textureFileName</key>
         <filename>images.png</filename>
         <key>flipPVR</key>
@@ -70,7 +70,7 @@
             </struct>
         </struct>
         <key>shapePadding</key>
-        <uint>0</uint>
+        <uint>2</uint>
         <key>jpgQuality</key>
         <uint>80</uint>
         <key>pngOptimizationLevel</key>
@@ -82,7 +82,7 @@
         <key>textureFormat</key>
         <enum type="SettingsBase::TextureFormat">png</enum>
         <key>borderPadding</key>
-        <uint>0</uint>
+        <uint>2</uint>
         <key>maxTextureSize</key>
         <QSize>
             <key>width</key>
