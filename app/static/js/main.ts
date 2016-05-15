@@ -127,9 +127,9 @@ var glbHWidth = 60;
 
 		// Set sprite width and height, to accomidate for pixel rounding?
 		let sWidth = glbHWidth;
-		let sHeight = glbHHeight * 1.15;
-		let axialCol = xPos * (2/3) / sWidth;
-		let axialRow = (-xPos/3 + Math.sqrt(3)/3 * yPos) / sHeight;
+		let sHeight = glbHHeight * 0.86956522;
+		let axialCol = xPos * (2/3) / (sWidth/2);
+		let axialRow = (-xPos/3 + (Math.sqrt(3)/3) * yPos) / (sHeight/2);
 		return hexRound([axialRow, axialCol]);
 	}
 
@@ -307,6 +307,8 @@ var Container = PIXI.Container,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite,
     TextureCache = PIXI.utils.TextureCache;
+    Graphics = PIXI.Graphics;
+    Text = PIXI.Text;
 
 // Create renderer
 var renderer = autoDetectRenderer();
@@ -331,6 +333,8 @@ var state = play;
 var pointer = null;
 
 let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+var msgPoint = null;
+var msgAxial = null;
 
 function onImageLoad() {
 
@@ -341,6 +345,29 @@ function onImageLoad() {
 	// This code runs when the texture atlas has loaded
 	littleLand.genTestLand();
 	littleLand.displayLand();
+
+	// Create design bar on right
+	var designBG = new Graphics();
+	designBG.beginFill(0x000000);
+	designBG.drawRect(0, 0, 205, (stage.height));
+	designBG.endFill();
+	designBG.x = stage.width-200;
+	designBG.y = 0;
+	stage.addChild(designBG);
+
+	// Display text
+	msgPoint = new Text(
+		("Coords: "),
+		{font: "16px sans-serif", fill: "white"}
+	);
+	msgPoint.position.set((stage.width-280), 20);
+	stage.addChild(msgPoint);
+	msgAxial = new Text(
+		("Hex: "),
+		{font: "16px sans-serif", fill: "white"}
+	);
+	msgAxial.position.set((stage.width-280), 120);
+	stage.addChild(msgAxial);
 	
 	// Start the game loop
 	gameLoop();
@@ -360,10 +387,18 @@ function gameLoop() {
 }
 
 // Executes on loop when game is in 'play' state
+let lastHex = null;
 function play() {
 
 	// Highlight hovered hex
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
 	let hovAxial = pointToHex(corPoint);
-	littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x000000;
+	if (hovAxial != lastHex) {
+		littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x000000;
+	}
+	
+	lastHex = hovAxial;
+
+	msgPoint.text = ("Coords: " + corPoint);
+	msgAxial.text = ("Hex: " + hovAxial);
 }
