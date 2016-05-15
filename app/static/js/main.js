@@ -202,6 +202,7 @@ var Land = (function () {
         var boundary = 14;
         var origin = [508, 268];
         var lTiles = this.tileArray;
+        var landSprites = [];
         for (var currX = (-1 * boundary); currX < boundary; currX++) {
             for (var currY = (-1 * boundary); currY < boundary; currY++) {
                 var tTile = lTiles[currX][currY];
@@ -225,8 +226,13 @@ var Land = (function () {
                 var yPos = origin[1] + ((sHeight / 2) * Math.sqrt(3) * (currY + currX / 2));
                 tSprite.position.set(xPos, yPos);
                 stage.addChild(tSprite);
+                if (landSprites[currX] === undefined) {
+                    landSprites[currX] = [];
+                }
+                landSprites[currX][currY] = tSprite;
             }
         }
+        this.spriteArray = landSprites;
         renderer.render(stage);
     };
     return Land;
@@ -247,14 +253,20 @@ var stage = new Container();
 loader
     .add("static/img/images.json")
     .load(onImageLoad);
+// Create global Pixi and Tink variables
 var tb = null;
+// Set the default game state to 'play'
+var state = play;
+var pointer = null;
+var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
 function onImageLoad() {
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
+    pointer = tb.makePointer();
     // This code runs when the texture atlas has loaded
-    var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
     littleLand.genTestLand();
     littleLand.displayLand();
+    tb.makeInteractive(littleLand.spriteArray[0][0]);
     // Start the game loop
     gameLoop();
 }
@@ -262,5 +274,13 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
     // Update Tink
     tb.update();
+    // Utilize the game state
+    state();
     renderer.render(stage);
 }
+// Executes on loop when game is in 'play' state
+function play() {
+}
+littleLand.spriteArray[0][0].press = function () {
+    console.log("Clicked the grassy space.");
+};
