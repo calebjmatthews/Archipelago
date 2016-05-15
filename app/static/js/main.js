@@ -235,7 +235,7 @@ var Land = (function () {
 // PIXI Aliases
 var Container = PIXI.Container, autoDetectRenderer = PIXI.autoDetectRenderer, loader = PIXI.loader, resources = PIXI.loader.resources, Sprite = PIXI.Sprite, TextureCache = PIXI.utils.TextureCache;
 // Create renderer
-var renderer = autoDetectRenderer(1216, 576);
+var renderer = autoDetectRenderer();
 renderer.backgroundColor = 0x061639;
 renderer.view.style.position = "absolute";
 renderer.view.style.display = "block";
@@ -247,9 +247,20 @@ var stage = new Container();
 loader
     .add("static/img/images.json")
     .load(onImageLoad);
+var tb = null;
 function onImageLoad() {
+    // Create the Tink instance
+    tb = new Tink(PIXI, renderer.view);
     // This code runs when the texture atlas has loaded
     var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
     littleLand.genTestLand();
     littleLand.displayLand();
+    // Start the game loop
+    gameLoop();
+}
+function gameLoop() {
+    requestAnimationFrame(gameLoop);
+    // Update Tink
+    tb.update();
+    renderer.render(stage);
 }

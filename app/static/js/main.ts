@@ -241,7 +241,7 @@ var Container = PIXI.Container,
     TextureCache = PIXI.utils.TextureCache;
 
 // Create renderer
-var renderer = autoDetectRenderer(1216, 576);
+var renderer = autoDetectRenderer();
 renderer.backgroundColor = 0x061639;
 renderer.view.style.position = "absolute";
 renderer.view.style.display = "block";
@@ -256,10 +256,38 @@ loader
 	.add("static/img/images.json")
 	.load(onImageLoad);
 
+var tb = null;
+// Set the default game state to 'play'
+var state = play;
+
 function onImageLoad() {
+
+	// Create the Tink instance
+	tb = new Tink(PIXI, renderer.view);
+
 	// This code runs when the texture atlas has loaded
-	var littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
+	let littleLand = new Land(eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied);
 	littleLand.genTestLand();
 	littleLand.displayLand();
 	
+	// Start the game loop
+	gameLoop();
+}
+
+function gameLoop() {
+
+	requestAnimationFrame(gameLoop);
+
+	// Update Tink
+	tb.update();
+
+	// Utilize the game state
+	state();
+
+	renderer.render(stage);
+}
+
+// Executes on loop when game is in 'play' state
+function play() {
+
 }
