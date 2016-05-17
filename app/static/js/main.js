@@ -323,6 +323,7 @@ var pointer = null;
 var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
 var msgPoint = null;
 var msgAxial = null;
+var msgLastAx = null;
 function onImageLoad() {
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
@@ -343,7 +344,7 @@ function onImageLoad() {
     msgPoint.position.set((stage.width - 280), 20);
     stage.addChild(msgPoint);
     msgAxial = new Text(("Hex: "), { font: "16px sans-serif", fill: "white" });
-    msgAxial.position.set((stage.width - 280), 120);
+    msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
     // Start the game loop
     gameLoop();
@@ -362,8 +363,11 @@ function play() {
     // Highlight hovered hex
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     var hovAxial = pointToHex(corPoint);
-    if (hovAxial != lastHex) {
-        littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x000000;
+    if (hovAxial != undefined) {
+        if (lastHex != undefined) {
+            littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+        }
+        littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
     }
     lastHex = hovAxial;
     msgPoint.text = ("Coords: " + corPoint);
