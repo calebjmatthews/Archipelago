@@ -178,6 +178,16 @@ class Tile extends Hex {
 	landscape: number = 0;
 	development: number = 0;
 	ownedBy: number = 0;
+
+	getSpriteId() {
+		if (this.landscape === eLAND.Desert) { return "desert.png"; }
+		else if (this.landscape === eLAND.Forested) { return "forested.png"; }
+		else if (this.landscape === eLAND.Grassy) { return "grassy.png"; }
+		else if (this.landscape === eLAND.Rocky) { return "rocky.png"; }
+		else if (this.landscape === eLAND.Sea) { return "sea.png"; }
+		else if (this.landscape === eLAND.Shore) { return "shore.png"; }
+		else { return "hex.png"; }
+	}
 }
 
 var playerIncrement = 0; // Global incrementing variable used to set playerID
@@ -269,19 +279,8 @@ class Land {
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let tTile = lTiles[currX][currY];
-				let tSprite = null;
-				if (tTile.landscape === eLAND.Sea) {
-					tSprite = new Sprite(sprId["sea.png"]);
-				}
-				else if (tTile.landscape === eLAND.Shore) {
-					tSprite = new Sprite(sprId["shore.png"]);
-				}
-				else if (tTile.landscape === eLAND.Grassy) {
-					tSprite = new Sprite(sprId["grassy.png"]);
-				}
-				else {
-					tSprite = new Sprite(sprId["hex.png"]);
-				}
+				let tSprite = new Sprite(sprId[tTile.getSpriteId()]);
+
 				tSprite.scale.set(tTile.scale, tTile.scale);
 
 				let sPos = hexToPoint([currX, currY]);

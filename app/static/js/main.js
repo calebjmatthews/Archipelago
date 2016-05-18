@@ -197,6 +197,29 @@ var Tile = (function (_super) {
         this.development = 0;
         this.ownedBy = 0;
     }
+    Tile.prototype.getSpriteId = function () {
+        if (this.landscape === eLAND.Desert) {
+            return "desert.png";
+        }
+        else if (this.landscape === eLAND.Forested) {
+            return "forested.png";
+        }
+        else if (this.landscape === eLAND.Grassy) {
+            return "grassy.png";
+        }
+        else if (this.landscape === eLAND.Rocky) {
+            return "rocky.png";
+        }
+        else if (this.landscape === eLAND.Sea) {
+            return "sea.png";
+        }
+        else if (this.landscape === eLAND.Shore) {
+            return "shore.png";
+        }
+        else {
+            return "hex.png";
+        }
+    };
     return Tile;
 }(Hex));
 var playerIncrement = 0; // Global incrementing variable used to set playerID
@@ -270,19 +293,7 @@ var Land = (function () {
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var tTile = lTiles[currX][currY];
-                var tSprite = null;
-                if (tTile.landscape === eLAND.Sea) {
-                    tSprite = new Sprite(sprId["sea.png"]);
-                }
-                else if (tTile.landscape === eLAND.Shore) {
-                    tSprite = new Sprite(sprId["shore.png"]);
-                }
-                else if (tTile.landscape === eLAND.Grassy) {
-                    tSprite = new Sprite(sprId["grassy.png"]);
-                }
-                else {
-                    tSprite = new Sprite(sprId["hex.png"]);
-                }
+                var tSprite = new Sprite(sprId[tTile.getSpriteId()]);
                 tSprite.scale.set(tTile.scale, tTile.scale);
                 var sPos = hexToPoint([currX, currY]);
                 tSprite.position.set(sPos[0], sPos[1]);
