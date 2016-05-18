@@ -141,8 +141,9 @@ function hexToPoint(tHex) {
     // Set sprite width and height, to accomidate for pixel rounding?
     var sWidth = glbHWidth;
     var sHeight = glbHHeight * 1.15;
-    var xPos = this.glbOrigin[0] + ((sWidth / 2) * 1.5 * axialRow);
-    var yPos = this.glbOrigin[1] + ((sHeight / 2) * Math.sqrt(3) * (axialCol + axialRow / 2));
+    var xPos = this.glbOrigin[0] + ((sWidth / 2) * 1.5 * axialRow) - sWidth / 2;
+    var yPos = this.glbOrigin[1] +
+        ((sHeight / 2) * Math.sqrt(3) * (axialCol + axialRow / 2)) - sHeight / 2;
     return [xPos, yPos];
 }
 // Function to convert an x,y point into corresponding hex
@@ -153,7 +154,7 @@ function pointToHex(tPoint) {
     var sWidth = glbHWidth;
     var sHeight = glbHHeight * 0.86956522;
     var axialCol = xPos * (2 / 3) / (sWidth / 2);
-    var axialRow = (-xPos / 3 + (Math.sqrt(3) / 3) * yPos) / (sHeight / 2);
+    var axialRow = (-xPos / 6.8 + (Math.sqrt(3) / 2) * yPos / 2) / (sHeight / 2);
     return hexRound([axialRow, axialCol]);
 }
 var Hex = (function () {

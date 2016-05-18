@@ -116,8 +116,9 @@ var glbHWidth = 60;
 		// Set sprite width and height, to accomidate for pixel rounding?
 		let sWidth = glbHWidth;
 		let sHeight = glbHHeight * 1.15;
-		let xPos = this.glbOrigin[0] + ((sWidth/2) * 1.5 * axialRow);
-		let yPos = this.glbOrigin[1] + ((sHeight/2) * Math.sqrt(3) * (axialCol+axialRow/2));
+		let xPos = this.glbOrigin[0] + ((sWidth/2) * 1.5 * axialRow) - sWidth/2;
+		let yPos = this.glbOrigin[1] + 
+			((sHeight/2) * Math.sqrt(3) * (axialCol+axialRow/2)) - sHeight/2;
 		return [xPos, yPos];
 	}
 
@@ -129,7 +130,7 @@ var glbHWidth = 60;
 		let sWidth = glbHWidth;
 		let sHeight = glbHHeight * 0.86956522;
 		let axialCol = xPos * (2/3) / (sWidth/2);
-		let axialRow = (-xPos/3 + (Math.sqrt(3)/3) * yPos) / (sHeight/2);
+		let axialRow = (-xPos/6.8 + (Math.sqrt(3)/2) * yPos/2) / (sHeight/2);
 		return hexRound([axialRow, axialCol]);
 	}
 
