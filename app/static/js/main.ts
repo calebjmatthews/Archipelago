@@ -337,6 +337,32 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 
+function formEditBar() {
+	for (var cButton=0; cButton<6; cButton++) {
+		let sprId = loader.resources["static/img/images.json"].textures;
+		let tSprite = new Sprite(sprId[cButton]);
+		let bScale = 0.2;
+
+		tSprite.scale.set(bScale, bScale);
+	}
+}
+
+function formDebugBar() {
+	// Display text
+	msgPoint = new Text(
+		("Coords: "),
+		{font: "16px sans-serif", fill: "white"}
+	);
+	msgPoint.position.set((stage.width-280), 20);
+	stage.addChild(msgPoint);
+	msgAxial = new Text(
+		("Hex: "),
+		{font: "16px sans-serif", fill: "white"}
+	);
+	msgAxial.position.set((stage.width-280), 60);
+	stage.addChild(msgAxial);
+}
+
 function onImageLoad() {
 
 	// Create the Tink instance
@@ -355,20 +381,7 @@ function onImageLoad() {
 	designBG.x = stage.width-200;
 	designBG.y = 0;
 	stage.addChild(designBG);
-
-	// Display text
-	msgPoint = new Text(
-		("Coords: "),
-		{font: "16px sans-serif", fill: "white"}
-	);
-	msgPoint.position.set((stage.width-280), 20);
-	stage.addChild(msgPoint);
-	msgAxial = new Text(
-		("Hex: "),
-		{font: "16px sans-serif", fill: "white"}
-	);
-	msgAxial.position.set((stage.width-280), 60);
-	stage.addChild(msgAxial);
+	formDebugBar();
 	
 	// Start the game loop
 	gameLoop();
