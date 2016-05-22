@@ -306,8 +306,8 @@ var Container = PIXI.Container,
     loader = PIXI.loader,
     resources = PIXI.loader.resources,
     Sprite = PIXI.Sprite,
-    TextureCache = PIXI.utils.TextureCache;
-    Graphics = PIXI.Graphics;
+    TextureCache = PIXI.utils.TextureCache,
+    Graphics = PIXI.Graphics,
     Text = PIXI.Text;
 
 // Create renderer
@@ -340,10 +340,43 @@ var msgLastAx = null;
 function formEditBar() {
 	for (var cButton=0; cButton<6; cButton++) {
 		let sprId = loader.resources["static/img/images.json"].textures;
-		let tSprite = new Sprite(sprId[cButton]);
+		let chosenPng = null;
+		let chosenText = null;
+		if (cButton === eLAND.Desert) { 
+			chosenPng = "desert.png"; 
+			chosenText = "Desert";
+		}
+		else if (cButton === eLAND.Forested) { 
+			chosenPng = "forested.png"; 
+			chosenText = "Forested";
+		}
+		else if (cButton === eLAND.Grassy) { 
+			chosenPng = "grassy.png"; 
+			chosenText = "Grassy";
+		}
+		else if (cButton === eLAND.Rocky) { 
+			chosenPng = "rocky.png"; 
+			chosenText = "Rocky";
+		}
+		else if (cButton === eLAND.Sea) { 
+			chosenPng = "sea.png"; 
+			chosenText = "Sea";
+		}
+		else if (cButton === eLAND.Shore) { 
+			chosenPng = "shore.png"; 
+			chosenText = "Shore";
+		}
+		else { 
+			chosenPng = "hex.png"; }
+		let tSprite = new Sprite(sprId[chosenPng]);
 		let bScale = 0.2;
 
 		tSprite.scale.set(bScale, bScale);
+		tSprite.position.set((stage.width-340), (20+40*cButton));
+		stage.addChild(tSprite);
+		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
+		msgLand.position.set((stage.width-260), (25+40*cButton));
+		stage.addChild(msgLand);
 	}
 }
 
@@ -381,7 +414,7 @@ function onImageLoad() {
 	designBG.x = stage.width-200;
 	designBG.y = 0;
 	stage.addChild(designBG);
-	formDebugBar();
+	formEditBar();
 	
 	// Start the game loop
 	gameLoop();
@@ -415,6 +448,6 @@ function play() {
 	}
 	lastHex = hovAxial;
 
-	msgPoint.text = ("Coords: " + corPoint);
-	msgAxial.text = ("Hex: " + hovAxial);
+	// msgPoint.text = ("Coords: " + corPoint);
+	// msgAxial.text = ("Hex: " + hovAxial);
 }
