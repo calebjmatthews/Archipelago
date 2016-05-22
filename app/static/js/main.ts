@@ -59,7 +59,7 @@ enum eLAND { Grassy, Shore, Forested, Rocky, Desert, Sea }
 
 // Global gameplay variables
 var glbBoundary = 14;
-var glbOrigin = [508, 268];
+var glbOrigin = [508, 288];
 var glbHHeight = 30;
 var glbHWidth = 60;
 
@@ -374,6 +374,8 @@ function formEditBar() {
 		tSprite.scale.set(bScale, bScale);
 		tSprite.position.set((stage.width-340), (20+40*cButton));
 		stage.addChild(tSprite);
+		tb.makeInteractive(tSprite);
+		tSprite.press = () => {console.log("Pressed button for " + chosenText);};
 		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
 		msgLand.position.set((stage.width-260), (25+40*cButton));
 		stage.addChild(msgLand);
@@ -441,12 +443,32 @@ function play() {
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
 	let hovAxial = pointToHex(corPoint);
 	if (hovAxial != undefined) {
-		if (lastHex != undefined) {
-			littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+		if (littleLand.spriteArray[hovAxial[0]] != undefined) {
+			if (littleLand.spriteArray[hovAxial[0]][hovAxial[1]] != undefined) {
+				if (lastHex != undefined) {
+					if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+						littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+					}
+				}
+				littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
+				lastHex = hovAxial;
+			}
+			else {
+				if (lastHex != undefined) {
+					if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+						littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+					}
+				}
+			}
 		}
-		littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
+		else {
+			if (lastHex != undefined) {
+				if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+					littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+				}
+			}
+		}
 	}
-	lastHex = hovAxial;
 
 	// msgPoint.text = ("Coords: " + corPoint);
 	// msgAxial.text = ("Hex: " + hovAxial);

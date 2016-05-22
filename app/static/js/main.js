@@ -87,7 +87,7 @@ var eLAND;
 })(eLAND || (eLAND = {}));
 // Global gameplay variables
 var glbBoundary = 14;
-var glbOrigin = [508, 268];
+var glbOrigin = [508, 288];
 var glbHHeight = 30;
 var glbHWidth = 60;
 // ~~~~ Hex functions ~~~~
@@ -335,7 +335,7 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 function formEditBar() {
-    for (var cButton = 0; cButton < 6; cButton++) {
+    var _loop_1 = function() {
         var sprId = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
@@ -371,9 +371,14 @@ function formEditBar() {
         tSprite.scale.set(bScale, bScale);
         tSprite.position.set((stage.width - 340), (20 + 40 * cButton));
         stage.addChild(tSprite);
+        tb.makeInteractive(tSprite);
+        tSprite.press = function () { console.log("Pressed button for " + chosenText); };
         var msgLand = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
+    };
+    for (var cButton = 0; cButton < 6; cButton++) {
+        _loop_1();
     }
 }
 function formDebugBar() {
@@ -419,12 +424,32 @@ function play() {
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     var hovAxial = pointToHex(corPoint);
     if (hovAxial != undefined) {
-        if (lastHex != undefined) {
-            littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+        if (littleLand.spriteArray[hovAxial[0]] != undefined) {
+            if (littleLand.spriteArray[hovAxial[0]][hovAxial[1]] != undefined) {
+                if (lastHex != undefined) {
+                    if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+                        littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+                    }
+                }
+                littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
+                lastHex = hovAxial;
+            }
+            else {
+                if (lastHex != undefined) {
+                    if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+                        littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+                    }
+                }
+            }
         }
-        littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
+        else {
+            if (lastHex != undefined) {
+                if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
+                    littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
+                }
+            }
+        }
     }
-    lastHex = hovAxial;
     // msgPoint.text = ("Coords: " + corPoint);
     // msgAxial.text = ("Hex: " + hovAxial);
 }
