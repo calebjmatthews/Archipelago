@@ -337,6 +337,7 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 
+var buttonArray = [];
 function formEditBar() {
 	for (var cButton=0; cButton<6; cButton++) {
 		let sprId = loader.resources["static/img/images.json"].textures;
@@ -368,14 +369,14 @@ function formEditBar() {
 		}
 		else { 
 			chosenPng = "hex.png"; }
-		let tSprite = new Sprite(sprId[chosenPng]);
+		buttonArray[cButton] = new Sprite(sprId[chosenPng]);
 		let bScale = 0.2;
 
-		tSprite.scale.set(bScale, bScale);
-		tSprite.position.set((stage.width-340), (20+40*cButton));
-		stage.addChild(tSprite);
-		tb.makeInteractive(tSprite);
-		tSprite.press = () => {console.log("Pressed button for " + chosenText);};
+		buttonArray[cButton].scale.set(bScale, bScale);
+		buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
+		stage.addChild(buttonArray[cButton]);
+		tb.makeInteractive(buttonArray[cButton]);
+		buttonArray[cButton].press = () => {console.log("Pressed button for " + chosenText);};
 		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
 		msgLand.position.set((stage.width-260), (25+40*cButton));
 		stage.addChild(msgLand);

@@ -334,6 +334,7 @@ var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
+var buttonArray = [];
 function formEditBar() {
     var _loop_1 = function() {
         var sprId = loader.resources["static/img/images.json"].textures;
@@ -366,13 +367,13 @@ function formEditBar() {
         else {
             chosenPng = "hex.png";
         }
-        var tSprite = new Sprite(sprId[chosenPng]);
+        buttonArray[cButton] = new Sprite(sprId[chosenPng]);
         var bScale = 0.2;
-        tSprite.scale.set(bScale, bScale);
-        tSprite.position.set((stage.width - 340), (20 + 40 * cButton));
-        stage.addChild(tSprite);
-        tb.makeInteractive(tSprite);
-        tSprite.press = function () { console.log("Pressed button for " + chosenText); };
+        buttonArray[cButton].scale.set(bScale, bScale);
+        buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
+        stage.addChild(buttonArray[cButton]);
+        tb.makeInteractive(buttonArray[cButton]);
+        buttonArray[cButton].press = function () { console.log("Pressed button for " + chosenText); };
         var msgLand = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
