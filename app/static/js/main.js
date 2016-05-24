@@ -90,6 +90,7 @@ var glbBoundary = 14;
 var glbOrigin = [508, 288];
 var glbHHeight = 30;
 var glbHWidth = 60;
+var glbPaintingLand = null;
 // ~~~~ Hex functions ~~~~
 function hexToCube(tHex) {
     var axialRow = tHex[0];
@@ -336,7 +337,7 @@ var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
 function formEditBar() {
-    var _loop_1 = function() {
+    for (var cButton = 0; cButton < 6; cButton++) {
         var sprId = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
@@ -368,18 +369,14 @@ function formEditBar() {
             chosenPng = "hex.png";
         }
         buttonArray[cButton] = new Sprite(sprId[chosenPng]);
+        tb.makeInteractive(buttonArray[cButton]);
         var bScale = 0.2;
         buttonArray[cButton].scale.set(bScale, bScale);
         buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
         stage.addChild(buttonArray[cButton]);
-        tb.makeInteractive(buttonArray[cButton]);
-        buttonArray[cButton].press = function () { console.log("Pressed button for " + chosenText); };
         var msgLand = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
-    };
-    for (var cButton = 0; cButton < 6; cButton++) {
-        _loop_1();
     }
 }
 function formDebugBar() {
@@ -390,6 +387,10 @@ function formDebugBar() {
     msgAxial = new Text(("Hex: "), { font: "16px sans-serif", fill: "white" });
     msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
+}
+function onClick(clkPoint) {
+    console.log("The pointer was tapped at: " + clkPoint);
+    console.log("Current painting ID: " + glbPaintingLand);
 }
 function onImageLoad() {
     // Create the Tink instance
@@ -421,8 +422,26 @@ function gameLoop() {
 // Executes on loop when game is in 'play' state
 var lastHex = null;
 function play() {
-    // Highlight hovered hex
+    // Edit bar buttons
+    for (var pButton = 0; pButton <= 5; pButton++) {
+        buttonArray[pButton].press = function () {
+            console.log("Clicked the " + pButton + " button.");
+            glbPaintingLand = pButton;
+        };
+    }
+    // Normal cursor when hovering over final edit bar button
+    if (pointer.hitTestSprite(buttonArray[5])) {
+        pointer.cursor = "auto";
+    }
+    // Click event handling
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
+    pointer.tap = function () {
+        onClick(corPoint);
+    };
+    pointer.release = function () {
+        onClick(corPoint);
+    };
+    // Highlight hovered hex
     var hovAxial = pointToHex(corPoint);
     if (hovAxial != undefined) {
         if (littleLand.spriteArray[hovAxial[0]] != undefined) {

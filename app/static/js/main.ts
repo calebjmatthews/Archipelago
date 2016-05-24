@@ -62,6 +62,7 @@ var glbBoundary = 14;
 var glbOrigin = [508, 288];
 var glbHHeight = 30;
 var glbHWidth = 60;
+var glbPaintingLand = null;
 
 // ~~~~ Hex functions ~~~~
 
@@ -299,32 +300,31 @@ class Land {
 }
 
 // ~~~~ Set up pixi.js ~~~~
+	// PIXI Aliases
+	var Container = PIXI.Container,
+	    autoDetectRenderer = PIXI.autoDetectRenderer,
+	    loader = PIXI.loader,
+	    resources = PIXI.loader.resources,
+	    Sprite = PIXI.Sprite,
+	    TextureCache = PIXI.utils.TextureCache,
+	    Graphics = PIXI.Graphics,
+	    Text = PIXI.Text;
 
-// PIXI Aliases
-var Container = PIXI.Container,
-    autoDetectRenderer = PIXI.autoDetectRenderer,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    Sprite = PIXI.Sprite,
-    TextureCache = PIXI.utils.TextureCache,
-    Graphics = PIXI.Graphics,
-    Text = PIXI.Text;
+	// Create renderer
+	var renderer = autoDetectRenderer();
+	renderer.backgroundColor = 0x061639;
+	renderer.view.style.position = "absolute";
+	renderer.view.style.display = "block";
+	renderer.autoResize = true;
+	renderer.resize(window.innerWidth, window.innerHeight);
 
-// Create renderer
-var renderer = autoDetectRenderer();
-renderer.backgroundColor = 0x061639;
-renderer.view.style.position = "absolute";
-renderer.view.style.display = "block";
-renderer.autoResize = true;
-renderer.resize(window.innerWidth, window.innerHeight);
+	// Apply renderer
+	document.body.appendChild(renderer.view);
+	var stage = new Container();
 
-// Apply renderer
-document.body.appendChild(renderer.view);
-var stage = new Container();
-
-loader
-	.add("static/img/images.json")
-	.load(onImageLoad);
+	loader
+		.add("static/img/images.json")
+		.load(onImageLoad);
 
 // Create global Pixi and Tink variables
 var tb = null;
@@ -370,13 +370,12 @@ function formEditBar() {
 		else { 
 			chosenPng = "hex.png"; }
 		buttonArray[cButton] = new Sprite(sprId[chosenPng]);
+		tb.makeInteractive(buttonArray[cButton]);
 		let bScale = 0.2;
 
 		buttonArray[cButton].scale.set(bScale, bScale);
 		buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
 		stage.addChild(buttonArray[cButton]);
-		tb.makeInteractive(buttonArray[cButton]);
-		buttonArray[cButton].press = () => {console.log("Pressed button for " + chosenText);};
 		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
 		msgLand.position.set((stage.width-260), (25+40*cButton));
 		stage.addChild(msgLand);
@@ -397,6 +396,12 @@ function formDebugBar() {
 	);
 	msgAxial.position.set((stage.width-280), 60);
 	stage.addChild(msgAxial);
+}
+
+function onClick(clkPoint) {
+
+	console.log("The pointer was tapped at: " + clkPoint);
+	console.log("Current painting ID: " + glbPaintingLand);
 }
 
 function onImageLoad() {
@@ -440,8 +445,26 @@ function gameLoop() {
 let lastHex = null;
 function play() {
 
-	// Highlight hovered hex
+	// Edit bar buttons
+	for (var pButton=0; pButton<=5; pButton++) {
+		buttonArray[pButton].press = () => {
+			console.log("Clicked the " + pButton + " button.");
+			glbPaintingLand = pButton;
+		}
+	}
+	// Normal cursor when hovering over final edit bar button
+	if (pointer.hitTestSprite(buttonArray[5])) {pointer.cursor = "auto";}
+
+	// Click event handling
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
+	pointer.tap = () => {
+		onClick(corPoint);
+	}
+	pointer.release = () => {
+		onClick(corPoint);
+	}
+
+	// Highlight hovered hex
 	let hovAxial = pointToHex(corPoint);
 	if (hovAxial != undefined) {
 		if (littleLand.spriteArray[hovAxial[0]] != undefined) {
