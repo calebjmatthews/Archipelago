@@ -336,6 +336,7 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
+var grassyButton = null;
 function formEditBar() {
     for (var cButton = 0; cButton < 6; cButton++) {
         var sprId = loader.resources["static/img/images.json"].textures;
@@ -350,7 +351,7 @@ function formEditBar() {
             chosenText = "Forested";
         }
         else if (cButton === eLAND.Grassy) {
-            chosenPng = "grassy.png";
+            grassyButton = "grassy.png";
             chosenText = "Grassy";
         }
         else if (cButton === eLAND.Rocky) {
@@ -368,11 +369,15 @@ function formEditBar() {
         else {
             chosenPng = "hex.png";
         }
+        var bScale = 0.2;
         buttonArray[cButton] = new Sprite(sprId[chosenPng]);
         tb.makeInteractive(buttonArray[cButton]);
-        var bScale = 0.2;
         buttonArray[cButton].scale.set(bScale, bScale);
         buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
+        buttonArray[cButton].tap = function () {
+            glbPaintingLand = cButton;
+            console.log("Clicked the " + cButton + " button.");
+        };
         stage.addChild(buttonArray[cButton]);
         var msgLand = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
@@ -389,7 +394,7 @@ function formDebugBar() {
     stage.addChild(msgAxial);
 }
 function onClick(clkPoint) {
-    console.log("The pointer was tapped at: " + clkPoint);
+    console.log("The pointer was clicked at: " + clkPoint);
     console.log("Current painting ID: " + glbPaintingLand);
 }
 function onImageLoad() {
@@ -408,6 +413,10 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
+    // Test button positions
+    for (var pButton = 0; pButton <= 5; pButton++) {
+        console.log("Button positions: " + buttonArray[pButton].position);
+    }
     // Start the game loop
     gameLoop();
 }

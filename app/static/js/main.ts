@@ -369,16 +369,20 @@ function formEditBar() {
 		}
 		else { 
 			chosenPng = "hex.png"; }
+		let bScale = 0.2;
 		buttonArray[cButton] = new Sprite(sprId[chosenPng]);
 		tb.makeInteractive(buttonArray[cButton]);
-		let bScale = 0.2;
-
+		
 		buttonArray[cButton].scale.set(bScale, bScale);
 		buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
+		buttonArray[cButton].tap = () => {
+			glbPaintingLand = cButton;
+			console.log("Clicked the " + cButton + " button.");
+		}
 		stage.addChild(buttonArray[cButton]);
 		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
 		msgLand.position.set((stage.width-260), (25+40*cButton));
-		stage.addChild(msgLand);
+		stage.addChild(msgLand);		
 	}
 }
 
@@ -400,7 +404,7 @@ function formDebugBar() {
 
 function onClick(clkPoint) {
 
-	console.log("The pointer was tapped at: " + clkPoint);
+	console.log("The pointer was clicked at: " + clkPoint);
 	console.log("Current painting ID: " + glbPaintingLand);
 }
 
@@ -423,6 +427,11 @@ function onImageLoad() {
 	designBG.y = 0;
 	stage.addChild(designBG);
 	formEditBar();
+
+	// Test button positions
+	for (var pButton=0; pButton<=5; pButton++) {
+		console.log("Button positions: " + buttonArray[pButton].position);
+	}
 	
 	// Start the game loop
 	gameLoop();
