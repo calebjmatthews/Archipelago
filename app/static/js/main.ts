@@ -368,7 +368,8 @@ function formEditBar() {
 			chosenText = "Shore";
 		}
 		else { 
-			chosenPng = "hex.png"; }
+			chosenPng = "hex.png"; 
+		}
 		buttonArray[cButton] = new Sprite(sprId[chosenPng]);
 		tb.makeInteractive(buttonArray[cButton]);
 		let bScale = 0.2;
@@ -380,6 +381,14 @@ function formEditBar() {
 		msgLand.position.set((stage.width-260), (25+40*cButton));
 		stage.addChild(msgLand);
 	}
+
+	// Can't use a for loop because of the way press events act like watchers
+	buttonArray[eLAND.Grassy].press = () => { glbPaintingLand = eLAND.Grassy; }
+	buttonArray[eLAND.Shore].press = () => { glbPaintingLand = eLAND.Shore; }
+	buttonArray[eLAND.Forested].press = () => { glbPaintingLand = eLAND.Forested; }
+	buttonArray[eLAND.Rocky].press = () => { glbPaintingLand = eLAND.Rocky; }
+	buttonArray[eLAND.Desert].press = () => { glbPaintingLand = eLAND.Desert; }
+	buttonArray[eLAND.Sea].press = () => { glbPaintingLand = eLAND.Sea; }
 }
 
 function formDebugBar() {
@@ -445,21 +454,12 @@ function gameLoop() {
 let lastHex = null;
 function play() {
 
-	// Edit bar buttons
-	for (var pButton=0; pButton<=5; pButton++) {
-		buttonArray[pButton].press = () => {
-			console.log("Clicked the " + pButton + " button.");
-			glbPaintingLand = pButton;
-		}
-	}
+
 	// Normal cursor when hovering over final edit bar button
 	if (pointer.hitTestSprite(buttonArray[5])) {pointer.cursor = "auto";}
 
 	// Click event handling
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
-	pointer.tap = () => {
-		onClick(corPoint);
-	}
 	pointer.release = () => {
 		onClick(corPoint);
 	}
