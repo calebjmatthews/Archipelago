@@ -383,6 +383,14 @@ function formEditBar() {
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
     }
+    buttonArray[eLAND.Grassy].press = function () {
+        console.log("Clicked the grassy button.");
+        glbPaintingLand = eLAND.Grassy;
+    };
+    buttonArray[eLAND.Shore].press = function () {
+        console.log("Clicked the shore button.");
+        glbPaintingLand = eLAND.Shore;
+    };
 }
 function formDebugBar() {
     // Display text
@@ -398,6 +406,27 @@ function onClick(clkPoint) {
     console.log("Current painting ID: " + glbPaintingLand);
 }
 function onImageLoad() {
+    // Test enum
+    for (var iii = 0; iii < 6; iii++) {
+        if (iii === eLAND.Desert) {
+            console.log("Desert" + iii);
+        }
+        else if (iii === eLAND.Forested) {
+            console.log("Forested" + iii);
+        }
+        else if (iii === eLAND.Grassy) {
+            console.log("Grassy" + iii);
+        }
+        else if (iii === eLAND.Rocky) {
+            console.log("Rocky" + iii);
+        }
+        else if (iii === eLAND.Sea) {
+            console.log("Sea" + iii);
+        }
+        else if (iii === eLAND.Shore) {
+            console.log("Shore" + iii);
+        }
+    }
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
@@ -431,13 +460,6 @@ function gameLoop() {
 // Executes on loop when game is in 'play' state
 var lastHex = null;
 function play() {
-    // Edit bar buttons
-    for (var pButton = 0; pButton <= 5; pButton++) {
-        buttonArray[pButton].press = function () {
-            console.log("Clicked the " + pButton + " button.");
-            glbPaintingLand = pButton;
-        };
-    }
     // Normal cursor when hovering over final edit bar button
     if (pointer.hitTestSprite(buttonArray[5])) {
         pointer.cursor = "auto";
