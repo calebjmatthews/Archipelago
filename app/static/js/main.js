@@ -221,6 +221,11 @@ var Tile = (function (_super) {
             return "hex.png";
         }
     };
+    Tile.prototype.reDrawTile = function () {
+        var sprId = loader.resources["static/img/images.json"].textures;
+        var tSprite = littleLand.spriteArray[this.axialRow][this.axialCol];
+        tSprite.texture = sprId[this.getSpriteId()];
+    };
     return Tile;
 }(Hex));
 var playerIncrement = 0; // Global incrementing variable used to set playerID
@@ -336,7 +341,6 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
-var grassyButton = null;
 function formEditBar() {
     for (var cButton = 0; cButton < 6; cButton++) {
         var sprId = loader.resources["static/img/images.json"].textures;
@@ -351,7 +355,7 @@ function formEditBar() {
             chosenText = "Forested";
         }
         else if (cButton === eLAND.Grassy) {
-            grassyButton = "grassy.png";
+            chosenPng = "grassy.png";
             chosenText = "Grassy";
         }
         else if (cButton === eLAND.Rocky) {
@@ -369,28 +373,23 @@ function formEditBar() {
         else {
             chosenPng = "hex.png";
         }
-        var bScale = 0.2;
         buttonArray[cButton] = new Sprite(sprId[chosenPng]);
         tb.makeInteractive(buttonArray[cButton]);
+        var bScale = 0.2;
         buttonArray[cButton].scale.set(bScale, bScale);
         buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
-        buttonArray[cButton].tap = function () {
-            glbPaintingLand = cButton;
-            console.log("Clicked the " + cButton + " button.");
-        };
         stage.addChild(buttonArray[cButton]);
         var msgLand = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
     }
-    buttonArray[eLAND.Grassy].press = function () {
-        console.log("Clicked the grassy button.");
-        glbPaintingLand = eLAND.Grassy;
-    };
-    buttonArray[eLAND.Shore].press = function () {
-        console.log("Clicked the shore button.");
-        glbPaintingLand = eLAND.Shore;
-    };
+    // Can't use a for loop because of the way press events act like watchers
+    buttonArray[eLAND.Grassy].press = function () { glbPaintingLand = eLAND.Grassy; };
+    buttonArray[eLAND.Shore].press = function () { glbPaintingLand = eLAND.Shore; };
+    buttonArray[eLAND.Forested].press = function () { glbPaintingLand = eLAND.Forested; };
+    buttonArray[eLAND.Rocky].press = function () { glbPaintingLand = eLAND.Rocky; };
+    buttonArray[eLAND.Desert].press = function () { glbPaintingLand = eLAND.Desert; };
+    buttonArray[eLAND.Sea].press = function () { glbPaintingLand = eLAND.Sea; };
 }
 function formDebugBar() {
     // Display text
@@ -402,31 +401,23 @@ function formDebugBar() {
     stage.addChild(msgAxial);
 }
 function onClick(clkPoint) {
-    console.log("The pointer was clicked at: " + clkPoint);
+    console.log("The pointer was tapped at: " + clkPoint);
     console.log("Current painting ID: " + glbPaintingLand);
-}
-function onImageLoad() {
-    // Test enum
-    for (var iii = 0; iii < 6; iii++) {
-        if (iii === eLAND.Desert) {
-            console.log("Desert" + iii);
-        }
-        else if (iii === eLAND.Forested) {
-            console.log("Forested" + iii);
-        }
-        else if (iii === eLAND.Grassy) {
-            console.log("Grassy" + iii);
-        }
-        else if (iii === eLAND.Rocky) {
-            console.log("Rocky" + iii);
-        }
-        else if (iii === eLAND.Sea) {
-            console.log("Sea" + iii);
-        }
-        else if (iii === eLAND.Shore) {
-            console.log("Shore" + iii);
+    var clkAxial = pointToHex(clkPoint);
+    var clkTile = littleLand.tileArray[clkAxial[0]][clkAxial[1]];
+    if (clkAxial != undefined) {
+        if (littleLand.tileArray[clkAxial[0]] != undefined) {
+            if (clkTile != undefined) {
+                if ((clkTile.landscape != glbPaintingLand) &&
+                    (glbPaintingLand != null)) {
+                    clkTile.landscape = glbPaintingLand;
+                    clkTile.reDrawTile();
+                }
+            }
         }
     }
+}
+function onImageLoad() {
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
@@ -442,10 +433,6 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
-    // Test button positions
-    for (var pButton = 0; pButton <= 5; pButton++) {
-        console.log("Button positions: " + buttonArray[pButton].position);
-    }
     // Start the game loop
     gameLoop();
 }
@@ -466,12 +453,9 @@ function play() {
     }
     // Click event handling
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
-    pointer.tap = function () {
+    if (pointer.isDown === true) {
         onClick(corPoint);
-    };
-    pointer.release = function () {
-        onClick(corPoint);
-    };
+    }
     // Highlight hovered hex
     var hovAxial = pointToHex(corPoint);
     if (hovAxial != undefined) {
