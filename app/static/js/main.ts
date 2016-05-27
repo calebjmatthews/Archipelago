@@ -406,6 +406,7 @@ function onClick(clkPoint) {
 
 	console.log("The pointer was clicked at: " + clkPoint);
 	console.log("Current painting ID: " + glbPaintingLand);
+	
 }
 
 function onImageLoad() {
