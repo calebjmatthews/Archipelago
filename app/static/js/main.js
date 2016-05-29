@@ -159,11 +159,12 @@ function pointToHex(tPoint) {
     return hexRound([axialRow, axialCol]);
 }
 var Hex = (function () {
-    function Hex(setPos) {
+    function Hex(arraySpot, setPos) {
         // Defines the graphical height/width of all hexagons in game
         this.height = 30;
         this.width = 60;
         this.scale = 0.2;
+        this.hexID = arraySpot;
         this.axialRow = setPos[0];
         this.axialCol = setPos[1];
     }
@@ -223,7 +224,8 @@ var Tile = (function (_super) {
     };
     Tile.prototype.reDrawTile = function () {
         var sprId = loader.resources["static/img/images.json"].textures;
-        var tSprite = littleLand.spriteArray[this.axialRow][this.axialCol];
+        var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
+        var tSprite = currLand.spriteArray[arraySpot];
         tSprite.texture = sprId[this.getSpriteId()];
     };
     return Tile;
@@ -248,6 +250,15 @@ var Land = (function () {
         this.lShape = sentSettings[1];
         this.lClimate = sentSettings[2];
     }
+    Land.prototype.getID = function (givPos) {
+        for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
+            if ((this.tileArray[cTile].axialRow === givPos[0]) &&
+                (this.tileArray[cTile].axialCol === givPos[1])) {
+                return cTile;
+            }
+        }
+        return null;
+    };
     Land.prototype.readLand = function () {
         // Read land tile data from json file
     };
@@ -261,32 +272,25 @@ var Land = (function () {
         for (var currWidth = 0; currWidth < landWidth; currWidth++) {
             // Make grassy center
             if (currWidth === 0) {
-                landTiles[0] = [];
-                landTiles[0][0] = new Tile([0, 0]);
-                landTiles[0][0].landscape = eLAND.Grassy;
+                landTiles[0] = new Tile(0, [0, 0]);
+                landTiles[0].landscape = eLAND.Grassy;
             }
             else if (currWidth === 1) {
-                var centerNeighbors = landTiles[0][0].getNeighbors();
+                var centerNeighbors = landTiles[0].getNeighbors();
                 for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
                     var tNbr = centerNeighbors[currNbr];
-                    if (landTiles[tNbr[0]] === undefined) {
-                        landTiles[tNbr[0]] = [];
-                    }
-                    landTiles[tNbr[0]][tNbr[1]] = new Tile([tNbr[0], tNbr[1]]);
-                    landTiles[tNbr[0]][tNbr[1]].landscape = eLAND.Shore;
+                    landTiles[tNbr] = new Tile(currNbr + 1, [tNbr[0], tNbr[1]]);
+                    landTiles[tNbr].landscape = eLAND.Shore;
                 }
+                3;
             }
         }
         // Fill the rest with sea
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
-                if (landTiles[currX] === undefined) {
-                    landTiles[currX] = [];
-                }
-                if (landTiles[currX][currY] === undefined) {
-                    landTiles[currX][currY] = new Tile([currX, currY]);
-                    landTiles[currX][currY].landscape = eLAND.Sea;
-                }
+                var currTile = landTiles.length;
+                landTiles[currTile] = new Tile(currTile, [currX, currY]);
+                landTiles[currTile].landscape = eLAND.Sea;
             }
         }
         this.tileArray = landTiles;
@@ -298,16 +302,14 @@ var Land = (function () {
         var landSprites = [];
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
-                var tTile = lTiles[currX][currY];
+                var arraySpot = this.getID([currX, currY]);
+                var tTile = lTiles[arraySpot];
                 var tSprite = new Sprite(sprId[tTile.getSpriteId()]);
                 tSprite.scale.set(tTile.scale, tTile.scale);
                 var sPos = hexToPoint([currX, currY]);
                 tSprite.position.set(sPos[0], sPos[1]);
                 stage.addChild(tSprite);
-                if (landSprites[currX] === undefined) {
-                    landSprites[currX] = [];
-                }
-                landSprites[currX][currY] = tSprite;
+                landSprites[arraySpot] = tSprite;
             }
         }
         this.spriteArray = landSprites;
@@ -337,6 +339,7 @@ var tb = null;
 var state = play;
 var pointer = null;
 var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
@@ -383,7 +386,7 @@ function formEditBar() {
         msgLand.position.set((stage.width - 260), (25 + 40 * cButton));
         stage.addChild(msgLand);
     }
-    // Can't use a for loop because of the way press events act like watchers
+    // Can't use a for loop because press events act like watchers
     buttonArray[eLAND.Grassy].press = function () { glbPaintingLand = eLAND.Grassy; };
     buttonArray[eLAND.Shore].press = function () { glbPaintingLand = eLAND.Shore; };
     buttonArray[eLAND.Forested].press = function () { glbPaintingLand = eLAND.Forested; };
@@ -400,13 +403,13 @@ function formDebugBar() {
     msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
 }
-function onClick(clkPoint) {
+function onClick(thisLand, clkPoint) {
     console.log("The pointer was tapped at: " + clkPoint);
     console.log("Current painting ID: " + glbPaintingLand);
     var clkAxial = pointToHex(clkPoint);
-    var clkTile = littleLand.tileArray[clkAxial[0]][clkAxial[1]];
+    var clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
     if (clkAxial != undefined) {
-        if (littleLand.tileArray[clkAxial[0]] != undefined) {
+        if (thisLand.tileArray[clkAxial[0]] != undefined) {
             if (clkTile != undefined) {
                 if ((clkTile.landscape != glbPaintingLand) &&
                     (glbPaintingLand != null)) {
@@ -422,8 +425,8 @@ function onImageLoad() {
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
     // This code runs when the texture atlas has loaded
-    littleLand.genTestLand();
-    littleLand.displayLand();
+    currLand.genTestLand();
+    currLand.displayLand();
     // Create design bar on right
     var designBG = new Graphics();
     designBG.beginFill(0x000000);
@@ -454,34 +457,26 @@ function play() {
     // Click event handling
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        onClick(corPoint);
+        onClick(currLand, corPoint);
     }
     // Highlight hovered hex
     var hovAxial = pointToHex(corPoint);
     if (hovAxial != undefined) {
-        if (littleLand.spriteArray[hovAxial[0]] != undefined) {
-            if (littleLand.spriteArray[hovAxial[0]][hovAxial[1]] != undefined) {
-                if (lastHex != undefined) {
-                    if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-                        littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-                    }
-                }
-                littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
-                lastHex = hovAxial;
-            }
-            else {
-                if (lastHex != undefined) {
-                    if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-                        littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-                    }
+        var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
+        if (currLand.spriteArray[hovArraySpot] != undefined) {
+            if (lastHex != null) {
+                var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+                if (currLand.spriteArray[lastArraySpot] != undefined) {
+                    currLand.spriteArray[lastArraySpot].tint = 0xffffff;
                 }
             }
+            currLand.spriteArray[hovArraySpot].tint = 0x424949;
+            lastHex = hovAxial;
         }
         else {
-            if (lastHex != undefined) {
-                if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-                    littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-                }
+            if (lastHex != null) {
+                var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+                currLand.spriteArray[lastArraySpot].tint = 0xffffff;
             }
         }
     }

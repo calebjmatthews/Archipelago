@@ -143,10 +143,12 @@ class Hex {
 	scale: number = 0.2;
 
 	// Axial column and axial row define individual hexagon position
+	hexID: number;
 	axialRow: number;
 	axialCol: number;
 
-	constructor(setPos: [number, number]) {
+	constructor(arraySpot: number, setPos: [number, number]) {
+		this.hexID = arraySpot;
 		this.axialRow = setPos[0];
 		this.axialCol = setPos[1];
 	}
@@ -192,7 +194,8 @@ class Tile extends Hex {
 
 	reDrawTile() {
 		let sprId = loader.resources["static/img/images.json"].textures;
-		let tSprite = littleLand.spriteArray[this.axialRow][this.axialCol];
+		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
+		let tSprite = currLand.spriteArray[arraySpot];
 		tSprite.texture = sprId[this.getSpriteId()];
 	}
 }
@@ -229,6 +232,16 @@ class Land {
 		this.lClimate = sentSettings[2];
 	}
 
+	getID(givPos: [number, number]) {
+		for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
+			if ((this.tileArray[cTile].axialRow === givPos[0]) &&
+					(this.tileArray[cTile].axialCol === givPos[1])) {
+				return cTile;
+			}
+		}
+		return null;
+	}
+
 	readLand() {
 		// Read land tile data from json file
 
@@ -246,33 +259,25 @@ class Land {
 		for (var currWidth = 0; currWidth < landWidth; currWidth ++) {
 			// Make grassy center
 			if (currWidth === 0) {
-				landTiles[0] = [];
-				landTiles[0][0] = new Tile([0, 0]);
-				landTiles[0][0].landscape = eLAND.Grassy;
+				landTiles[0] = new Tile(0, [0, 0]);
+				landTiles[0].landscape = eLAND.Grassy;
 			} 
 			// Make surrounding shore
 			else if (currWidth === 1) {
-				let centerNeighbors = landTiles[0][0].getNeighbors();
+				let centerNeighbors = landTiles[0].getNeighbors();
 				for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
 					let tNbr = centerNeighbors[currNbr];
-					if (landTiles[tNbr[0]] === undefined) { 
-						landTiles[tNbr[0]] = []; 
-					}
-					landTiles[tNbr[0]][tNbr[1]] = new Tile([tNbr[0], tNbr[1]]);
-					landTiles[tNbr[0]][tNbr[1]].landscape = eLAND.Shore;
+					landTiles[tNbr] = new Tile(currNbr+1, [tNbr[0], tNbr[1]]);
+					landTiles[tNbr].landscape = eLAND.Shore;
 				}
 			}
 		}
 		// Fill the rest with sea
 		for (var currX = (-1*glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY = (-1*glbBoundary); currY < glbBoundary; currY++) {
-				if (landTiles[currX] === undefined) {
-					landTiles[currX] = [];
-				}
-				if (landTiles[currX][currY] === undefined) {
-					landTiles[currX][currY] = new Tile([currX, currY]);
-					landTiles[currX][currY].landscape = eLAND.Sea;
-				}
+				let currTile = landTiles.length;
+				landTiles[currTile] = new Tile(currTile, [currX, currY]);
+				landTiles[currTile].landscape = eLAND.Sea;
 			}
 		}
 		this.tileArray = landTiles;
@@ -285,7 +290,8 @@ class Land {
 		let landSprites = [];
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
-				let tTile = lTiles[currX][currY];
+				let arraySpot = this.getID([currX, currY]);
+				let tTile = lTiles[arraySpot];
 				let tSprite = new Sprite(sprId[tTile.getSpriteId()]);
 
 				tSprite.scale.set(tTile.scale, tTile.scale);
@@ -294,10 +300,7 @@ class Land {
 
 				tSprite.position.set(sPos[0], sPos[1]);
 				stage.addChild(tSprite);
-				if (landSprites[currX] === undefined) {
-					landSprites[currX] = [];
-				}
-				landSprites[currX][currY] = tSprite;
+				landSprites[arraySpot] = tSprite;
 			}
 		}
 		this.spriteArray = landSprites;
@@ -339,6 +342,7 @@ var state = play;
 var pointer = null;
 
 let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+let currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
@@ -388,7 +392,7 @@ function formEditBar() {
 		stage.addChild(msgLand);
 	}
 
-	// Can't use a for loop because of the way press events act like watchers
+	// Can't use a for loop because press events act like watchers
 	buttonArray[eLAND.Grassy].press = () => { glbPaintingLand = eLAND.Grassy; }
 	buttonArray[eLAND.Shore].press = () => { glbPaintingLand = eLAND.Shore; }
 	buttonArray[eLAND.Forested].press = () => { glbPaintingLand = eLAND.Forested; }
@@ -413,15 +417,15 @@ function formDebugBar() {
 	stage.addChild(msgAxial);
 }
 
-function onClick(clkPoint) {
+function onClick(thisLand, clkPoint) {
 	console.log("The pointer was tapped at: " + clkPoint);
 	console.log("Current painting ID: " + glbPaintingLand);
 
 	let clkAxial = pointToHex(clkPoint);
-	let clkTile = littleLand.tileArray[clkAxial[0]][clkAxial[1]];
+	let clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
 
 	if (clkAxial != undefined) {
-		if (littleLand.tileArray[clkAxial[0]] != undefined) {
+		if (thisLand.tileArray[clkAxial[0]] != undefined) {
 			if (clkTile != undefined) {
 				if ((clkTile.landscape != glbPaintingLand) && 
 					(glbPaintingLand != null)) {
@@ -441,8 +445,8 @@ function onImageLoad() {
 	pointer = tb.makePointer();
 
 	// This code runs when the texture atlas has loaded
-	littleLand.genTestLand();
-	littleLand.displayLand();
+	currLand.genTestLand();
+	currLand.displayLand();
 
 	// Create design bar on right
 	var designBG = new Graphics();
@@ -482,35 +486,27 @@ function play() {
 	// Click event handling
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
 	 if (pointer.isDown === true) {
-		onClick(corPoint);
+		onClick(currLand, corPoint);
 	}
 
 	// Highlight hovered hex
 	let hovAxial = pointToHex(corPoint);
 	if (hovAxial != undefined) {
-		if (littleLand.spriteArray[hovAxial[0]] != undefined) {
-			if (littleLand.spriteArray[hovAxial[0]][hovAxial[1]] != undefined) {
-				if (lastHex != undefined) {
-					if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-						littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-					}
-				}
-				littleLand.spriteArray[hovAxial[0]][hovAxial[1]].tint = 0x424949;
-				lastHex = hovAxial;
-			}
-			else {
-				if (lastHex != undefined) {
-					if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-						littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-					}
+		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
+		if (currLand.spriteArray[hovArraySpot] != undefined) {
+			if (lastHex != null) {
+				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+				if (currLand.spriteArray[lastArraySpot] != undefined) {
+					currLand.spriteArray[lastArraySpot].tint = 0xffffff;
 				}
 			}
+			currLand.spriteArray[hovArraySpot].tint = 0x424949;
+			lastHex = hovAxial;
 		}
 		else {
-			if (lastHex != undefined) {
-				if (littleLand.spriteArray[lastHex[0]][lastHex[1]] != undefined) {
-					littleLand.spriteArray[lastHex[0]][lastHex[1]].tint = 0xffffff;
-				}
+			if (lastHex != null) {
+				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+				currLand.spriteArray[lastArraySpot].tint = 0xffffff;
 			}
 		}
 	}
