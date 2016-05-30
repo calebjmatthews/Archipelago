@@ -267,8 +267,8 @@ class Land {
 				let centerNeighbors = landTiles[0].getNeighbors();
 				for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
 					let tNbr = centerNeighbors[currNbr];
-					landTiles[tNbr] = new Tile(currNbr+1, [tNbr[0], tNbr[1]]);
-					landTiles[tNbr].landscape = eLAND.Shore;
+					landTiles[currNbr+1] = new Tile(currNbr+1, [tNbr[0], tNbr[1]]);
+					landTiles[currNbr+1].landscape = eLAND.Shore;
 				}
 			}
 		}
@@ -425,13 +425,12 @@ function onClick(thisLand, clkPoint) {
 	let clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
 
 	if (clkAxial != undefined) {
-		if (thisLand.tileArray[clkAxial[0]] != undefined) {
-			if (clkTile != undefined) {
-				if ((clkTile.landscape != glbPaintingLand) && 
-					(glbPaintingLand != null)) {
-					clkTile.landscape = glbPaintingLand;
-					clkTile.reDrawTile();
-				}
+		if (clkTile != undefined) {
+			if ((clkTile.landscape != glbPaintingLand) && 
+				(glbPaintingLand != null)) {
+				console.log("Current landscape: " + clkTile.landscape);
+				clkTile.landscape = glbPaintingLand;
+				clkTile.reDrawTile();
 			}
 		}
 	}
