@@ -43,7 +43,7 @@ Turns work like this:
 		Some developments require special action to build
 		Can build a ship, which sails away
 	Once building is finished, the player's month is over
-The gave ends after month ten
+The game ends after month ten
 The player with the most ships built wins
 In the case of a tie, the player with the most treasures wins, then materials, then food
 
@@ -142,13 +142,16 @@ class Hex {
 
 	scale: number = 0.2;
 
-	// Axial column and axial row define individual hexagon position
+	// Axial column and axial row define individual hexagon position, parentID stores
+	//  the landID for the parent land
 	hexID: number;
+	parentID: number;
 	axialRow: number;
 	axialCol: number;
 
 	constructor(arraySpot: number, setPos: [number, number]) {
 		this.hexID = arraySpot;
+		this.parentID = currLand.landID;
 		this.axialRow = setPos[0];
 		this.axialCol = setPos[1];
 	}
@@ -182,7 +185,7 @@ class Tile extends Hex {
 	development: number = 0;
 	ownedBy: number = 0;
 
-	getSpriteId() {
+	getSpriteID() {
 		if (this.landscape === eLAND.Desert) { return "desert.png"; }
 		else if (this.landscape === eLAND.Forested) { return "forested.png"; }
 		else if (this.landscape === eLAND.Grassy) { return "grassy.png"; }
@@ -196,7 +199,7 @@ class Tile extends Hex {
 		let sprId = loader.resources["static/img/images.json"].textures;
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
-		tSprite.texture = sprId[this.getSpriteId()];
+		tSprite.texture = sprId[this.getSpriteID()];
 	}
 }
 
@@ -219,19 +222,24 @@ class Player {
 	}
 }
 
+var landIncrement = 0; // Global incrementing variable used to set landID
 class Land {
+	landID: number;
 	lSize: number;
 	lShape: number;
 	lClimate: number;
-	tileArray: Tile[][];
-	spriteArray: Sprite[][];
+	tileArray: Tile[];
+	spriteArray: Sprite[];
 
 	constructor(sentSettings: [number, number, number]) {
+		this.landID = landIncrement;
+		landIncrement ++;
 		this.lSize = sentSettings[0];
 		this.lShape = sentSettings[1];
 		this.lClimate = sentSettings[2];
 	}
 
+	// Returns the tile's place in the array (tileID) given its row and column position
 	getID(givPos: [number, number]) {
 		for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
 			if ((this.tileArray[cTile].axialRow === givPos[0]) &&
@@ -292,7 +300,7 @@ class Land {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
 				let tTile = lTiles[arraySpot];
-				let tSprite = new Sprite(sprId[tTile.getSpriteId()]);
+				let tSprite = new Sprite(sprId[tTile.getSpriteID()]);
 
 				tSprite.scale.set(tTile.scale, tTile.scale);
 
