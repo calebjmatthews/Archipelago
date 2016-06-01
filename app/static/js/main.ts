@@ -418,8 +418,6 @@ function formDebugBar() {
 }
 
 function onClick(thisLand, clkPoint) {
-	console.log("The pointer was tapped at: " + clkPoint);
-	console.log("Current painting ID: " + glbPaintingLand);
 
 	let clkAxial = pointToHex(clkPoint);
 	let clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
