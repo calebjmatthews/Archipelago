@@ -182,8 +182,8 @@ class Hex {
 class Tile extends Hex {
 	// Landscape and development define the contents of the hexagon, these use Enums
 	landscape: number = 0;
-	development: number = 0;
-	ownedBy: number = 0;
+	development: number = null;
+	ownedBy: number = null;
 
 	getSpriteID() {
 		if (this.landscape === eLAND.Desert) { return "desert.png"; }
