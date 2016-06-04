@@ -2,12 +2,9 @@ from flask import render_template
 from app import app
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
-	user = {'nickname': 'Amy'}
-	return render_template('index.html',
-													title='Home',
-													user=user)
+	return render_template('index.html')
 
 if __name__ == '__main__':
 	app.run(debug=True)

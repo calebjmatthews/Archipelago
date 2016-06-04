@@ -425,6 +425,14 @@ function formDebugBar() {
 	stage.addChild(msgAxial);
 }
 
+var acquiredLand = null;
+function testAPI() {
+	$.get("http://localhost:1234/land/1", function(data) {
+		acquiredLand = data;
+	});
+	console.log(acquiredLand);
+}
+
 function onClick(thisLand, clkPoint) {
 
 	let clkAxial = pointToHex(clkPoint);
@@ -462,6 +470,8 @@ function onImageLoad() {
 	designBG.y = 0;
 	stage.addChild(designBG);
 	formEditBar();
+
+	testAPI();
 	
 	// Start the game loop
 	gameLoop();

@@ -43,7 +43,7 @@ Turns work like this:
         Some developments require special action to build
         Can build a ship, which sails away
     Once building is finished, the player's month is over
-The gave ends after month ten
+The game ends after month ten
 The player with the most ships built wins
 In the case of a tie, the player with the most treasures wins, then materials, then food
 
@@ -165,6 +165,7 @@ var Hex = (function () {
         this.width = 60;
         this.scale = 0.2;
         this.hexID = arraySpot;
+        this.parentID = currLand.landID;
         this.axialRow = setPos[0];
         this.axialCol = setPos[1];
     }
@@ -196,10 +197,10 @@ var Tile = (function (_super) {
         _super.apply(this, arguments);
         // Landscape and development define the contents of the hexagon, these use Enums
         this.landscape = 0;
-        this.development = 0;
-        this.ownedBy = 0;
+        this.development = null;
+        this.ownedBy = null;
     }
-    Tile.prototype.getSpriteId = function () {
+    Tile.prototype.getSpriteID = function () {
         if (this.landscape === eLAND.Desert) {
             return "desert.png";
         }
@@ -226,7 +227,7 @@ var Tile = (function (_super) {
         var sprId = loader.resources["static/img/images.json"].textures;
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
-        tSprite.texture = sprId[this.getSpriteId()];
+        tSprite.texture = sprId[this.getSpriteID()];
     };
     return Tile;
 }(Hex));
@@ -244,12 +245,16 @@ var Player = (function () {
     }
     return Player;
 }());
+var landIncrement = 0; // Global incrementing variable used to set landID
 var Land = (function () {
     function Land(sentSettings) {
+        this.landID = landIncrement;
+        landIncrement++;
         this.lSize = sentSettings[0];
         this.lShape = sentSettings[1];
         this.lClimate = sentSettings[2];
     }
+    // Returns the tile's place in the array (tileID) given its row and column position
     Land.prototype.getID = function (givPos) {
         for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
             if ((this.tileArray[cTile].axialRow === givPos[0]) &&
@@ -303,7 +308,7 @@ var Land = (function () {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
                 var tTile = lTiles[arraySpot];
-                var tSprite = new Sprite(sprId[tTile.getSpriteId()]);
+                var tSprite = new Sprite(sprId[tTile.getSpriteID()]);
                 tSprite.scale.set(tTile.scale, tTile.scale);
                 var sPos = hexToPoint([currX, currY]);
                 tSprite.position.set(sPos[0], sPos[1]);
@@ -402,9 +407,14 @@ function formDebugBar() {
     msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
 }
+var acquiredLand = null;
+function testAPI() {
+    $.get("http://localhost:1234/land/1", function (data) {
+        acquiredLand = data;
+    });
+    console.log(acquiredLand);
+}
 function onClick(thisLand, clkPoint) {
-    console.log("The pointer was tapped at: " + clkPoint);
-    console.log("Current painting ID: " + glbPaintingLand);
     var clkAxial = pointToHex(clkPoint);
     var clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
     if (clkAxial != undefined) {
@@ -434,6 +444,7 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
+    testAPI();
     // Start the game loop
     gameLoop();
 }
