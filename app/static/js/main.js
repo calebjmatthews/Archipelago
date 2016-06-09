@@ -260,8 +260,8 @@ var Tile = (function (_super) {
         _super.apply(this, arguments);
         // Landscape and development define the contents of the hexagon, these use Enums
         this.landscape = 0;
-        this.development = 0;
-        this.ownedBy = 0;
+        this.development = null;
+        this.ownedBy = null;
     }
     Tile.prototype.getSpriteID = function () {
         if (this.landscape === eLAND.Desert) {
@@ -471,6 +471,13 @@ function formDebugBar() {
     msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
 }
+var acquiredLand = null;
+function testAPI() {
+    $.get("http://localhost:1234/land/1", function (data) {
+        acquiredLand = data;
+    });
+    console.log(acquiredLand);
+}
 function onClick(thisLand, clkPoint) {
     var clkAxial = pointToHex(clkPoint);
     var clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
@@ -501,7 +508,11 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
+<<<<<<< HEAD
     console.log(currLand.tileArray[0].getRing(4));
+=======
+    testAPI();
+>>>>>>> 609a600a4ab1833f03f4545ef1889b10f8ef7b65
     // Start the game loop
     gameLoop();
 }

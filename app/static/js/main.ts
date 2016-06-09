@@ -243,8 +243,8 @@ class Hex {
 class Tile extends Hex {
 	// Landscape and development define the contents of the hexagon, these use Enums
 	landscape: number = 0;
-	development: number = 0;
-	ownedBy: number = 0;
+	development: number = null;
+	ownedBy: number = null;
 
 	getSpriteID() {
 		if (this.landscape === eLAND.Desert) { return "desert.png"; }
@@ -489,6 +489,14 @@ function formDebugBar() {
 	stage.addChild(msgAxial);
 }
 
+var acquiredLand = null;
+function testAPI() {
+	$.get("http://localhost:1234/land/1", function(data) {
+		acquiredLand = data;
+	});
+	console.log(acquiredLand);
+}
+
 function onClick(thisLand, clkPoint) {
 
 	let clkAxial = pointToHex(clkPoint);
@@ -527,7 +535,11 @@ function onImageLoad() {
 	stage.addChild(designBG);
 	formEditBar();
 
+<<<<<<< HEAD
 	console.log(currLand.tileArray[0].getRing(4));
+=======
+	testAPI();
+>>>>>>> 609a600a4ab1833f03f4545ef1889b10f8ef7b65
 	
 	// Start the game loop
 	gameLoop();
