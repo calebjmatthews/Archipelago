@@ -43,7 +43,7 @@ Turns work like this:
         Some developments require special action to build
         Can build a ship, which sails away
     Once building is finished, the player's month is over
-The gave ends after month ten
+The game ends after month ten
 The player with the most ships built wins
 In the case of a tie, the player with the most treasures wins, then materials, then food
 
@@ -53,6 +53,17 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+// Enumerates the convention of how hex direction is ordered within this program
+var eHEXD;
+(function (eHEXD) {
+    eHEXD[eHEXD["SouthEast"] = 0] = "SouthEast";
+    eHEXD[eHEXD["SouthWest"] = 1] = "SouthWest";
+    eHEXD[eHEXD["West"] = 2] = "West";
+    eHEXD[eHEXD["NorthWest"] = 3] = "NorthWest";
+    eHEXD[eHEXD["NorthEast"] = 4] = "NorthEast";
+    eHEXD[eHEXD["East"] = 5] = "East";
+})(eHEXD || (eHEXD = {}));
+// Enumerates land size options
 var eSIZE;
 (function (eSIZE) {
     eSIZE[eSIZE["Small"] = 0] = "Small";
@@ -60,6 +71,7 @@ var eSIZE;
     eSIZE[eSIZE["Large"] = 2] = "Large";
     eSIZE[eSIZE["Gigantic"] = 3] = "Gigantic";
 })(eSIZE || (eSIZE = {}));
+// Enumerates land shape options
 var eSHAPE;
 (function (eSHAPE) {
     eSHAPE[eSHAPE["Round"] = 0] = "Round";
@@ -68,6 +80,7 @@ var eSHAPE;
     eSHAPE[eSHAPE["Jagged"] = 3] = "Jagged";
     eSHAPE[eSHAPE["Thin"] = 4] = "Thin";
 })(eSHAPE || (eSHAPE = {}));
+// Enumerates land climate options
 var eCLIMATE;
 (function (eCLIMATE) {
     eCLIMATE[eCLIMATE["Grassy"] = 0] = "Grassy";
@@ -76,6 +89,7 @@ var eCLIMATE;
     eCLIMATE[eCLIMATE["Desert"] = 3] = "Desert";
     eCLIMATE[eCLIMATE["Varied"] = 4] = "Varied";
 })(eCLIMATE || (eCLIMATE = {}));
+// Enumerates landscape types for individual tiles
 var eLAND;
 (function (eLAND) {
     eLAND[eLAND["Grassy"] = 0] = "Grassy";
@@ -158,6 +172,33 @@ function pointToHex(tPoint) {
     var axialRow = (-xPos / 6.8 + (Math.sqrt(3) / 2) * yPos / 2) / (sHeight / 2);
     return hexRound([axialRow, axialCol]);
 }
+// Returns an axial coordinate based on a given coordinate, a direction in which
+//  to move, and the magnitude of the movement.
+//  Example: From the point [-2, 2], move South East (i.e. 0) by a magnitude of
+//  3 to return the axial coordinates [1, 2]
+function moveHex(tHex, direction, magnitude) {
+    if (direction === eHEXD.SouthEast) {
+        return [(tHex[0] + magnitude), tHex[1]];
+    }
+    else if (direction === eHEXD.SouthWest) {
+        return [(tHex[0] + magnitude), (tHex[1] - magnitude)];
+    }
+    else if (direction === eHEXD.West) {
+        return [tHex[0], (tHex[1] - magnitude)];
+    }
+    else if (direction === eHEXD.NorthWest) {
+        return [(tHex[0] - magnitude), tHex[1]];
+    }
+    else if (direction === eHEXD.NorthEast) {
+        return [(tHex[0] - magnitude), (tHex[1] + magnitude)];
+    }
+    else if (direction === eHEXD.East) {
+        return [tHex[0], (tHex[1] + magnitude)];
+    }
+    else {
+        console.log("Error: Unexpected hex movement direction.");
+    }
+}
 var Hex = (function () {
     function Hex(arraySpot, setPos) {
         // Defines the graphical height/width of all hexagons in game
@@ -165,21 +206,44 @@ var Hex = (function () {
         this.width = 60;
         this.scale = 0.2;
         this.hexID = arraySpot;
+        this.parentID = currLand.landID;
         this.axialRow = setPos[0];
         this.axialCol = setPos[1];
     }
-    // method to return the expected hexID of the instance's six neighbors.  Non-existant
-    //  hexIDs are included in this.  The method starts with the horizontal-right nieghbor
-    //  and proceeds clockwise
+    // Method to return the expected axial coordinates of the instance's six neighbors.  
+    //  Axial coordinates of non-existant tiles are included in this.  The method starts 
+    //  with the north-east neightbor and proceeds clockwise
     Hex.prototype.getNeighbors = function () {
         var aNeighbors = [];
-        aNeighbors[0] = [this.axialRow, (this.axialCol + 1)];
-        aNeighbors[1] = [(this.axialRow + 1), this.axialCol];
-        aNeighbors[2] = [(this.axialRow + 1), (this.axialCol - 1)];
-        aNeighbors[3] = [this.axialRow, (this.axialCol - 1)];
-        aNeighbors[4] = [(this.axialRow - 1), this.axialCol];
-        aNeighbors[5] = [(this.axialRow - 1), (this.axialCol + 1)];
+        aNeighbors[0] = [(this.axialRow - 1), (this.axialCol + 1)];
+        aNeighbors[1] = [this.axialRow, (this.axialCol + 1)];
+        aNeighbors[2] = [(this.axialRow + 1), this.axialCol];
+        aNeighbors[3] = [(this.axialRow + 1), (this.axialCol - 1)];
+        aNeighbors[4] = [this.axialRow, (this.axialCol - 1)];
+        aNeighbors[5] = [(this.axialRow - 1), this.axialCol];
         return aNeighbors;
+    };
+    // Method to return the expected axial coordinates of the instance, using the given
+    //  radius. Axial coordinates of non-existant tiles are included in this.  The method 
+    //  starts with the north-east ring member and proceeds clockwise
+    Hex.prototype.getRing = function (radius) {
+        var ringMembers = [];
+        if (radius === 0) {
+            console.log("Error: radius cannot equal 0.");
+            return ringMembers;
+        }
+        // Begin in the North East corner of the ring
+        var tAxial = [-radius, radius];
+        // Move in six directions, corresponding to the six sides of the ring
+        for (var tDirec = 0; tDirec < 6; tDirec++) {
+            // The number of ring members on each side equals the radius of the ring
+            for (var tFace = 0; tFace < radius; tFace++) {
+                ringMembers.push(tAxial);
+                // Move one hex around the current face of the ring
+                tAxial = moveHex(tAxial, tDirec, 1);
+            }
+        }
+        return ringMembers;
     };
     // Returns the distance between this Hex and a specified target Hex
     Hex.prototype.getDistance = function (targetHex) {
@@ -199,7 +263,7 @@ var Tile = (function (_super) {
         this.development = 0;
         this.ownedBy = 0;
     }
-    Tile.prototype.getSpriteId = function () {
+    Tile.prototype.getSpriteID = function () {
         if (this.landscape === eLAND.Desert) {
             return "desert.png";
         }
@@ -219,6 +283,7 @@ var Tile = (function (_super) {
             return "shore.png";
         }
         else {
+            console.log("Error: Unexpected tile landscape when finding sprite id.");
             return "hex.png";
         }
     };
@@ -226,7 +291,7 @@ var Tile = (function (_super) {
         var sprId = loader.resources["static/img/images.json"].textures;
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
-        tSprite.texture = sprId[this.getSpriteId()];
+        tSprite.texture = sprId[this.getSpriteID()];
     };
     return Tile;
 }(Hex));
@@ -244,12 +309,16 @@ var Player = (function () {
     }
     return Player;
 }());
+var landIncrement = 0; // Global incrementing variable used to set landID
 var Land = (function () {
     function Land(sentSettings) {
+        this.landID = landIncrement;
+        landIncrement++;
         this.lSize = sentSettings[0];
         this.lShape = sentSettings[1];
         this.lClimate = sentSettings[2];
     }
+    // Returns the tile's place in the array (tileID) given its row and column position
     Land.prototype.getID = function (givPos) {
         for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
             if ((this.tileArray[cTile].axialRow === givPos[0]) &&
@@ -303,7 +372,7 @@ var Land = (function () {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
                 var tTile = lTiles[arraySpot];
-                var tSprite = new Sprite(sprId[tTile.getSpriteId()]);
+                var tSprite = new Sprite(sprId[tTile.getSpriteID()]);
                 tSprite.scale.set(tTile.scale, tTile.scale);
                 var sPos = hexToPoint([currX, currY]);
                 tSprite.position.set(sPos[0], sPos[1]);
@@ -403,8 +472,6 @@ function formDebugBar() {
     stage.addChild(msgAxial);
 }
 function onClick(thisLand, clkPoint) {
-    console.log("The pointer was tapped at: " + clkPoint);
-    console.log("Current painting ID: " + glbPaintingLand);
     var clkAxial = pointToHex(clkPoint);
     var clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
     if (clkAxial != undefined) {
@@ -434,6 +501,7 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
+    console.log(currLand.tileArray[0].getRing(4));
     // Start the game loop
     gameLoop();
 }
