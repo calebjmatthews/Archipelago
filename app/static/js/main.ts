@@ -330,32 +330,32 @@ class Land {
 
 	genTestLand() {
 		// Generate a small debug land
-		let landWidth = 2;
+		let landWidth = 5;
 		let landTiles = [];
-		for (var currWidth = 0; currWidth < landWidth; currWidth ++) {
+		let tileCounter = 0;
+		for (var currWidth = 0; currWidth < (landWidth+12); currWidth ++) {
 			// Make grassy center
 			if (currWidth === 0) {
 				landTiles[0] = new Tile(0, [0, 0]);
 				landTiles[0].landscape = eLSCP.Grassy;
+				tileCounter++;
 			} 
-			// Make surrounding shore
-			else if (currWidth === 1) {
-				let centerNeighbors = landTiles[0].getNeighbors();
-				for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
-					let tNbr = centerNeighbors[currNbr];
-					landTiles[currNbr+1] = new Tile(currNbr+1, [tNbr[0], tNbr[1]]);
-					landTiles[currNbr+1].landscape = eLSCP.Shore;
+			let thisRing = landTiles[0].getRing(currWidth);
+			for (var ringTile=0; ringTile < thisRing.length; ringTile++ ) {
+				landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
+				if (currWidth < landWidth) {
+					landTiles[tileCounter].landscape = eLSCP.Grassy;
 				}
+				else if (currWidth === landWidth) {
+					landTiles[tileCounter].landscape = eLSCP.Shore;
+				}
+				else {
+					landTiles[tileCounter].landscape = eLSCP.Sea;
+				}
+				tileCounter++;
 			}
 		}
-		// Fill the rest with sea
-		for (var currX = (-1*glbBoundary); currX < glbBoundary; currX++) {
-			for (var currY = (-1*glbBoundary); currY < glbBoundary; currY++) {
-				let currTile = landTiles.length;
-				landTiles[currTile] = new Tile(currTile, [currX, currY]);
-				landTiles[currTile].landscape = eLSCP.Sea;
-			}
-		}
+
 		this.tileArray = landTiles;
 	}
 
@@ -367,16 +367,18 @@ class Land {
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
-				let tTile = lTiles[arraySpot];
-				let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
+				if (arraySpot != null) {
+					let tTile = lTiles[arraySpot];
+					let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
 
-				tSprite.scale.set(tTile.scale, tTile.scale);
+					tSprite.scale.set(tTile.scale, tTile.scale);
 
-				let sPos = hexToPoint([currX, currY]);
+					let sPos = hexToPoint([currX, currY]);
 
-				tSprite.position.set(sPos[0], sPos[1]);
-				stage.addChild(tSprite);
-				landSprites[arraySpot] = tSprite;
+					tSprite.position.set(sPos[0], sPos[1]);
+					stage.addChild(tSprite);
+					landSprites[arraySpot] = tSprite;
+				}
 			}
 		}
 		this.spriteArray = landSprites;

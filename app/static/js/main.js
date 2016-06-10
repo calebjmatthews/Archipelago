@@ -145,7 +145,7 @@ var eREQ;
     eREQ[eREQ["Treasure"] = 2] = "Treasure";
     eREQ[eREQ["Ship"] = 3] = "Ship";
     eREQ[eREQ["Active"] = 4] = "Active";
-    eREQ[eREQ["DestroyNonBlack"] = 5] = "DestroyNonBlack";
+    eREQ[eREQ["Destroy"] = 5] = "Destroy";
 })(eREQ || (eREQ = {}));
 // Enumerates the result of development effects
 var eRES;
@@ -366,29 +366,29 @@ var Land = (function () {
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
-        var landWidth = 2;
+        var landWidth = 5;
         var landTiles = [];
-        for (var currWidth = 0; currWidth < landWidth; currWidth++) {
+        var tileCounter = 0;
+        for (var currWidth = 0; currWidth < (landWidth + 12); currWidth++) {
             // Make grassy center
             if (currWidth === 0) {
                 landTiles[0] = new Tile(0, [0, 0]);
                 landTiles[0].landscape = eLSCP.Grassy;
+                tileCounter++;
             }
-            else if (currWidth === 1) {
-                var centerNeighbors = landTiles[0].getNeighbors();
-                for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
-                    var tNbr = centerNeighbors[currNbr];
-                    landTiles[currNbr + 1] = new Tile(currNbr + 1, [tNbr[0], tNbr[1]]);
-                    landTiles[currNbr + 1].landscape = eLSCP.Shore;
+            var thisRing = landTiles[0].getRing(currWidth);
+            for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
+                if (currWidth < landWidth) {
+                    landTiles[tileCounter].landscape = eLSCP.Grassy;
                 }
-            }
-        }
-        // Fill the rest with sea
-        for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
-            for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
-                var currTile = landTiles.length;
-                landTiles[currTile] = new Tile(currTile, [currX, currY]);
-                landTiles[currTile].landscape = eLSCP.Sea;
+                else if (currWidth === landWidth) {
+                    landTiles[tileCounter].landscape = eLSCP.Shore;
+                }
+                else {
+                    landTiles[tileCounter].landscape = eLSCP.Sea;
+                }
+                tileCounter++;
             }
         }
         this.tileArray = landTiles;
@@ -401,13 +401,15 @@ var Land = (function () {
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
-                var tTile = lTiles[arraySpot];
-                var tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
-                tSprite.scale.set(tTile.scale, tTile.scale);
-                var sPos = hexToPoint([currX, currY]);
-                tSprite.position.set(sPos[0], sPos[1]);
-                stage.addChild(tSprite);
-                landSprites[arraySpot] = tSprite;
+                if (arraySpot != null) {
+                    var tTile = lTiles[arraySpot];
+                    var tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
+                    tSprite.scale.set(tTile.scale, tTile.scale);
+                    var sPos = hexToPoint([currX, currY]);
+                    tSprite.position.set(sPos[0], sPos[1]);
+                    stage.addChild(tSprite);
+                    landSprites[arraySpot] = tSprite;
+                }
             }
         }
         this.spriteArray = landSprites;
