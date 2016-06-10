@@ -56,7 +56,7 @@ var glbHHeight = 30;
 var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
-var glbNumDevels = 3;
+var glbNumBlkDevels = 3;
 
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }
@@ -73,12 +73,20 @@ enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied }
 // Enumerates landscape types for individual tiles
 enum eLSCP { Grassy, Shore, Forested, Rocky, Desert, Sea }
 
-// Enumberates options for developments
-enum eDEVEL { Jungle, Freshwater, Cave }
+// Enumerates options for developments
+enum eDEVEL { Jungle, Freshwater, Cave, FireCrew, LaborPort, SeasSideParade }
 
-class Landcape {
+// Enumerates development color options
+enum eDCLR { Black, Blue, Green, Orange, Red, Violet }
 
-}
+// Enumerates development costs
+enum eCOST { Food, Material, Treasure, DestroyBlue, DestroyGreen, DestroyOrange }
+
+// Enumerates the requirement of development effects
+enum eREQ { Food, Material, Treasure, Ship, Active, DestroyNonBlack }
+
+// Enumerates the result of development effects
+enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedActive }
 
 // ~~~~ Hex functions ~~~~
 
@@ -181,8 +189,8 @@ class Landcape {
 
 class Hex {
 	// Defines the graphical height/width of all hexagons in game
-	height: number = 30;
-	width: number = 60;
+	height: number = glbHHeight;
+	width: number = glbHWidth;
 
 	scale: number = 0.2;
 
@@ -255,35 +263,11 @@ class Tile extends Hex {
 	development: number = null;
 	ownedBy: number = null;
 
-	getLscpSprID() {
-		if (this.landscape === eLSCP.Desert) { return "desert.png"; }
-		else if (this.landscape === eLSCP.Forested) { return "forested.png"; }
-		else if (this.landscape === eLSCP.Grassy) { return "grassy.png"; }
-		else if (this.landscape === eLSCP.Rocky) { return "rocky.png"; }
-		else if (this.landscape === eLSCP.Sea) { return "sea.png"; }
-		else if (this.landscape === eLSCP.Shore) { return "shore.png"; }
-		else { 
-			console.log("Error: Unexpected tile landscape when finding sprite id.");
-			return "hex.png"; 
-		}
-	}
-
-	getDevelSprID() {
-		if (this.development === eDEVEL.Cave) { return "hex.png"; }
-		// if (this.development === eDEVEL.Cave) { return "cave.png"; }
-		// else if (this.development === eDEVEL.Freshwater) { return "freshwater.png"; }
-		// else if (this.development === eDEVEL.Jungle) { return "jungle.png"; }
-		else { 
-			console.log("Error: Unexpected tile development when finding sprite id.");
-			return "hex.png"; 
-		}
-	}
-
 	reDrawTile() {
-		let sprId = loader.resources["static/img/images.json"].textures;
+		let sprMed = loader.resources["static/img/images.json"].textures;
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
-		tSprite.texture = sprId[this.getLscpSprID()];
+		tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
 	}
 }
 
@@ -377,14 +361,14 @@ class Land {
 
 	displayLand() {
 		// Create an intermediate sprite ID alias
-		let sprId = loader.resources["static/img/images.json"].textures;
+		let sprMed = loader.resources["static/img/images.json"].textures;
 		let lTiles = this.tileArray;
 		let landSprites = [];
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
 				let tTile = lTiles[arraySpot];
-				let tSprite = new Sprite(sprId[tTile.getLscpSprID()]);
+				let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
 
 				tSprite.scale.set(tTile.scale, tTile.scale);
 
@@ -399,6 +383,99 @@ class Land {
 		renderer.render(stage);
 	}
 }
+
+class Landcape {
+	id: number;
+	sprID: string;
+	name: string;
+
+	constructor(setID: number, setSprID: string, setName: string) {
+		this.id = setID;
+		this.sprID = setSprID;
+		this.name = setName;
+	}
+}
+
+var lscpArray = [];
+lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "Desert");
+lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Desert, "forested.png", "Forested");
+lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "Grassy");
+lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "Rocky");
+lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "Sea");
+lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "Shore");
+
+class Development {
+	id: number;
+	sprID: string;
+	name: string;
+	color: number;
+	lscpRequired: number[];
+	description: string;
+	cost: number[];
+	requirement: number[];
+	result: number[];
+
+	constructor(setID: number, setSprID: string, setName: string, setColor: number,
+		setLscpRequired: number[], setDescription: string) {
+		this.id = setID;
+		this.sprID = setSprID;
+		this.name = setName;
+		this.color = setColor;
+		this.lscpRequired = setLscpRequired;
+		this.description = setDescription;
+	}
+}
+
+var develArray = [];
+
+develArray[eDEVEL.Jungle] = new Development(eDEVEL.Jungle, "jungle.png", 
+	"Jungle", eDCLR.Black, [eLSCP.Forested], "No effect");
+
+develArray[eDEVEL.Freshwater] = new Development(eDEVEL.Freshwater, "freshwater.png", 
+	"Freshwater", eDCLR.Black, [eLSCP.Grassy], "No effect");
+
+develArray[eDEVEL.Cave] = new Development(eDEVEL.Cave, "cave.png", "Cave", 
+	eDCLR.Black, [eLSCP.Rocky], "No effect");
+
+develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, "firecrew.png", 
+	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
+develArray[eDEVEL.FireCrew].cost = [];
+develArray[eDEVEL.FireCrew].cost[eCOST.Material] = 1;
+develArray[eDEVEL.FireCrew].requirement = null;
+develArray[eDEVEL.FireCrew].result = [];
+develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
+develArray[eDEVEL.FireCrew].result[eRES.Active] = 1;
+
+develArray[eDEVEL.LaborPort] = new Development(eDEVEL.LaborPort, "laborport.png", 
+	"Labor Port", eDCLR.Blue, [eLSCP.Shore], "req: -1 Treasure; res: +3 Actives");
+develArray[eDEVEL.LaborPort].cost = [];
+develArray[eDEVEL.LaborPort].cost[eCOST.Material] = 1;
+develArray[eDEVEL.LaborPort].cost[eCOST.Treasure] = 1;
+develArray[eDEVEL.LaborPort].requirement = []
+develArray[eDEVEL.LaborPort].requirement[eREQ.Treasure] = 1;
+develArray[eDEVEL.LaborPort].result = [];
+develArray[eDEVEL.LaborPort].result[eRES.Active] = 3;
+
+develArray[eDEVEL.SeasSideParade] = new Development(eDEVEL.SeasSideParade, 
+	"seassideparade.png", "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], 
+	("req: -1 Material; res: For the rest of the month, all Blue developments " + 
+		"give an additional +1 Treasure"));
+develArray[eDEVEL.SeasSideParade].cost = [];
+develArray[eDEVEL.SeasSideParade].cost[eCOST.Food] = 2;
+develArray[eDEVEL.SeasSideParade].cost[eCOST.Material] = 2;
+develArray[eDEVEL.SeasSideParade].cost[eCOST.Treasure] = 2;
+develArray[eDEVEL.SeasSideParade].requirement = []
+develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.SeasSideParade].result = [];
+develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
+
+develArray[eDEVEL.Cave].sprID = "hex.png";
+develArray[eDEVEL.FireCrew].sprID = "hex.png";
+develArray[eDEVEL.Freshwater].sprID = "hex.png";
+develArray[eDEVEL.Jungle].sprID = "hex.png";
+develArray[eDEVEL.LaborPort].sprID = "hex.png";
+develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
+
 
 // ~~~~ Set up pixi.js ~~~~
 	// PIXI Aliases
@@ -441,53 +518,27 @@ var msgLastAx = null;
 
 var buttonArray = [];
 function formEditBar() {
-	for (var cButton=0; cButton < (glbNumLscps+glbNumDevels); cButton++) {
-		let sprId = loader.resources["static/img/images.json"].textures;
-		let chosenPng = null;
-		let chosenText = null;
-		if (cButton === eLSCP.Desert) { 
-			chosenPng = "desert.png"; 
-			chosenText = "Desert";
+	// Since the edit bar includes both landscapes and some black developments, the
+	//  for loop needs to be compensate for the total number of landscapes when iterating
+	//  through black developments
+	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels); cButton++) {
+		let sprMed = loader.resources["static/img/images.json"].textures;
+		var chosenPng = null;
+		var chosenText = null;
+		if (cButton < glbNumLscps) {
+			chosenPng = lscpArray[cButton].sprID;
+			chosenText = lscpArray[cButton].name;
 		}
-		else if (cButton === eLSCP.Forested) { 
-			chosenPng = "forested.png"; 
-			chosenText = "Forested";
+		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
+			chosenPng = develArray[cButton-glbNumLscps].sprID;
+			chosenText = develArray[cButton-glbNumLscps].name;
 		}
-		else if (cButton === eLSCP.Grassy) { 
-			chosenPng = "grassy.png"; 
-			chosenText = "Grassy";
-		}
-		else if (cButton === eLSCP.Rocky) { 
-			chosenPng = "rocky.png"; 
-			chosenText = "Rocky";
-		}
-		else if (cButton === eLSCP.Sea) { 
-			chosenPng = "sea.png"; 
-			chosenText = "Sea";
-		}
-		else if (cButton === eLSCP.Shore) { 
-			chosenPng = "shore.png"; 
-			chosenText = "Shore";
-		}
-		else if (cButton === (glbNumLscps + eDEVEL.Cave)) {
-			// chosenPng = "cave.png";
-			chosenPng = "hex.png";
-			chosenText = "Cave";
-		}
-		else if (cButton === (glbNumLscps + eDEVEL.Freshwater)) {
-			// chosenPng = "freshwater.png";
-			chosenPng = "hex.png";
-			chosenText = "Freshwater";
-		}
-		else if (cButton === (glbNumLscps + eDEVEL.Jungle)) {
-			// chosenPng = "jungle.png";
-			chosenPng = "hex.png";
-			chosenText = "Jungle";
-		}
-		else { 
+		else {
+			console.log("Error: unexpected current button incremental variable.");
 			chosenPng = "hex.png"; 
+			chosenText = "Error"
 		}
-		buttonArray[cButton] = new Sprite(sprId[chosenPng]);
+		buttonArray[cButton] = new Sprite(sprMed[chosenPng]);
 		tb.makeInteractive(buttonArray[cButton]);
 		let bScale = 0.2;
 
