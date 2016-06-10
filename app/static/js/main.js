@@ -99,12 +99,21 @@ var eLAND;
     eLAND[eLAND["Desert"] = 4] = "Desert";
     eLAND[eLAND["Sea"] = 5] = "Sea";
 })(eLAND || (eLAND = {}));
+// Enumberates options for developments
+var eDEVEL;
+(function (eDEVEL) {
+    eDEVEL[eDEVEL["Jungle"] = 0] = "Jungle";
+    eDEVEL[eDEVEL["Freshwater"] = 1] = "Freshwater";
+    eDEVEL[eDEVEL["Cave"] = 2] = "Cave";
+})(eDEVEL || (eDEVEL = {}));
 // Global gameplay variables
 var glbBoundary = 14;
 var glbOrigin = [508, 288];
 var glbHHeight = 30;
 var glbHWidth = 60;
 var glbPaintingLand = null;
+var glbNumLands = 6;
+var glbNumDevels = 3;
 // ~~~~ Hex functions ~~~~
 function hexToCube(tHex) {
     var axialRow = tHex[0];
@@ -263,7 +272,7 @@ var Tile = (function (_super) {
         this.development = null;
         this.ownedBy = null;
     }
-    Tile.prototype.getSpriteID = function () {
+    Tile.prototype.getLandSprID = function () {
         if (this.landscape === eLAND.Desert) {
             return "desert.png";
         }
@@ -287,11 +296,20 @@ var Tile = (function (_super) {
             return "hex.png";
         }
     };
+    Tile.prototype.getDevelSprID = function () {
+        if (this.development === eDEVEL.Cave) {
+            return "hex.png";
+        }
+        else {
+            console.log("Error: Unexpected tile development when finding sprite id.");
+            return "hex.png";
+        }
+    };
     Tile.prototype.reDrawTile = function () {
         var sprId = loader.resources["static/img/images.json"].textures;
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
-        tSprite.texture = sprId[this.getSpriteID()];
+        tSprite.texture = sprId[this.getLandSprID()];
     };
     return Tile;
 }(Hex));
@@ -372,7 +390,7 @@ var Land = (function () {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
                 var tTile = lTiles[arraySpot];
-                var tSprite = new Sprite(sprId[tTile.getSpriteID()]);
+                var tSprite = new Sprite(sprId[tTile.getLandSprID()]);
                 tSprite.scale.set(tTile.scale, tTile.scale);
                 var sPos = hexToPoint([currX, currY]);
                 tSprite.position.set(sPos[0], sPos[1]);
@@ -413,7 +431,7 @@ var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
 function formEditBar() {
-    for (var cButton = 0; cButton < 6; cButton++) {
+    for (var cButton = 0; cButton < (glbNumLands + glbNumDevels); cButton++) {
         var sprId = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
@@ -441,6 +459,21 @@ function formEditBar() {
             chosenPng = "shore.png";
             chosenText = "Shore";
         }
+        else if (cButton === (glbNumLands + eDEVEL.Cave)) {
+            // chosenPng = "cave.png";
+            chosenPng = "hex.png";
+            chosenText = "Cave";
+        }
+        else if (cButton === (glbNumLands + eDEVEL.Freshwater)) {
+            // chosenPng = "freshwater.png";
+            chosenPng = "hex.png";
+            chosenText = "Freshwater";
+        }
+        else if (cButton === (glbNumLands + eDEVEL.Jungle)) {
+            // chosenPng = "jungle.png";
+            chosenPng = "hex.png";
+            chosenText = "Jungle";
+        }
         else {
             chosenPng = "hex.png";
         }
@@ -461,6 +494,15 @@ function formEditBar() {
     buttonArray[eLAND.Rocky].press = function () { glbPaintingLand = eLAND.Rocky; };
     buttonArray[eLAND.Desert].press = function () { glbPaintingLand = eLAND.Desert; };
     buttonArray[eLAND.Sea].press = function () { glbPaintingLand = eLAND.Sea; };
+    buttonArray[(glbNumLands + eDEVEL.Cave)].press = function () {
+        glbPaintingLand = glbNumLands + eDEVEL.Cave;
+    };
+    buttonArray[(glbNumLands + eDEVEL.Freshwater)].press = function () {
+        glbPaintingLand = glbNumLands + eDEVEL.Freshwater;
+    };
+    buttonArray[(glbNumLands + eDEVEL.Jungle)].press = function () {
+        glbPaintingLand = glbNumLands + eDEVEL.Jungle;
+    };
 }
 function formDebugBar() {
     // Display text
@@ -508,11 +550,6 @@ function onImageLoad() {
     designBG.y = 0;
     stage.addChild(designBG);
     formEditBar();
-<<<<<<< HEAD
-    console.log(currLand.tileArray[0].getRing(4));
-=======
-    testAPI();
->>>>>>> 609a600a4ab1833f03f4545ef1889b10f8ef7b65
     // Start the game loop
     gameLoop();
 }
