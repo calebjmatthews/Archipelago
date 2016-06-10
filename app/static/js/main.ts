@@ -83,7 +83,7 @@ enum eDCLR { Black, Blue, Green, Orange, Red, Violet }
 enum eCOST { Food, Material, Treasure, DestroyBlue, DestroyGreen, DestroyOrange }
 
 // Enumerates the requirement of development effects
-enum eREQ { Food, Material, Treasure, Ship, Active, DestroyNonBlack }
+enum eREQ { Food, Material, Treasure, Ship, Active, Destroy }
 
 // Enumerates the result of development effects
 enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedActive }
