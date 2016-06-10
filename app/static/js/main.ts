@@ -27,7 +27,7 @@ Turns work like this:
 	Developments which have been used cannot be re-used until next month
 		Development effects (for now) have these possibilites:
 		-Resources / +Resources
-		Destroy a developments
+		Destroy a development
 		Build a development
 		Build a development irregardless of distance
 		For remainer of month, other developments effects are changed
@@ -49,6 +49,15 @@ In the case of a tie, the player with the most treasures wins, then materials, t
 
 */
 
+// Global gameplay variables
+var glbBoundary = 14;
+var glbOrigin = [508, 288];
+var glbHHeight = 30;
+var glbHWidth = 60;
+var glbPainting = null;
+var glbNumLscps = 6;
+var glbNumDevels = 3;
+
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }
 
@@ -62,19 +71,14 @@ enum eSHAPE { Round, Bay, Twin, Jagged, Thin }
 enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied }
 
 // Enumerates landscape types for individual tiles
-enum eLAND { Grassy, Shore, Forested, Rocky, Desert, Sea }
+enum eLSCP { Grassy, Shore, Forested, Rocky, Desert, Sea }
 
 // Enumberates options for developments
 enum eDEVEL { Jungle, Freshwater, Cave }
 
-// Global gameplay variables
-var glbBoundary = 14;
-var glbOrigin = [508, 288];
-var glbHHeight = 30;
-var glbHWidth = 60;
-var glbPaintingLand = null;
-var glbNumLands = 6;
-var glbNumDevels = 3;
+class Landcape {
+
+}
 
 // ~~~~ Hex functions ~~~~
 
@@ -251,13 +255,13 @@ class Tile extends Hex {
 	development: number = null;
 	ownedBy: number = null;
 
-	getLandSprID() {
-		if (this.landscape === eLAND.Desert) { return "desert.png"; }
-		else if (this.landscape === eLAND.Forested) { return "forested.png"; }
-		else if (this.landscape === eLAND.Grassy) { return "grassy.png"; }
-		else if (this.landscape === eLAND.Rocky) { return "rocky.png"; }
-		else if (this.landscape === eLAND.Sea) { return "sea.png"; }
-		else if (this.landscape === eLAND.Shore) { return "shore.png"; }
+	getLscpSprID() {
+		if (this.landscape === eLSCP.Desert) { return "desert.png"; }
+		else if (this.landscape === eLSCP.Forested) { return "forested.png"; }
+		else if (this.landscape === eLSCP.Grassy) { return "grassy.png"; }
+		else if (this.landscape === eLSCP.Rocky) { return "rocky.png"; }
+		else if (this.landscape === eLSCP.Sea) { return "sea.png"; }
+		else if (this.landscape === eLSCP.Shore) { return "shore.png"; }
 		else { 
 			console.log("Error: Unexpected tile landscape when finding sprite id.");
 			return "hex.png"; 
@@ -279,7 +283,7 @@ class Tile extends Hex {
 		let sprId = loader.resources["static/img/images.json"].textures;
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
-		tSprite.texture = sprId[this.getLandSprID()];
+		tSprite.texture = sprId[this.getLscpSprID()];
 	}
 }
 
@@ -335,7 +339,7 @@ class Land {
 
 	}
 
-	generateLand() {
+	generateLSCP() {
 		// Procedurally generate land tiles based on selected land properties
 
 	}
@@ -348,7 +352,7 @@ class Land {
 			// Make grassy center
 			if (currWidth === 0) {
 				landTiles[0] = new Tile(0, [0, 0]);
-				landTiles[0].landscape = eLAND.Grassy;
+				landTiles[0].landscape = eLSCP.Grassy;
 			} 
 			// Make surrounding shore
 			else if (currWidth === 1) {
@@ -356,7 +360,7 @@ class Land {
 				for (var currNbr = 0; currNbr < centerNeighbors.length; currNbr++) {
 					let tNbr = centerNeighbors[currNbr];
 					landTiles[currNbr+1] = new Tile(currNbr+1, [tNbr[0], tNbr[1]]);
-					landTiles[currNbr+1].landscape = eLAND.Shore;
+					landTiles[currNbr+1].landscape = eLSCP.Shore;
 				}
 			}
 		}
@@ -365,7 +369,7 @@ class Land {
 			for (var currY = (-1*glbBoundary); currY < glbBoundary; currY++) {
 				let currTile = landTiles.length;
 				landTiles[currTile] = new Tile(currTile, [currX, currY]);
-				landTiles[currTile].landscape = eLAND.Sea;
+				landTiles[currTile].landscape = eLSCP.Sea;
 			}
 		}
 		this.tileArray = landTiles;
@@ -380,7 +384,7 @@ class Land {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
 				let tTile = lTiles[arraySpot];
-				let tSprite = new Sprite(sprId[tTile.getLandSprID()]);
+				let tSprite = new Sprite(sprId[tTile.getLscpSprID()]);
 
 				tSprite.scale.set(tTile.scale, tTile.scale);
 
@@ -429,53 +433,53 @@ var tb = null;
 var state = play;
 var pointer = null;
 
-let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
-let currLand = littleLand;
+let littleLSCP = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+let currLand = littleLSCP;
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 
 var buttonArray = [];
 function formEditBar() {
-	for (var cButton=0; cButton < (glbNumLands+glbNumDevels); cButton++) {
+	for (var cButton=0; cButton < (glbNumLscps+glbNumDevels); cButton++) {
 		let sprId = loader.resources["static/img/images.json"].textures;
 		let chosenPng = null;
 		let chosenText = null;
-		if (cButton === eLAND.Desert) { 
+		if (cButton === eLSCP.Desert) { 
 			chosenPng = "desert.png"; 
 			chosenText = "Desert";
 		}
-		else if (cButton === eLAND.Forested) { 
+		else if (cButton === eLSCP.Forested) { 
 			chosenPng = "forested.png"; 
 			chosenText = "Forested";
 		}
-		else if (cButton === eLAND.Grassy) { 
+		else if (cButton === eLSCP.Grassy) { 
 			chosenPng = "grassy.png"; 
 			chosenText = "Grassy";
 		}
-		else if (cButton === eLAND.Rocky) { 
+		else if (cButton === eLSCP.Rocky) { 
 			chosenPng = "rocky.png"; 
 			chosenText = "Rocky";
 		}
-		else if (cButton === eLAND.Sea) { 
+		else if (cButton === eLSCP.Sea) { 
 			chosenPng = "sea.png"; 
 			chosenText = "Sea";
 		}
-		else if (cButton === eLAND.Shore) { 
+		else if (cButton === eLSCP.Shore) { 
 			chosenPng = "shore.png"; 
 			chosenText = "Shore";
 		}
-		else if (cButton === (glbNumLands + eDEVEL.Cave)) {
+		else if (cButton === (glbNumLscps + eDEVEL.Cave)) {
 			// chosenPng = "cave.png";
 			chosenPng = "hex.png";
 			chosenText = "Cave";
 		}
-		else if (cButton === (glbNumLands + eDEVEL.Freshwater)) {
+		else if (cButton === (glbNumLscps + eDEVEL.Freshwater)) {
 			// chosenPng = "freshwater.png";
 			chosenPng = "hex.png";
 			chosenText = "Freshwater";
 		}
-		else if (cButton === (glbNumLands + eDEVEL.Jungle)) {
+		else if (cButton === (glbNumLscps + eDEVEL.Jungle)) {
 			// chosenPng = "jungle.png";
 			chosenPng = "hex.png";
 			chosenText = "Jungle";
@@ -490,24 +494,24 @@ function formEditBar() {
 		buttonArray[cButton].scale.set(bScale, bScale);
 		buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
 		stage.addChild(buttonArray[cButton]);
-		let msgLand = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
-		msgLand.position.set((stage.width-260), (25+40*cButton));
-		stage.addChild(msgLand);
+		let msgLscp = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
+		msgLscp.position.set((stage.width-260), (25+40*cButton));
+		stage.addChild(msgLscp);
 	}
 
 	// Can't use a for loop because press events act like watchers
-	buttonArray[eLAND.Grassy].press = () => { glbPaintingLand = eLAND.Grassy; }
-	buttonArray[eLAND.Shore].press = () => { glbPaintingLand = eLAND.Shore; }
-	buttonArray[eLAND.Forested].press = () => { glbPaintingLand = eLAND.Forested; }
-	buttonArray[eLAND.Rocky].press = () => { glbPaintingLand = eLAND.Rocky; }
-	buttonArray[eLAND.Desert].press = () => { glbPaintingLand = eLAND.Desert; }
-	buttonArray[eLAND.Sea].press = () => { glbPaintingLand = eLAND.Sea; }
-	buttonArray[(glbNumLands + eDEVEL.Cave)].press = () => { 
-		glbPaintingLand = glbNumLands + eDEVEL.Cave; }
-	buttonArray[(glbNumLands + eDEVEL.Freshwater)].press = () => { 
-		glbPaintingLand = glbNumLands + eDEVEL.Freshwater; }
-	buttonArray[(glbNumLands + eDEVEL.Jungle)].press = () => { 
-		glbPaintingLand = glbNumLands + eDEVEL.Jungle; }
+	buttonArray[eLSCP.Grassy].press = () => { glbPainting = eLSCP.Grassy; }
+	buttonArray[eLSCP.Shore].press = () => { glbPainting = eLSCP.Shore; }
+	buttonArray[eLSCP.Forested].press = () => { glbPainting = eLSCP.Forested; }
+	buttonArray[eLSCP.Rocky].press = () => { glbPainting = eLSCP.Rocky; }
+	buttonArray[eLSCP.Desert].press = () => { glbPainting = eLSCP.Desert; }
+	buttonArray[eLSCP.Sea].press = () => { glbPainting = eLSCP.Sea; }
+	buttonArray[(glbNumLscps + eDEVEL.Cave)].press = () => { 
+		glbPainting = glbNumLscps + eDEVEL.Cave; }
+	buttonArray[(glbNumLscps + eDEVEL.Freshwater)].press = () => { 
+		glbPainting = glbNumLscps + eDEVEL.Freshwater; }
+	buttonArray[(glbNumLscps + eDEVEL.Jungle)].press = () => { 
+		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
 function formDebugBar() {
@@ -541,10 +545,10 @@ function onClick(thisLand, clkPoint) {
 
 	if (clkAxial != undefined) {
 		if (clkTile != undefined) {
-			if ((clkTile.landscape != glbPaintingLand) && 
-				(glbPaintingLand != null)) {
+			if ((clkTile.landscape != glbPainting) && 
+				(glbPainting != null)) {
 				console.log("Current landscape: " + clkTile.landscape);
-				clkTile.landscape = glbPaintingLand;
+				clkTile.landscape = glbPainting;
 				clkTile.reDrawTile();
 			}
 		}
