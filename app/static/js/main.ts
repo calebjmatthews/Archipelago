@@ -339,20 +339,22 @@ class Land {
 				landTiles[0] = new Tile(0, [0, 0]);
 				landTiles[0].landscape = eLSCP.Grassy;
 				tileCounter++;
-			} 
-			let thisRing = landTiles[0].getRing(currWidth);
-			for (var ringTile=0; ringTile < thisRing.length; ringTile++ ) {
-				landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
-				if (currWidth < landWidth) {
-					landTiles[tileCounter].landscape = eLSCP.Grassy;
+			}
+			else{
+				let thisRing = landTiles[0].getRing(currWidth);
+				for (var ringTile=0; ringTile < thisRing.length; ringTile++ ) {
+					landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
+					if (currWidth < landWidth) {
+						landTiles[tileCounter].landscape = eLSCP.Grassy;
+					}
+					else if (currWidth === landWidth) {
+						landTiles[tileCounter].landscape = eLSCP.Shore;
+					}
+					else {
+						landTiles[tileCounter].landscape = eLSCP.Sea;
+					}
+					tileCounter++;
 				}
-				else if (currWidth === landWidth) {
-					landTiles[tileCounter].landscape = eLSCP.Shore;
-				}
-				else {
-					landTiles[tileCounter].landscape = eLSCP.Sea;
-				}
-				tileCounter++;
 			}
 		}
 
@@ -509,7 +511,7 @@ develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'play'
-var state = play;
+var state = edit;
 var pointer = null;
 
 let littleLSCP = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
@@ -591,22 +593,65 @@ function testAPI() {
 	console.log(acquiredLand);
 }
 
-function onClick(thisLand, clkPoint) {
+function paintLscp(clkTile) {
+	// Simple landscape alteration
+	if (glbPainting < glbNumLscps) {
+		clkTile.landscape = glbPainting;
+	}
+	// Apply the black developments only to the appropriate landscape
+	else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
+		if (clkTile.landscape === develArray[glbPainting - glbNumLscps].lscpRequired) {
+			clkTile.landscape = glbPainting - glbNumLscps;
+			clkTile.development = glbPainting;
+		}
+	}
+	else {
+		console.log("Error, unexpected glbPainting value.");
+	}
+}
+
+function editClick(clkPoint) {
 
 	let clkAxial = pointToHex(clkPoint);
-	let clkTile = thisLand.tileArray[thisLand.getID(clkAxial)];
+	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
 
 	if (clkAxial != undefined) {
 		if (clkTile != undefined) {
 			if ((clkTile.landscape != glbPainting) && 
 				(glbPainting != null)) {
-				console.log("Current landscape: " + clkTile.landscape);
+				
 				clkTile.landscape = glbPainting;
 				clkTile.reDrawTile();
 			}
 		}
 	}
 
+}
+
+function hoverTile(corPoint) {
+	let hovAxial = pointToHex(corPoint);
+	if (hovAxial != undefined) {
+		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
+		if (currLand.spriteArray[hovArraySpot] != undefined) {
+			if (lastHex != null) {
+				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+				if (currLand.spriteArray[lastArraySpot] != undefined) {
+					currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+				}
+			}
+			currLand.spriteArray[hovArraySpot].tint = 0x424949;
+			lastHex = hovAxial;
+		}
+		else {
+			if (lastHex != null) {
+				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+				currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+			}
+		}
+	}
+
+	// Normal cursor when hovering over final edit bar button
+	if (pointer.hitTestSprite(buttonArray[glbNumLscps])) {pointer.cursor = "auto";}
 }
 
 function onImageLoad() {
@@ -648,40 +693,50 @@ function gameLoop() {
 
 // Executes on loop when game is in 'play' state
 let lastHex = null;
-function play() {
-
-
-	// Normal cursor when hovering over final edit bar button
-	if (pointer.hitTestSprite(buttonArray[5])) {pointer.cursor = "auto";}
+function edit() {
 
 	// Click event handling
 	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
-	 if (pointer.isDown === true) {
-		onClick(currLand, corPoint);
+	if (pointer.isDown === true) {
+		editClick(corPoint);
 	}
-
-	// Highlight hovered hex
-	let hovAxial = pointToHex(corPoint);
-	if (hovAxial != undefined) {
-		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
-		if (currLand.spriteArray[hovArraySpot] != undefined) {
-			if (lastHex != null) {
-				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
-				if (currLand.spriteArray[lastArraySpot] != undefined) {
-					currLand.spriteArray[lastArraySpot].tint = 0xffffff;
-				}
-			}
-			currLand.spriteArray[hovArraySpot].tint = 0x424949;
-			lastHex = hovAxial;
-		}
-		else {
-			if (lastHex != null) {
-				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
-				currLand.spriteArray[lastArraySpot].tint = 0xffffff;
-			}
-		}
-	}
+	hoverTile(corPoint)
 
 	// msgPoint.text = ("Coords: " + corPoint);
 	// msgAxial.text = ("Hex: " + hovAxial);
+}
+
+// Applies prior to every game round
+function monthSetup() {
+
+}
+
+// Applies prior to each player's round
+function plrMonSetup() {
+
+}
+
+// Player chooses which of their active developments to use
+function active() {
+
+}
+
+// Choosing a target for a development's effect
+function selDevel() {
+
+}
+
+// Player chooses new developments to purchase
+function buy() {
+
+}
+
+// Player chooses where to build a newly bought development
+function build() {
+
+}
+
+// Applies after a player has finished their turn
+function cleanup() {
+
 }
