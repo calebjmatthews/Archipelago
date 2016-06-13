@@ -323,7 +323,7 @@ class Land {
 
 	}
 
-	generateLSCP() {
+	generateLand() {
 		// Procedurally generate land tiles based on selected land properties
 
 	}
@@ -514,8 +514,8 @@ var tb = null;
 var state = edit;
 var pointer = null;
 
-let littleLSCP = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
-let currLand = littleLSCP;
+let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+let currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
@@ -525,6 +525,16 @@ function formEditBar() {
 	// Since the edit bar includes both landscapes and some black developments, the
 	//  for loop needs to be compensate for the total number of landscapes when iterating
 	//  through black developments
+
+	// Create blank background for edit bar
+	var designBG = new Graphics();
+	designBG.beginFill(0x000000);
+	designBG.drawRect(0, 0, 205, (stage.height));
+	designBG.endFill();
+	designBG.x = stage.width-200;
+	designBG.y = 0;
+	stage.addChild(designBG);
+
 	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels); cButton++) {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		var chosenPng = null;
@@ -664,14 +674,6 @@ function onImageLoad() {
 	currLand.genTestLand();
 	currLand.displayLand();
 
-	// Create design bar on right
-	var designBG = new Graphics();
-	designBG.beginFill(0x000000);
-	designBG.drawRect(0, 0, 205, (stage.height));
-	designBG.endFill();
-	designBG.x = stage.width-200;
-	designBG.y = 0;
-	stage.addChild(designBG);
 	formEditBar();
 	
 	// Start the game loop
