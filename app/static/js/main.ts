@@ -325,12 +325,34 @@ class Land {
 
 	generateLand() {
 		// Procedurally generate land tiles based on selected land properties
-
+		let landWidth = (this.lSize+1)*3;
+		let landTiles = [];
+		let tileCounter = 0;
+		for (var currWidth = 0; currWidth < (landWidth+12); currWidth ++) {
+			// Make grassy center
+			if (currWidth === 0) {
+				landTiles[0] = new Tile(0, [0, 0]);
+				landTiles[0].landscape = eLSCP.Grassy;
+				tileCounter++;
+			}
+			else{
+				let thisRing = landTiles[0].getRing(currWidth);
+				for (var ringTile=0; ringTile < thisRing.length; ringTile++ ) {
+					landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
+					if (currWidth <= landWidth) {
+						landTiles[tileCounter].landscape = eLSCP.Grassy;
+					}
+					else {
+						landTiles[tileCounter].landscape = eLSCP.Sea;
+					}
+					tileCounter++;
+				}
+			}
 	}
 
 	genTestLand() {
 		// Generate a small debug land
-		let landWidth = 5;
+		let landWidth = 3;
 		let landTiles = [];
 		let tileCounter = 0;
 		for (var currWidth = 0; currWidth < (landWidth+12); currWidth ++) {
@@ -438,9 +460,9 @@ climateArray[eCLIMATE.Varied].prob[eLSCP.Rocky] = 0.4;
 climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.5);
 climateArray[eCLIMATE.Jungle].prob = [];
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Desert] = 0.05;
-climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.8;
-climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.2;
-climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.1;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.6;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.1;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.05;
 
 climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.5);
 climateArray[eCLIMATE.Mountain].prob = [];
