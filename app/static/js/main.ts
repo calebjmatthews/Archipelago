@@ -71,7 +71,7 @@ enum eSHAPE { Round, Bay, Twin, Jagged, Thin }
 enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied, Jungle, Wet, Mountain }
 
 // Enumerates landscape types for individual tiles
-enum eLSCP { Grassy, Shore, Forested, Rocky, Desert, Sea }
+enum eLSCP { Grassy, Forested, Rocky, Desert, Sea, Shore }
 
 // Enumerates options for developments
 enum eDEVEL { Jungle, Freshwater, Cave, FireCrew, LaborPort, SeasSideParade }
@@ -318,17 +318,88 @@ class Land {
 		return null;
 	}
 
+	// Read land tile data from json file
 	readLand() {
-		// Read land tile data from json file
 
 	}
 
+	// Randomly alter an individual tile, based on neighbors and land's climate
+	genTile(tileSnapShot, axialCoord) {
+		var probArray = [1, 1, 1, 1, 0, 0]; 
+		var neighbors = [];
+		var seaCount = 0;
+		var tTile = this.tileArray[this.getID(axialCoord)];
+		neighbors = tTile.getNeighbors();
+		for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
+			if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Desert) {
+				probArray[eLSCP.Desert] += 0.2;
+			}
+			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Forested) {
+				probArray[eLSCP.Forested] += 0.2;
+			}
+			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Grassy) {
+				probArray[eLSCP.Grassy] += 0.0;
+			}
+			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Rocky) {
+				probArray[eLSCP.Rocky] += 0.2;
+			}
+			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Sea) {
+				seaCount++;
+			}
+			else {
+				console.log("Error, unexpected neighbor landscape type.")
+			}
+		}
+
+		// Pull the starting probability array from this land's climate
+		probArray = climateArray[this.lClimate];
+		var probSum = 0;
+		for (var iii = 0; iii < 5; iii++) {
+			// Multiply the current neighbor probability by the climate's probability
+			probArray[iii] *= climateArray[this.lClimate].prob[iii];
+			probSum += probArray[iii];
+		}
+
+		// If the total of the probabilities is above 0.5, adjust downwards
+		if (probSum >= 0.5) {
+			for (var iii = 0; iii < 5; iii++) {
+				probArray[iii] *= (probSum/0.5);
+			}
+		}
+
+		// If a non-sea tile borders the sea, calculate probability of change (n/6/2)
+		if ((tTile.landscape != eLSCP.Sea) && (seaCount > 0)) {
+			if (Math.random() > (seaCount/3)) {
+				return eLSCP.Sea;
+			}
+		}
+
+		// If a sea tile borders the land, calculate probability of change (1-n/6/2)
+	}
+
+	// Modification to each tile in a series of rings, performed multiple times
+	genLandStep(landWidth) {
+		var tileSnapShot = this.tileArray;
+		for (var stepWidth = 0; stepWidth < (landWidth+12); stepWidth++) {
+			var thisRing = [];
+			if (stepWidth === 0) { thisRing[0] = [0, 0]; }
+			else { thisRing = this.tileArray[0].getRing(stepWidth); }
+
+			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+				this.genTile(tileSnapShot, thisRing[ringTile]);
+			}
+
+		}
+	}
+
+	// Procedurally generate land tiles based on selected land properties
 	generateLand() {
-		// Procedurally generate land tiles based on selected land properties
 		let landWidth = (this.lSize+1)*3;
 		let landTiles = [];
 		let tileCounter = 0;
-		for (var currWidth = 0; currWidth < (landWidth+12); currWidth ++) {
+
+		// Create grass/sea template
+		for (var currWidth = 0; currWidth < (landWidth+12); currWidth++) {
 			// Make grassy center
 			if (currWidth === 0) {
 				landTiles[0] = new Tile(0, [0, 0]);
@@ -337,7 +408,7 @@ class Land {
 			}
 			else{
 				let thisRing = landTiles[0].getRing(currWidth);
-				for (var ringTile=0; ringTile < thisRing.length; ringTile++ ) {
+				for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
 					landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
 					if (currWidth <= landWidth) {
 						landTiles[tileCounter].landscape = eLSCP.Grassy;
@@ -348,6 +419,12 @@ class Land {
 					tileCounter++;
 				}
 			}
+		}
+
+		// Step through templated tiles, modifying landscape and black development
+		for (var tStep = 0; tStep < 3; tStep++) {
+			this.genLandStep(landWidth);
+		}
 	}
 
 	genTestLand() {
