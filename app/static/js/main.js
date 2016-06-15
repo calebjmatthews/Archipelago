@@ -96,16 +96,19 @@ var eCLIMATE;
     eCLIMATE[eCLIMATE["Rocky"] = 2] = "Rocky";
     eCLIMATE[eCLIMATE["Desert"] = 3] = "Desert";
     eCLIMATE[eCLIMATE["Varied"] = 4] = "Varied";
+    eCLIMATE[eCLIMATE["Jungle"] = 5] = "Jungle";
+    eCLIMATE[eCLIMATE["Wet"] = 6] = "Wet";
+    eCLIMATE[eCLIMATE["Mountain"] = 7] = "Mountain";
 })(eCLIMATE || (eCLIMATE = {}));
 // Enumerates landscape types for individual tiles
 var eLSCP;
 (function (eLSCP) {
     eLSCP[eLSCP["Grassy"] = 0] = "Grassy";
-    eLSCP[eLSCP["Shore"] = 1] = "Shore";
-    eLSCP[eLSCP["Forested"] = 2] = "Forested";
-    eLSCP[eLSCP["Rocky"] = 3] = "Rocky";
-    eLSCP[eLSCP["Desert"] = 4] = "Desert";
-    eLSCP[eLSCP["Sea"] = 5] = "Sea";
+    eLSCP[eLSCP["Forested"] = 1] = "Forested";
+    eLSCP[eLSCP["Rocky"] = 2] = "Rocky";
+    eLSCP[eLSCP["Desert"] = 3] = "Desert";
+    eLSCP[eLSCP["Sea"] = 4] = "Sea";
+    eLSCP[eLSCP["Shore"] = 5] = "Shore";
 })(eLSCP || (eLSCP = {}));
 // Enumerates options for developments
 var eDEVEL;
@@ -358,15 +361,127 @@ var Land = (function () {
         }
         return null;
     };
+    // Read land tile data from json file
     Land.prototype.readLand = function () {
-        // Read land tile data from json file
     };
-    Land.prototype.generateLSCP = function () {
-        // Procedurally generate land tiles based on selected land properties
+    // Randomly alter an individual tile, based on neighbors and land's climate
+    Land.prototype.genTile = function (tileSnapShot, axialCoord) {
+        var probArray = [1, 1, 1, 1, 0, 0];
+        var neighbors = [];
+        var seaCount = 0;
+        var tTile = this.tileArray[this.getID(axialCoord)];
+        neighbors = tTile.getNeighbors();
+        for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
+            var tSnapTile = tileSnapShot[this.getID(neighbors[tNeigh])];
+            if (tSnapTile.landscape === eLSCP.Desert) {
+                probArray[eLSCP.Desert] += 0.2;
+            }
+            else if (tSnapTile.landscape === eLSCP.Forested) {
+                probArray[eLSCP.Forested] += 0.2;
+            }
+            else if (tSnapTile.landscape === eLSCP.Grassy) {
+                probArray[eLSCP.Grassy] += 0.0;
+            }
+            else if (tSnapTile.landscape === eLSCP.Rocky) {
+                probArray[eLSCP.Rocky] += 0.2;
+            }
+            else if (tSnapTile.landscape === eLSCP.Sea) {
+                seaCount++;
+            }
+            else {
+                console.log("Error, unexpected neighbor landscape type.");
+            }
+        }
+        // Pull the starting probability array from this land's climate
+        probArray = climateArray[this.lClimate];
+        var probSum = 0;
+        for (var iii = 0; iii < 5; iii++) {
+            // Multiply the current neighbor probability by the climate's probability
+            probArray[iii] *= climateArray[this.lClimate].prob[iii];
+            probSum += probArray[iii];
+        }
+        // If the total of the probabilities is above 0.5, adjust downwards
+        if (probSum >= 0.5) {
+            for (var iii = 0; iii < 5; iii++) {
+                probArray[iii] *= (probSum / 0.5);
+            }
+        }
+        // If a non-sea tile borders the sea, calculate probability of change (n/6/2)
+        if ((tTile.landscape != eLSCP.Sea) && (seaCount > 0)) {
+            if (Math.random() < (seaCount / 12)) {
+                return eLSCP.Sea;
+            }
+        }
+        else if ((tTile.landscape === eLSCP.Sea) && (seaCount < 6)) {
+            if (Math.random() > (((6 - seaCount) / 6) * 0.5)) {
+                return eLSCP.Sea;
+            }
+        }
+        // Use the probability array to determine the tile's landscape fate
+        probSum = 0;
+        var rand = Math.random();
+        for (var tLSCP = 0; tLSCP < 4; tLSCP++) {
+            probSum += probArray[tLSCP];
+            if (rand < probSum) {
+                return tLSCP;
+            }
+        }
+        // If the above for-loop does not trigger a return, give the original landscape
+        return tTile.landscape;
+    };
+    // Modification to each tile in a series of rings, performed multiple times
+    Land.prototype.genLandStep = function (landWidth) {
+        var tileSnapShot = this.tileArray;
+        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+            var thisRing = [];
+            if (stepWidth === 0) {
+                thisRing[0] = [0, 0];
+            }
+            else {
+                thisRing = this.tileArray[0].getRing(stepWidth);
+            }
+            for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                var result = this.genTile(tileSnapShot, thisRing[ringTile]);
+                this.tileArray[this.getID(thisRing[ringTile])].landscape = result;
+            }
+        }
+    };
+    // Procedurally generate land tiles based on selected land properties
+    Land.prototype.generateLand = function () {
+        var landWidth = (this.lSize + 1) * 3;
+        var landTiles = [];
+        var tileCounter = 0;
+        // Create grass/sea template
+        for (var currWidth = 0; currWidth < (landWidth + 12); currWidth++) {
+            // Make grassy center
+            if (currWidth === 0) {
+                landTiles[0] = new Tile(0, [0, 0]);
+                landTiles[0].landscape = eLSCP.Grassy;
+                tileCounter++;
+            }
+            else {
+                var thisRing = landTiles[0].getRing(currWidth);
+                for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                    landTiles[tileCounter] = new Tile(tileCounter, thisRing[ringTile]);
+                    if (currWidth <= landWidth) {
+                        landTiles[tileCounter].landscape = eLSCP.Grassy;
+                    }
+                    else {
+                        landTiles[tileCounter].landscape = eLSCP.Sea;
+                    }
+                    tileCounter++;
+                }
+            }
+        }
+        this.tileArray = landTiles;
+        // Step through templated tiles, modifying landscape and black development
+        for (var tStep = 0; tStep < 3; tStep++) {
+            this.genLandStep(landWidth);
+        }
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
-        var landWidth = 5;
+        var landWidth = 3;
         var landTiles = [];
         var tileCounter = 0;
         for (var currWidth = 0; currWidth < (landWidth + 12); currWidth++) {
@@ -419,6 +534,62 @@ var Land = (function () {
     };
     return Land;
 }());
+var Climate = (function () {
+    function Climate(setID, setDevel) {
+        this.id = setID;
+        this.devel = setDevel;
+    }
+    return Climate;
+}());
+var climateArray = [];
+climateArray[eCLIMATE.Desert] = new Climate(eCLIMATE.Desert, 0.1);
+climateArray[eCLIMATE.Desert].prob = [];
+climateArray[eCLIMATE.Desert].prob[eLSCP.Desert] = 0.3;
+climateArray[eCLIMATE.Desert].prob[eLSCP.Forested] = 0.05;
+climateArray[eCLIMATE.Desert].prob[eLSCP.Grassy] = 0.15;
+climateArray[eCLIMATE.Desert].prob[eLSCP.Rocky] = 0.1;
+climateArray[eCLIMATE.Forested] = new Climate(eCLIMATE.Forested, 0.1);
+climateArray[eCLIMATE.Forested].prob = [];
+climateArray[eCLIMATE.Forested].prob[eLSCP.Desert] = 0.05;
+climateArray[eCLIMATE.Forested].prob[eLSCP.Forested] = 0.6;
+climateArray[eCLIMATE.Forested].prob[eLSCP.Grassy] = 0.2;
+climateArray[eCLIMATE.Forested].prob[eLSCP.Rocky] = 0.1;
+climateArray[eCLIMATE.Grassy] = new Climate(eCLIMATE.Grassy, 0.1);
+climateArray[eCLIMATE.Grassy].prob = [];
+climateArray[eCLIMATE.Grassy].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Grassy].prob[eLSCP.Forested] = 0.2;
+climateArray[eCLIMATE.Grassy].prob[eLSCP.Grassy] = 0.4;
+climateArray[eCLIMATE.Grassy].prob[eLSCP.Rocky] = 0.1;
+climateArray[eCLIMATE.Rocky] = new Climate(eCLIMATE.Rocky, 0.1);
+climateArray[eCLIMATE.Rocky].prob = [];
+climateArray[eCLIMATE.Rocky].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Rocky].prob[eLSCP.Forested] = 0.1;
+climateArray[eCLIMATE.Rocky].prob[eLSCP.Grassy] = 0.2;
+climateArray[eCLIMATE.Rocky].prob[eLSCP.Rocky] = 0.4;
+climateArray[eCLIMATE.Varied] = new Climate(eCLIMATE.Varied, 0.2);
+climateArray[eCLIMATE.Varied].prob = [];
+climateArray[eCLIMATE.Varied].prob[eLSCP.Desert] = 0.2;
+climateArray[eCLIMATE.Varied].prob[eLSCP.Forested] = 0.4;
+climateArray[eCLIMATE.Varied].prob[eLSCP.Grassy] = 0.1;
+climateArray[eCLIMATE.Varied].prob[eLSCP.Rocky] = 0.4;
+climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.5);
+climateArray[eCLIMATE.Jungle].prob = [];
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Desert] = 0.05;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.6;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.1;
+climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.05;
+climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.5);
+climateArray[eCLIMATE.Mountain].prob = [];
+climateArray[eCLIMATE.Mountain].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Mountain].prob[eLSCP.Forested] = 0.1;
+climateArray[eCLIMATE.Mountain].prob[eLSCP.Grassy] = 0.2;
+climateArray[eCLIMATE.Mountain].prob[eLSCP.Rocky] = 0.6;
+climateArray[eCLIMATE.Wet] = new Climate(eCLIMATE.Wet, 0.5);
+climateArray[eCLIMATE.Wet].prob = [];
+climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Wet].prob[eLSCP.Forested] = 0.2;
+climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
+climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
 var Landcape = (function () {
     function Landcape(setID, setSprID, setName) {
         this.id = setID;
@@ -501,8 +672,8 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLSCP = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
-var currLand = littleLSCP;
+var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
@@ -511,6 +682,14 @@ function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
     //  for loop needs to be compensate for the total number of landscapes when iterating
     //  through black developments
+    // Create blank background for edit bar
+    var designBG = new Graphics();
+    designBG.beginFill(0x000000);
+    designBG.drawRect(0, 0, 205, (stage.height));
+    designBG.endFill();
+    designBG.x = stage.width - 200;
+    designBG.y = 0;
+    stage.addChild(designBG);
     for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels); cButton++) {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
@@ -586,7 +765,7 @@ function paintLscp(clkTile) {
         console.log("Error, unexpected glbPainting value.");
     }
 }
-function onClick(clkPoint) {
+function editClick(clkPoint) {
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if (clkAxial != undefined) {
@@ -630,16 +809,8 @@ function onImageLoad() {
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
     // This code runs when the texture atlas has loaded
-    currLand.genTestLand();
+    currLand.generateLand();
     currLand.displayLand();
-    // Create design bar on right
-    var designBG = new Graphics();
-    designBG.beginFill(0x000000);
-    designBG.drawRect(0, 0, 205, (stage.height));
-    designBG.endFill();
-    designBG.x = stage.width - 200;
-    designBG.y = 0;
-    stage.addChild(designBG);
     formEditBar();
     // Start the game loop
     gameLoop();
@@ -658,9 +829,30 @@ function edit() {
     // Click event handling
     var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        onClick(corPoint);
+        editClick(corPoint);
     }
     hoverTile(corPoint);
     // msgPoint.text = ("Coords: " + corPoint);
     // msgAxial.text = ("Hex: " + hovAxial);
+}
+// Applies prior to every game round
+function monthSetup() {
+}
+// Applies prior to each player's round
+function plrMonSetup() {
+}
+// Player chooses which of their active developments to use
+function active() {
+}
+// Choosing a target for a development's effect
+function selDevel() {
+}
+// Player chooses new developments to purchase
+function buy() {
+}
+// Player chooses where to build a newly bought development
+function build() {
+}
+// Applies after a player has finished their turn
+function cleanup() {
 }

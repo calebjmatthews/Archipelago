@@ -308,7 +308,7 @@ class Land {
 	}
 
 	// Returns the tile's place in the array (tileID) given its row and column position
-	getID(givPos: [number, number]) {
+	getID(givPos: number[]) {
 		for (var cTile = 0; cTile < this.tileArray.length; cTile++) {
 			if ((this.tileArray[cTile].axialRow === givPos[0]) &&
 					(this.tileArray[cTile].axialCol === givPos[1])) {
@@ -331,19 +331,20 @@ class Land {
 		var tTile = this.tileArray[this.getID(axialCoord)];
 		neighbors = tTile.getNeighbors();
 		for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
-			if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Desert) {
+			let tSnapTile = tileSnapShot[this.getID(neighbors[tNeigh])];
+			if (tSnapTile.landscape === eLSCP.Desert) {
 				probArray[eLSCP.Desert] += 0.2;
 			}
-			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Forested) {
+			else if (tSnapTile.landscape === eLSCP.Forested) {
 				probArray[eLSCP.Forested] += 0.2;
 			}
-			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Grassy) {
+			else if (tSnapTile.landscape === eLSCP.Grassy) {
 				probArray[eLSCP.Grassy] += 0.0;
 			}
-			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Rocky) {
+			else if (tSnapTile.landscape === eLSCP.Rocky) {
 				probArray[eLSCP.Rocky] += 0.2;
 			}
-			else if (tileSnapShot[this.getID(neighbors[tNeigh])] === eLSCP.Sea) {
+			else if (tSnapTile.landscape === eLSCP.Sea) {
 				seaCount++;
 			}
 			else {
@@ -369,12 +370,29 @@ class Land {
 
 		// If a non-sea tile borders the sea, calculate probability of change (n/6/2)
 		if ((tTile.landscape != eLSCP.Sea) && (seaCount > 0)) {
-			if (Math.random() > (seaCount/3)) {
+			if (Math.random() < (seaCount/12)) {
 				return eLSCP.Sea;
 			}
 		}
 
-		// If a sea tile borders the land, calculate probability of change (1-n/6/2)
+		// If a sea tile borders the land, calculate probability of change (6-n/6/2)
+		else if ((tTile.landscape === eLSCP.Sea) && (seaCount < 6)) {
+			if (Math.random() > (((6-seaCount)/6) * 0.5)) {
+				return eLSCP.Sea;
+			}
+		}
+
+		// Use the probability array to determine the tile's landscape fate
+		probSum = 0;
+		var rand = Math.random();
+		for (var tLSCP=0; tLSCP < 4; tLSCP++) {
+			probSum += probArray[tLSCP];
+			if (rand < probSum) {
+				return tLSCP;
+			}
+		}
+		// If the above for-loop does not trigger a return, give the original landscape
+		return tTile.landscape;
 	}
 
 	// Modification to each tile in a series of rings, performed multiple times
@@ -386,7 +404,8 @@ class Land {
 			else { thisRing = this.tileArray[0].getRing(stepWidth); }
 
 			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
-				this.genTile(tileSnapShot, thisRing[ringTile]);
+				let result = this.genTile(tileSnapShot, thisRing[ringTile]);
+				this.tileArray[this.getID(thisRing[ringTile])].landscape = result;
 			}
 
 		}
@@ -420,6 +439,8 @@ class Land {
 				}
 			}
 		}
+
+		this.tileArray = landTiles;
 
 		// Step through templated tiles, modifying landscape and black development
 		for (var tStep = 0; tStep < 3; tStep++) {
@@ -492,7 +513,7 @@ class Climate {
 	devel: number; // The probability of randgen black developments
 	prob: number[]; // An array of probabilities for the landscape types
 
-	constructor(setID: number, setDevel: number;) {
+	constructor(setID: number, setDevel: number) {
 		this.id = setID;
 		this.devel = setDevel;
 	}
@@ -838,7 +859,7 @@ function onImageLoad() {
 	pointer = tb.makePointer();
 
 	// This code runs when the texture atlas has loaded
-	currLand.genTestLand();
+	currLand.generateLand();
 	currLand.displayLand();
 
 	formEditBar();
