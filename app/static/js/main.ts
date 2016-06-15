@@ -332,7 +332,10 @@ class Land {
 		neighbors = tTile.getNeighbors();
 		for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
 			let tSnapTile = tileSnapShot[this.getID(neighbors[tNeigh])];
-			if (tSnapTile.landscape === eLSCP.Desert) {
+			if (tSnapTile === undefined) {
+				seaCount++;
+			}
+			else if (tSnapTile.landscape === eLSCP.Desert) {
 				probArray[eLSCP.Desert] += 0.2;
 			}
 			else if (tSnapTile.landscape === eLSCP.Forested) {
@@ -702,7 +705,7 @@ var tb = null;
 var state = edit;
 var pointer = null;
 
-let littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+let littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Varied]);
 let currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;

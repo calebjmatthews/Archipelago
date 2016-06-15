@@ -373,7 +373,10 @@ var Land = (function () {
         neighbors = tTile.getNeighbors();
         for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
             var tSnapTile = tileSnapShot[this.getID(neighbors[tNeigh])];
-            if (tSnapTile.landscape === eLSCP.Desert) {
+            if (tSnapTile === undefined) {
+                seaCount++;
+            }
+            else if (tSnapTile.landscape === eLSCP.Desert) {
                 probArray[eLSCP.Desert] += 0.2;
             }
             else if (tSnapTile.landscape === eLSCP.Forested) {
@@ -672,7 +675,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Varied]);
+var littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Varied]);
 var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
