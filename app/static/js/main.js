@@ -431,6 +431,34 @@ var Land = (function () {
         // If the above for-loop does not trigger a return, give the original landscape
         return tTile.landscape;
     };
+    Land.prototype.genShore = function (landWidth) {
+        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+            var thisRing = [];
+            if (stepWidth === 0) {
+                thisRing[0] = [0, 0];
+            }
+            else {
+                thisRing = this.tileArray[0].getRing(stepWidth);
+            }
+            for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                var tTile = this.tileArray[this.getID(thisRing[ringTile])];
+                var neighbors = [];
+                neighbors = tTile.getNeighbors();
+                var bordersSea = false;
+                // Check to see if any of the six neighbors are sea
+                for (var cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+                    if ((this.tileArray[this.getID(neighbors[cNeigh])] === undefined) ||
+                        (this.tileArray[this.getID(neighbors[cNeigh])].landscape === eLSCP.Sea)) {
+                        bordersSea = true;
+                    }
+                }
+                // If at least one is sea, and the tile itself is grassy, make it into shore
+                if ((bordersSea) && (tTile.landscape === eLSCP.Grassy)) {
+                    this.tileArray[this.getID(thisRing[ringTile])].landscape = eLSCP.Shore;
+                }
+            }
+        }
+    };
     // Modification to each tile in a series of rings, performed multiple times
     Land.prototype.genLandStep = function (landWidth) {
         var tileSnapShot = this.tileArray;
@@ -450,7 +478,7 @@ var Land = (function () {
     };
     // Procedurally generate land tiles based on selected land properties
     Land.prototype.generateLand = function () {
-        var landWidth = (this.lSize + 1) * 3;
+        var landWidth = (this.lSize + 2) * 2;
         var landTiles = [];
         var tileCounter = 0;
         // Create grass/sea template
@@ -480,6 +508,7 @@ var Land = (function () {
         for (var tStep = 0; tStep < 5; tStep++) {
             this.genLandStep(landWidth);
         }
+        this.genShore(landWidth);
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
@@ -674,7 +703,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Forested]);
+var littleLand = new Land([eSIZE.Gigantic, eSHAPE.Round, eCLIMATE.Jungle]);
 var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;

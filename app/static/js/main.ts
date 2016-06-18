@@ -397,6 +397,33 @@ class Land {
 		return tTile.landscape;
 	}
 
+	genShore(landWidth) {
+		for (var stepWidth = 0; stepWidth < (landWidth+12); stepWidth++) {
+			var thisRing = [];
+			if (stepWidth === 0) { thisRing[0] = [0, 0]; }
+			else { thisRing = this.tileArray[0].getRing(stepWidth); }
+
+			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+				let tTile = this.tileArray[this.getID(thisRing[ringTile])];
+				let neighbors = []; 
+				neighbors = tTile.getNeighbors();
+				let bordersSea = false;
+				// Check to see if any of the six neighbors are sea
+				for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+					if ((this.tileArray[this.getID(neighbors[cNeigh])] === undefined) || 
+						(this.tileArray[this.getID(neighbors[cNeigh])].landscape === eLSCP.Sea)) {
+						bordersSea = true;
+					}
+				}
+				// If at least one is sea, and the tile itself is grassy, make it into shore
+				if ((bordersSea) && (tTile.landscape === eLSCP.Grassy)) {
+					this.tileArray[this.getID(thisRing[ringTile])].landscape = eLSCP.Shore;
+				}
+			}
+
+		}
+	}
+
 	// Modification to each tile in a series of rings, performed multiple times
 	genLandStep(landWidth) {
 		var tileSnapShot = this.tileArray;
@@ -415,7 +442,7 @@ class Land {
 
 	// Procedurally generate land tiles based on selected land properties
 	generateLand() {
-		let landWidth = (this.lSize+1)*3;
+		let landWidth = (this.lSize+2)*2;
 		let landTiles = [];
 		let tileCounter = 0;
 
@@ -448,6 +475,7 @@ class Land {
 		for (var tStep = 0; tStep < 5; tStep++) {
 			this.genLandStep(landWidth);
 		}
+		this.genShore(landWidth);
 	}
 
 	genTestLand() {
@@ -704,7 +732,7 @@ var tb = null;
 var state = edit;
 var pointer = null;
 
-let littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Forested]);
+let littleLand = new Land([eSIZE.Gigantic, eSHAPE.Round, eCLIMATE.Jungle]);
 let currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
@@ -769,6 +797,10 @@ function formEditBar() {
 		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
+function formPlayerBar() {
+
+}
+
 function formDebugBar() {
 	// Display text
 	msgPoint = new Text(
@@ -783,14 +815,6 @@ function formDebugBar() {
 	);
 	msgAxial.position.set((stage.width-280), 60);
 	stage.addChild(msgAxial);
-}
-
-var acquiredLand = null;
-function testAPI() {
-	$.get("http://localhost:1234/land/1", function(data) {
-		acquiredLand = data;
-	});
-	console.log(acquiredLand);
 }
 
 function paintLscp(clkTile) {
