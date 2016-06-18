@@ -520,19 +520,31 @@ class Land {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		let lTiles = this.tileArray;
 		let landSprites = [];
+		let landDevSprs = [];
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
 				if (arraySpot != null) {
 					let tTile = lTiles[arraySpot];
 					let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
-					let tDevSpr = new Sprite
-
 					tSprite.scale.set(tTile.scale, tTile.scale);
 
 					let sPos = hexToPoint([currX, currY]);
-
 					tSprite.position.set(sPos[0], sPos[1]);
+
+					// If there is no development for this tile, insert an empty hex as placeholder
+					if (tTile.development === null) {
+						let tDevSpr = new Sprite(sprMed["tallhex.png"]);
+						tDevSpr.scale.set(tTile.scale, tTile.scale);
+						let sdPos = hexToPoint([currX, currY]);
+						tDevSpr.position.set(sdPos[0], sdPos[1]);
+						stage.addChild(tDevSpr);
+						landDevSprs[arraySpot] = tDevSpr;
+					}
+					else {
+
+					}
+
 					stage.addChild(tSprite);
 					landSprites[arraySpot] = tSprite;
 				}

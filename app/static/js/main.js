@@ -325,6 +325,8 @@ var Tile = (function (_super) {
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
         tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
+        if (this.development != null) {
+        }
     };
     return Tile;
 }(Hex));
@@ -552,6 +554,7 @@ var Land = (function () {
                 if (arraySpot != null) {
                     var tTile = lTiles[arraySpot];
                     var tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
+                    // let tDevSpr = new Sprite(sprMed)
                     tSprite.scale.set(tTile.scale, tTile.scale);
                     var sPos = hexToPoint([currX, currY]);
                     tSprite.position.set(sPos[0], sPos[1]);
@@ -676,10 +679,10 @@ develArray[eDEVEL.SeasSideParade].requirement = [];
 develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeasSideParade].result = [];
 develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
-// develArray[eDEVEL.Cave].sprID = "hex.png";
+develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
-// develArray[eDEVEL.Freshwater].sprID = "hex.png";
-// develArray[eDEVEL.Jungle].sprID = "hex.png";
+develArray[eDEVEL.Freshwater].sprID = "hex.png";
+develArray[eDEVEL.Jungle].sprID = "hex.png";
 develArray[eDEVEL.LaborPort].sprID = "hex.png";
 develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
 // ~~~~ Set up pixi.js ~~~~
@@ -703,7 +706,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLand = new Land([eSIZE.Gigantic, eSHAPE.Round, eCLIMATE.Jungle]);
+var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Desert]);
 var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;

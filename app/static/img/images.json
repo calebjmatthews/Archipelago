@@ -9,7 +9,7 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"rocky.png":
+"grassy.png":
 {
 	"frame": {"x":304,"y":2,"w":300,"h":150},
 	"rotated": false,
@@ -18,7 +18,7 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"grassy.png":
+"rocky.png":
 {
 	"frame": {"x":606,"y":2,"w":300,"h":150},
 	"rotated": false,
@@ -27,7 +27,7 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"hex.png":
+"shore.png":
 {
 	"frame": {"x":908,"y":2,"w":300,"h":150},
 	"rotated": false,
@@ -36,7 +36,7 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"shore.png":
+"desert.png":
 {
 	"frame": {"x":1210,"y":2,"w":300,"h":150},
 	"rotated": false,
@@ -45,9 +45,9 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"desert.png":
+"hex.png":
 {
-	"frame": {"x":2,"y":154,"w":300,"h":150},
+	"frame": {"x":1512,"y":2,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -56,7 +56,7 @@
 },
 "forested.png":
 {
-	"frame": {"x":304,"y":154,"w":300,"h":150},
+	"frame": {"x":2,"y":154,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -65,6 +65,15 @@
 },
 "cave.png":
 {
+	"frame": {"x":304,"y":154,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"tall hex.png":
+{
 	"frame": {"x":606,"y":154,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
@@ -72,7 +81,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"jungle.png":
+"freshwater.png":
 {
 	"frame": {"x":908,"y":154,"w":300,"h":300},
 	"rotated": false,
@@ -81,7 +90,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"freshwater.png":
+"jungle.png":
 {
 	"frame": {"x":1210,"y":154,"w":300,"h":300},
 	"rotated": false,
@@ -95,8 +104,8 @@
 	"version": "1.0",
 	"image": "images.png",
 	"format": "RGBA8888",
-	"size": {"w":1512,"h":456},
+	"size": {"w":1814,"h":456},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:305437a07ee11c93709a7252f5ff0e53:dc5bcd0464df65d25cd08ef82ed3876c:9be8c185d95a5be4a06ec0067a3d8380$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ead76f0df46a43eb8d8f9d9e2d114d58:816d9393ffd6eef37f3296dae924e248:9be8c185d95a5be4a06ec0067a3d8380$"
 }
 }
