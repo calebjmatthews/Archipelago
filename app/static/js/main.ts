@@ -355,19 +355,18 @@ class Land {
 			}
 		}
 
-		// Pull the starting probability array from this land's climate
-		probArray = climateArray[this.lClimate];
 		var probSum = 0;
-		for (var iii = 0; iii < 5; iii++) {
+		for (let iii = 0; iii < 4; iii++) {
 			// Multiply the current neighbor probability by the climate's probability
-			probArray[iii] *= climateArray[this.lClimate].prob[iii];
+			let climateProb = climateArray[this.lClimate].prob
+			probArray[iii] *= climateProb[iii];
 			probSum += probArray[iii];
 		}
 
 		// If the total of the probabilities is above 0.5, adjust downwards
-		if (probSum >= 0.5) {
-			for (var iii = 0; iii < 5; iii++) {
-				probArray[iii] *= (probSum/0.5);
+		if (probSum >= 0.15) {
+			for (let jjj = 0; jjj < 4; jjj++) {
+				probArray[jjj] *= (0.15 / probSum);
 			}
 		}
 
@@ -379,7 +378,7 @@ class Land {
 		}
 
 		// If a sea tile borders the land, calculate probability of change (6-n/6/2)
-		else if ((tTile.landscape === eLSCP.Sea) && (seaCount < 6)) {
+		else if (tTile.landscape === eLSCP.Sea) {
 			if (Math.random() > (((6-seaCount)/6) * 0.5)) {
 				return eLSCP.Sea;
 			}
@@ -446,7 +445,7 @@ class Land {
 		this.tileArray = landTiles;
 
 		// Step through templated tiles, modifying landscape and black development
-		for (var tStep = 0; tStep < 3; tStep++) {
+		for (var tStep = 0; tStep < 5; tStep++) {
 			this.genLandStep(landWidth);
 		}
 	}
@@ -705,7 +704,7 @@ var tb = null;
 var state = edit;
 var pointer = null;
 
-let littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Varied]);
+let littleLand = new Land([eSIZE.Medium, eSHAPE.Round, eCLIMATE.Forested]);
 let currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
