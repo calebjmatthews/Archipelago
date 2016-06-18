@@ -676,10 +676,10 @@ develArray[eDEVEL.SeasSideParade].requirement = [];
 develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeasSideParade].result = [];
 develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
-develArray[eDEVEL.Cave].sprID = "hex.png";
+// develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
-develArray[eDEVEL.Freshwater].sprID = "hex.png";
-develArray[eDEVEL.Jungle].sprID = "hex.png";
+// develArray[eDEVEL.Freshwater].sprID = "hex.png";
+// develArray[eDEVEL.Jungle].sprID = "hex.png";
 develArray[eDEVEL.LaborPort].sprID = "hex.png";
 develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
 // ~~~~ Set up pixi.js ~~~~
@@ -709,6 +709,7 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
+var develBGArray = [];
 function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
     //  for loop needs to be compensate for the total number of landscapes when iterating
@@ -725,6 +726,7 @@ function formEditBar() {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
+        var bScale = 0.2;
         if (cButton < glbNumLscps) {
             chosenPng = lscpArray[cButton].sprID;
             chosenText = lscpArray[cButton].name;
@@ -732,6 +734,13 @@ function formEditBar() {
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
             chosenPng = develArray[cButton - glbNumLscps].sprID;
             chosenText = develArray[cButton - glbNumLscps].name;
+            var dBG = develBGArray[cButton - glbNumLscps];
+            var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
+            var lscpSprID = lscpArray[bgLscp].sprID;
+            dBG = new Sprite(sprMed[lscpSprID]);
+            dBG.scale.set(bScale, bScale);
+            dBG.position.set((stage.width - 340), (30 + 40 * cButton));
+            stage.addChild(dBG);
         }
         else {
             console.log("Error: unexpected current button incremental variable.");
@@ -740,9 +749,13 @@ function formEditBar() {
         }
         buttonArray[cButton] = new Sprite(sprMed[chosenPng]);
         tb.makeInteractive(buttonArray[cButton]);
-        var bScale = 0.2;
         buttonArray[cButton].scale.set(bScale, bScale);
-        buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
+        if (cButton < glbNumLscps) {
+            buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
+        }
+        else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
+            buttonArray[cButton].position.set((stage.width - 340), (0 + 40 * cButton));
+        }
         stage.addChild(buttonArray[cButton]);
         var msgLscp = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
         msgLscp.position.set((stage.width - 260), (25 + 40 * cButton));
@@ -765,6 +778,8 @@ function formEditBar() {
         glbPainting = glbNumLscps + eDEVEL.Jungle;
     };
 }
+function formPlayerBar() {
+}
 function formDebugBar() {
     // Display text
     msgPoint = new Text(("Coords: "), { font: "16px sans-serif", fill: "white" });
@@ -773,13 +788,6 @@ function formDebugBar() {
     msgAxial = new Text(("Hex: "), { font: "16px sans-serif", fill: "white" });
     msgAxial.position.set((stage.width - 280), 60);
     stage.addChild(msgAxial);
-}
-var acquiredLand = null;
-function testAPI() {
-    $.get("http://localhost:1234/land/1", function (data) {
-        acquiredLand = data;
-    });
-    console.log(acquiredLand);
 }
 function paintLscp(clkTile) {
     // Simple landscape alteration
@@ -831,7 +839,7 @@ function hoverTile(corPoint) {
         }
     }
     // Normal cursor when hovering over final edit bar button
-    if (pointer.hitTestSprite(buttonArray[glbNumLscps])) {
+    if (pointer.hitTestSprite(buttonArray[(glbNumLscps + glbNumBlkDevels) - 1])) {
         pointer.cursor = "auto";
     }
 }

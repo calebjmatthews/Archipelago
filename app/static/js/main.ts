@@ -268,6 +268,9 @@ class Tile extends Hex {
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
 		tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
+		if (this.development != null) {
+
+		}
 	}
 }
 
@@ -298,6 +301,7 @@ class Land {
 	lClimate: number;
 	tileArray: Tile[];
 	spriteArray: Sprite[];
+	sprDevArray: Sprite[];
 
 	constructor(sentSettings: [number, number, number]) {
 		this.landID = landIncrement;
@@ -522,6 +526,7 @@ class Land {
 				if (arraySpot != null) {
 					let tTile = lTiles[arraySpot];
 					let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
+					let tDevSpr = new Sprite
 
 					tSprite.scale.set(tTile.scale, tTile.scale);
 
@@ -691,10 +696,10 @@ develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeasSideParade].result = [];
 develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
 
-develArray[eDEVEL.Cave].sprID = "hex.png";
+// develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
-develArray[eDEVEL.Freshwater].sprID = "hex.png";
-develArray[eDEVEL.Jungle].sprID = "hex.png";
+// develArray[eDEVEL.Freshwater].sprID = "hex.png";
+// develArray[eDEVEL.Jungle].sprID = "hex.png";
 develArray[eDEVEL.LaborPort].sprID = "hex.png";
 develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
 
@@ -739,6 +744,7 @@ var msgAxial = null;
 var msgLastAx = null;
 
 var buttonArray = [];
+var develBGArray = [];
 function formEditBar() {
 	// Since the edit bar includes both landscapes and some black developments, the
 	//  for loop needs to be compensate for the total number of landscapes when iterating
@@ -757,6 +763,7 @@ function formEditBar() {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		var chosenPng = null;
 		var chosenText = null;
+		let bScale = 0.2;
 		if (cButton < glbNumLscps) {
 			chosenPng = lscpArray[cButton].sprID;
 			chosenText = lscpArray[cButton].name;
@@ -764,6 +771,13 @@ function formEditBar() {
 		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
 			chosenPng = develArray[cButton-glbNumLscps].sprID;
 			chosenText = develArray[cButton-glbNumLscps].name;
+			let dBG = develBGArray[cButton-glbNumLscps];
+			let bgLscp = develArray[cButton-glbNumLscps].lscpRequired[0];
+			let lscpSprID = lscpArray[bgLscp].sprID;
+			dBG = new Sprite(sprMed[lscpSprID]);
+			dBG.scale.set(bScale, bScale);
+			dBG.position.set((stage.width-340), (30+40*cButton));
+			stage.addChild(dBG);
 		}
 		else {
 			console.log("Error: unexpected current button incremental variable.");
@@ -772,10 +786,15 @@ function formEditBar() {
 		}
 		buttonArray[cButton] = new Sprite(sprMed[chosenPng]);
 		tb.makeInteractive(buttonArray[cButton]);
-		let bScale = 0.2;
+		
 
 		buttonArray[cButton].scale.set(bScale, bScale);
-		buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
+		if (cButton < glbNumLscps) {
+			buttonArray[cButton].position.set((stage.width-340), (20+40*cButton));
+		}
+		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
+			buttonArray[cButton].position.set((stage.width-340), (0 + 40*cButton));
+		}
 		stage.addChild(buttonArray[cButton]);
 		let msgLscp = new Text((chosenText), {font: "16px sans-serif", fill: "white"});
 		msgLscp.position.set((stage.width-260), (25+40*cButton));
@@ -875,7 +894,9 @@ function hoverTile(corPoint) {
 	}
 
 	// Normal cursor when hovering over final edit bar button
-	if (pointer.hitTestSprite(buttonArray[glbNumLscps])) {pointer.cursor = "auto";}
+	if (pointer.hitTestSprite(buttonArray[(glbNumLscps+glbNumBlkDevels)-1])) {
+		pointer.cursor = "auto";
+	}
 }
 
 function onImageLoad() {
