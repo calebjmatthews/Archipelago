@@ -324,8 +324,10 @@ var Tile = (function (_super) {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
+        var tDevSpr = currLand.sprDevArray[arraySpot];
         tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
         if (this.development != null) {
+            tDevSpr.texture = sprMed[develArray[this.development].sprID];
         }
     };
     return Tile;
@@ -577,6 +579,7 @@ var Land = (function () {
             }
         }
         this.spriteArray = landSprites;
+        this.sprDevArray = landDevSprs;
         renderer.render(stage);
     };
     return Land;
@@ -827,7 +830,15 @@ function editClick(clkPoint) {
         if (clkTile != undefined) {
             if ((clkTile.landscape != glbPainting) &&
                 (glbPainting != null)) {
-                clkTile.landscape = glbPainting;
+                if (glbPainting < glbNumLscps) {
+                    clkTile.landscape = glbPainting;
+                }
+                else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
+                    clkTile.development = glbPainting;
+                }
+                else {
+                    console.log("Error, unexpected global painting value.");
+                }
                 clkTile.reDrawTile();
             }
         }

@@ -267,9 +267,10 @@ class Tile extends Hex {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
+		let tDevSpr = currLand.sprDevArray[arraySpot];
 		tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
 		if (this.development != null) {
-
+			tDevSpr.texture = sprMed[develArray[this.development].sprID];
 		}
 	}
 }
@@ -551,6 +552,7 @@ class Land {
 			}
 		}
 		this.spriteArray = landSprites;
+		this.sprDevArray = landDevSprs;
 		renderer.render(stage);
 	}
 }
@@ -874,8 +876,13 @@ function editClick(clkPoint) {
 		if (clkTile != undefined) {
 			if ((clkTile.landscape != glbPainting) && 
 				(glbPainting != null)) {
-				
-				clkTile.landscape = glbPainting;
+				if (glbPainting < glbNumLscps) { clkTile.landscape = glbPainting; }
+				else if (glbPainting < (glbNumLscps+glbNumBlkDevels)) {
+					clkTile.development = glbPainting; 
+				}
+				else {
+					console.log("Error, unexpected global painting value.");
+				}
 				clkTile.reDrawTile();
 			}
 		}
