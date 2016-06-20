@@ -323,7 +323,7 @@ var Land = (function () {
     Land.prototype.readLand = function () {
     };
     // Randomly alter an individual tile, based on neighbors and land's climate
-    Land.prototype.genTile = function (tileSnapShot, axialCoord) {
+    Land.prototype.genTileLscp = function (tileSnapShot, axialCoord) {
         var probArray = [1, 1, 1, 1, 0, 0];
         var neighbors = [];
         var seaCount = 0;
@@ -389,6 +389,27 @@ var Land = (function () {
         // If the above for-loop does not trigger a return, give the original landscape
         return tTile.landscape;
     };
+    Land.prototype.genTileDev = function (tileSnapShot, axialCoord) {
+        var tTile = this.tileArray[this.getID(axialCoord)];
+        var neighbors = [];
+        neighbors = tTile.getNeighbors();
+        var clustered = false;
+        // If there are two similar landscapes clustered together, allow the possibility of
+        //  a black development
+        for (var tNeigh = 0; tNeigh < neighbors.length; tNeigh++) {
+            var tSnapTile = tileSnapShot[this.getID(neighbors[tNeigh])];
+            if (tSnapTile != undefined) {
+                if (tSnapTile.landscape === tTile.landscape) {
+                    clustered = true;
+                }
+            }
+        }
+        if ((clustered) && (lscpArray[tTile.landscape].black != null)) {
+            if (Math.random() < climateArray[this.lClimate].devel) {
+                return lscpArray[tTile.landscape].black;
+            }
+        }
+    };
     Land.prototype.genShore = function (landWidth) {
         for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
             var thisRing = [];
@@ -410,8 +431,9 @@ var Land = (function () {
                         bordersSea = true;
                     }
                 }
-                // If at least one is sea, and the tile itself is grassy, make it into shore
-                if ((bordersSea) && (tTile.landscape === eLSCP.Grassy)) {
+                // If at least one is sea, and the tile is grassy or desert, make it into shore
+                if (((bordersSea) && (tTile.landscape === eLSCP.Grassy)) ||
+                    ((bordersSea) && (tTile.landscape === eLSCP.Desert))) {
                     this.tileArray[this.getID(thisRing[ringTile])].landscape = eLSCP.Shore;
                 }
             }
@@ -429,8 +451,24 @@ var Land = (function () {
                 thisRing = this.tileArray[0].getRing(stepWidth);
             }
             for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
-                var result = this.genTile(tileSnapShot, thisRing[ringTile]);
+                var result = this.genTileLscp(tileSnapShot, thisRing[ringTile]);
                 this.tileArray[this.getID(thisRing[ringTile])].landscape = result;
+            }
+        }
+    };
+    Land.prototype.genDevStep = function (landWidth) {
+        var tileSnapShot = this.tileArray;
+        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+            var thisRing = [];
+            if (stepWidth === 0) {
+                thisRing[0] = [0, 0];
+            }
+            else {
+                thisRing = this.tileArray[0].getRing(stepWidth);
+            }
+            for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                var result = this.genTileDev(tileSnapShot, thisRing[ringTile]);
+                this.tileArray[this.getID(thisRing[ringTile])].development = result;
             }
         }
     };
@@ -467,6 +505,7 @@ var Land = (function () {
             this.genLandStep(landWidth);
         }
         this.genShore(landWidth);
+        this.genDevStep(landWidth);
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
@@ -516,7 +555,7 @@ var Land = (function () {
                     tSprite.position.set(sPos[0], sPos[1]);
                     var tDevSpr = null;
                     // If there is no development for this tile, insert an empty hex as placeholder
-                    if (tTile.development === null) {
+                    if (tTile.development === undefined) {
                         tDevSpr = new Sprite(sprMed["tallhex.png"]);
                     }
                     else {
@@ -524,11 +563,11 @@ var Land = (function () {
                     }
                     tDevSpr.scale.set(tTile.scale, tTile.scale);
                     var sdPos = hexToPoint([currX, currY]);
-                    tDevSpr.position.set(sdPos[0], sdPos[1]);
-                    stage.addChild(tDevSpr);
-                    landDevSprs[arraySpot] = tDevSpr;
+                    tDevSpr.position.set(sdPos[0], (sdPos[1] - glbHHeight));
                     stage.addChild(tSprite);
                     landSprites[arraySpot] = tSprite;
+                    stage.addChild(tDevSpr);
+                    landDevSprs[arraySpot] = tDevSpr;
                 }
             }
         }
@@ -577,13 +616,13 @@ climateArray[eCLIMATE.Varied].prob[eLSCP.Desert] = 0.2;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Forested] = 0.4;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Rocky] = 0.4;
-climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.5);
+climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.25);
 climateArray[eCLIMATE.Jungle].prob = [];
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Desert] = 0.05;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.6;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.05;
-climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.5);
+climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.25);
 climateArray[eCLIMATE.Mountain].prob = [];
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Forested] = 0.1;
@@ -597,20 +636,21 @@ climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
 /// <reference path="references.ts" />
 var Landcape = (function () {
-    function Landcape(setID, setSprID, setName) {
+    function Landcape(setID, setSprID, setName, setBlack) {
         this.id = setID;
         this.sprID = setSprID;
         this.name = setName;
+        this.black = setBlack;
     }
     return Landcape;
 }());
 var lscpArray = [];
-lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "Desert");
-lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Desert, "forested.png", "Forested");
-lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "Grassy");
-lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "Rocky");
-lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "Sea");
-lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "Shore");
+lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "Desert", null);
+lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Desert, "forested.png", "Forested", eDEVEL.Jungle);
+lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "Grassy", eDEVEL.Freshwater);
+lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "Rocky", eDEVEL.Cave);
+lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "Sea", null);
+lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "Shore", null);
 /// <reference path="references.ts" />
 var Development = (function () {
     function Development(setID, setSprID, setName, setColor, setLscpRequired, setDescription) {
@@ -680,7 +720,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLand = new Land([eSIZE.Gigantic, eSHAPE.Round, eCLIMATE.Jungle]);
+var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
 var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;
@@ -802,7 +842,7 @@ function editClick(clkPoint) {
                     clkTile.landscape = glbPainting;
                 }
                 else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
-                    clkTile.development = glbPainting;
+                    clkTile.development = glbPainting - glbNumLscps;
                 }
                 else {
                     console.log("Error, unexpected global painting value.");
