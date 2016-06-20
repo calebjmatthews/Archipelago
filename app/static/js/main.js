@@ -1,58 +1,9 @@
-/*
-
-Main menu with selection between:
-Single player
-    Player vs computer
-    Player vs 2-3 computers, possible teams
-    Player vs no one (peaceful)
-Local multi player
-    Player vs player
-    Three players (with possible 1 computer)
-    Four players (with possible 1-2 computers)
-    Player vs player on separate islands (peaceful)
-
-After selection load pre-created island or generate new island
-For random generation can select: size, shape (round, bay, twin, jagged, thin),
-    climate (grassy, forested, rocky, desert)
-Load development options based on pre-created island choice or randomly select new
-    options
-Player who moves first is randomly selected
-First player chooses where to place their base camp
-Second player chooses where to place their base camp, then begins first month
-First month only has base camp avaialble with 1 Food and 1 Material
-Turns work like this:
-    Three developments are randomly selected and become active
-    Active developments can be used, can give additional actions
-    If an additional action is given, an unused development is randomly selected
-    Developments which have been used cannot be re-used until next month
-        Development effects (for now) have these possibilites:
-        -Resources / +Resources
-        Destroy a development
-        Build a development
-        Build a development irregardless of distance
-        For remainer of month, other developments effects are changed
-        Copy the effect of an adjacent development
-        Some allow the user a choice between multiple effects
-    Once all developments are used up or the player passes, the player can build
-    Building is unlimited, but consumes Food/Material/Treasure
-        Building should be done with a function that takes option and cost variables
-        Option can be the normal set for the game, could be something specific (if triggered
-        by a development effect)
-        Cost (for now) could only be normal or none (if triggered by a development effect)
-        Normally, developments can only be built next to existing developments
-        Some developments require special action to build
-        Can build a ship, which sails away
-    Once building is finished, the player's month is over
-The game ends after month ten
-The player with the most ships built wins
-In the case of a tie, the player with the most treasures wins, then materials, then food
-
-*/
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+/// <reference path="references.ts" />
 // Global gameplay variables
 var glbBoundary = 14;
 var glbOrigin = [508, 288];
@@ -256,6 +207,7 @@ function moveHex(tHex, direction, magnitude) {
         console.log("Error: Unexpected hex movement direction.");
     }
 }
+/// <reference path="references.ts" />
 var Hex = (function () {
     function Hex(arraySpot, setPos) {
         // Defines the graphical height/width of all hexagons in game
@@ -332,6 +284,7 @@ var Tile = (function (_super) {
     };
     return Tile;
 }(Hex));
+/// <reference path="references.ts" />
 var playerIncrement = 0; // Global incrementing variable used to set playerID
 var Player = (function () {
     function Player() {
@@ -346,6 +299,7 @@ var Player = (function () {
     }
     return Player;
 }());
+/// <reference path="references.ts" />
 var landIncrement = 0; // Global incrementing variable used to set landID
 var Land = (function () {
     function Land(sentSettings) {
@@ -584,6 +538,7 @@ var Land = (function () {
     };
     return Land;
 }());
+/// <reference path="references.ts" />
 var Climate = (function () {
     function Climate(setID, setDevel) {
         this.id = setID;
@@ -640,6 +595,7 @@ climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Forested] = 0.2;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
+/// <reference path="references.ts" />
 var Landcape = (function () {
     function Landcape(setID, setSprID, setName) {
         this.id = setID;
@@ -655,6 +611,7 @@ lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "Grassy");
 lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "Rocky");
 lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "Sea");
 lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "Shore");
+/// <reference path="references.ts" />
 var Development = (function () {
     function Development(setID, setSprID, setName, setColor, setLscpRequired, setDescription) {
         this.id = setID;
@@ -701,6 +658,7 @@ develArray[eDEVEL.FireCrew].sprID = "hex.png";
 // develArray[eDEVEL.Jungle].sprID = "hex.png";
 develArray[eDEVEL.LaborPort].sprID = "hex.png";
 develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
+/// <reference path="references.ts" />
 // ~~~~ Set up pixi.js ~~~~
 // PIXI Aliases
 var Container = PIXI.Container, autoDetectRenderer = PIXI.autoDetectRenderer, loader = PIXI.loader, resources = PIXI.loader.resources, Sprite = PIXI.Sprite, TextureCache = PIXI.utils.TextureCache, Graphics = PIXI.Graphics, Text = PIXI.Text;
@@ -823,6 +781,16 @@ function paintLscp(clkTile) {
         console.log("Error, unexpected glbPainting value.");
     }
 }
+/// <reference path="global.ts" />
+/// <reference path="tile.ts" />
+/// <reference path="player.ts" />
+/// <reference path="land.ts" />
+/// <reference path="climate.ts" />
+/// <reference path="landscape.ts" />
+/// <reference path="development.ts" />
+/// <reference path="setup.ts" />
+/// <reference path="state.ts" /> 
+/// <reference path="references.ts" />
 function editClick(clkPoint) {
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
