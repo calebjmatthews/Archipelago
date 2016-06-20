@@ -548,16 +548,29 @@ var Land = (function () {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var lTiles = this.tileArray;
         var landSprites = [];
+        var landDevSprs = [];
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
                 if (arraySpot != null) {
                     var tTile = lTiles[arraySpot];
                     var tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
-                    // let tDevSpr = new Sprite(sprMed)
                     tSprite.scale.set(tTile.scale, tTile.scale);
                     var sPos = hexToPoint([currX, currY]);
                     tSprite.position.set(sPos[0], sPos[1]);
+                    var tDevSpr = null;
+                    // If there is no development for this tile, insert an empty hex as placeholder
+                    if (tTile.development === null) {
+                        tDevSpr = new Sprite(sprMed["tallhex.png"]);
+                    }
+                    else {
+                        tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID]);
+                    }
+                    tDevSpr.scale.set(tTile.scale, tTile.scale);
+                    var sdPos = hexToPoint([currX, currY]);
+                    tDevSpr.position.set(sdPos[0], sdPos[1]);
+                    stage.addChild(tDevSpr);
+                    landDevSprs[arraySpot] = tDevSpr;
                     stage.addChild(tSprite);
                     landSprites[arraySpot] = tSprite;
                 }
@@ -679,10 +692,10 @@ develArray[eDEVEL.SeasSideParade].requirement = [];
 develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeasSideParade].result = [];
 develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
-develArray[eDEVEL.Cave].sprID = "hex.png";
+// develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
-develArray[eDEVEL.Freshwater].sprID = "hex.png";
-develArray[eDEVEL.Jungle].sprID = "hex.png";
+// develArray[eDEVEL.Freshwater].sprID = "hex.png";
+// develArray[eDEVEL.Jungle].sprID = "hex.png";
 develArray[eDEVEL.LaborPort].sprID = "hex.png";
 develArray[eDEVEL.SeasSideParade].sprID = "hex.png";
 // ~~~~ Set up pixi.js ~~~~
@@ -706,7 +719,7 @@ var tb = null;
 // Set the default game state to 'play'
 var state = edit;
 var pointer = null;
-var littleLand = new Land([eSIZE.Small, eSHAPE.Round, eCLIMATE.Desert]);
+var littleLand = new Land([eSIZE.Gigantic, eSHAPE.Round, eCLIMATE.Jungle]);
 var currLand = littleLand;
 var msgPoint = null;
 var msgAxial = null;

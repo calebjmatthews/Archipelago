@@ -532,19 +532,19 @@ class Land {
 					let sPos = hexToPoint([currX, currY]);
 					tSprite.position.set(sPos[0], sPos[1]);
 
+					let tDevSpr = null;
 					// If there is no development for this tile, insert an empty hex as placeholder
 					if (tTile.development === null) {
-						let tDevSpr = new Sprite(sprMed["tallhex.png"]);
-						tDevSpr.scale.set(tTile.scale, tTile.scale);
-						let sdPos = hexToPoint([currX, currY]);
-						tDevSpr.position.set(sdPos[0], sdPos[1]);
-						stage.addChild(tDevSpr);
-						landDevSprs[arraySpot] = tDevSpr;
+						tDevSpr = new Sprite(sprMed["tallhex.png"]);
 					}
 					else {
-
+						tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID]);
 					}
-
+					tDevSpr.scale.set(tTile.scale, tTile.scale);
+					let sdPos = hexToPoint([currX, currY]);
+					tDevSpr.position.set(sdPos[0], sdPos[1]);
+					stage.addChild(tDevSpr);
+					landDevSprs[arraySpot] = tDevSpr;
 					stage.addChild(tSprite);
 					landSprites[arraySpot] = tSprite;
 				}
