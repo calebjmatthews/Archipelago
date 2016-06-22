@@ -188,13 +188,17 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">cave.png</key>
             <key type="filename">desert.png</key>
             <key type="filename">forested.png</key>
+            <key type="filename">freshwater.png</key>
             <key type="filename">grassy.png</key>
             <key type="filename">hex.png</key>
+            <key type="filename">jungle.png</key>
             <key type="filename">rocky.png</key>
             <key type="filename">sea.png</key>
             <key type="filename">shore.png</key>
+            <key type="filename">tall hex.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -209,6 +213,10 @@
             <filename>sea.png</filename>
             <filename>shore.png</filename>
             <filename>rocky.png</filename>
+            <filename>cave.png</filename>
+            <filename>freshwater.png</filename>
+            <filename>jungle.png</filename>
+            <filename>tall hex.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
