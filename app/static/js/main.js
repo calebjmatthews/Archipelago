@@ -717,7 +717,7 @@ loader
     .load(onImageLoad);
 // Create global Pixi and Tink variables
 var tb = null;
-// Set the default game state to 'play'
+// Set the default game state to 'edit'
 var state = edit;
 var pointer = null;
 var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
@@ -726,7 +726,8 @@ var msgPoint = null;
 var msgAxial = null;
 var msgLastAx = null;
 var buttonArray = [];
-var develBGArray = [];
+var devEditArray = [];
+var msgArray = [];
 function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
     //  for loop needs to be compensate for the total number of landscapes when iterating
@@ -734,9 +735,9 @@ function formEditBar() {
     // Create blank background for edit bar
     var designBG = new Graphics();
     designBG.beginFill(0x000000);
-    designBG.drawRect(0, 0, 205, (stage.height));
+    designBG.drawRect(0, 0, 205, (renderer.height));
     designBG.endFill();
-    designBG.x = stage.width - 200;
+    designBG.x = renderer.width - 200;
     designBG.y = 0;
     stage.addChild(designBG);
     for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels); cButton++) {
@@ -749,15 +750,17 @@ function formEditBar() {
             chosenText = lscpArray[cButton].name;
         }
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
-            chosenPng = develArray[cButton - glbNumLscps].sprID;
-            chosenText = develArray[cButton - glbNumLscps].name;
-            var dBG = develBGArray[cButton - glbNumLscps];
+            // Set up the development's background as the button
             var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
-            var lscpSprID = lscpArray[bgLscp].sprID;
-            dBG = new Sprite(sprMed[lscpSprID]);
-            dBG.scale.set(bScale, bScale);
-            dBG.position.set((stage.width - 340), (30 + 40 * cButton));
-            stage.addChild(dBG);
+            chosenPng = lscpArray[bgLscp].sprID;
+            // Create the development as the text and as a facade
+            chosenText = develArray[cButton - glbNumLscps].name;
+            var devSprID = develArray[cButton - glbNumLscps].sprID;
+            var tDevSpr = new Sprite(sprMed[devSprID]);
+            tDevSpr.scale.set(bScale, bScale);
+            tDevSpr.position.set((renderer.width - 180), (30 + 40 * cButton));
+            stage.addChild(tDevSpr);
+            devEditArray[cButton - glbNumLscps] = tDevSpr;
         }
         else {
             console.log("Error: unexpected current button incremental variable.");
@@ -768,15 +771,15 @@ function formEditBar() {
         tb.makeInteractive(buttonArray[cButton]);
         buttonArray[cButton].scale.set(bScale, bScale);
         if (cButton < glbNumLscps) {
-            buttonArray[cButton].position.set((stage.width - 340), (20 + 40 * cButton));
+            buttonArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
         }
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
-            buttonArray[cButton].position.set((stage.width - 340), (0 + 40 * cButton));
+            buttonArray[cButton].position.set((renderer.width - 180), (40 + 40 * cButton));
         }
         stage.addChild(buttonArray[cButton]);
-        var msgLscp = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
-        msgLscp.position.set((stage.width - 260), (25 + 40 * cButton));
-        stage.addChild(msgLscp);
+        msgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
+        msgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
+        stage.addChild(msgArray[cButton]);
     }
     // Can't use a for loop because press events act like watchers
     buttonArray[eLSCP.Grassy].press = function () { glbPainting = eLSCP.Grassy; };
@@ -795,15 +798,24 @@ function formEditBar() {
         glbPainting = glbNumLscps + eDEVEL.Jungle;
     };
 }
+function removeEditBar() {
+    for (var cButton = 0; cButton < buttonArray.length; cButton++) {
+        stage.removeChild(buttonArray[cButton]);
+        stage.removeChild(msgArray[cButton]);
+    }
+    for (var cButton = 0; cButton < develBGArray.length; cButton++) {
+        stage.removeChild(develBGArray[cButton]);
+    }
+}
 function formPlayerBar() {
 }
 function formDebugBar() {
     // Display text
     msgPoint = new Text(("Coords: "), { font: "16px sans-serif", fill: "white" });
-    msgPoint.position.set((stage.width - 280), 20);
+    msgPoint.position.set((renderer.width - 180), 20);
     stage.addChild(msgPoint);
     msgAxial = new Text(("Hex: "), { font: "16px sans-serif", fill: "white" });
-    msgAxial.position.set((stage.width - 280), 60);
+    msgAxial.position.set((renderer.width - 180), 60);
     stage.addChild(msgAxial);
 }
 function paintLscp(clkTile) {
@@ -834,7 +846,7 @@ function paintLscp(clkTile) {
 function editClick(clkPoint) {
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
-    if (clkAxial != undefined) {
+    if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         if (clkTile != undefined) {
             if ((clkTile.landscape != glbPainting) &&
                 (glbPainting != null)) {
@@ -854,7 +866,7 @@ function editClick(clkPoint) {
 }
 function hoverTile(corPoint) {
     var hovAxial = pointToHex(corPoint);
-    if (hovAxial != undefined) {
+    if ((hovAxial != undefined) && ((corPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
         if (currLand.spriteArray[hovArraySpot] != undefined) {
             if (lastHex != null) {

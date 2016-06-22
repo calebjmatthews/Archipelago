@@ -5,7 +5,7 @@ function editClick(clkPoint) {
 	let clkAxial = pointToHex(clkPoint);
 	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
 
-	if (clkAxial != undefined) {
+	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if ((clkTile.landscape != glbPainting) && 
 				(glbPainting != null)) {
@@ -25,7 +25,7 @@ function editClick(clkPoint) {
 
 function hoverTile(corPoint) {
 	let hovAxial = pointToHex(corPoint);
-	if (hovAxial != undefined) {
+	if ((hovAxial != undefined) && ((corPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
 		if (currLand.spriteArray[hovArraySpot] != undefined) {
 			if (lastHex != null) {
