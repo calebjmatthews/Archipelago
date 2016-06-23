@@ -127,7 +127,7 @@ function removeEditBar() {
 }
 
 function formPlayerBar() {
-
+	
 }
 
 function formDebugBar() {
