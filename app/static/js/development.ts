@@ -65,6 +65,88 @@ develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeasSideParade].result = [];
 develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
 
+develArray[eDEVEL.TradeHarbor] = new Development(eDEVEL.TradeHarbor, 
+	"tradeharbor.png", "Trade Harbor", eDCLR.Blue, [eLSCP.Shore], 
+	("req: -1 Food, -1 Material; res: +1 Treasure"));
+develArray[eDEVEL.TradeHarbor].cost = [];
+develArray[eDEVEL.TradeHarbor].cost[eCOST.Material] = 2;
+develArray[eDEVEL.TradeHarbor].requirement = []
+develArray[eDEVEL.TradeHarbor].requirement[eREQ.Food] = 1;
+develArray[eDEVEL.TradeHarbor].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.TradeHarbor].result = [];
+develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
+
+develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, 
+	"actionhouse.png", "Auction House", eDCLR.Blue, [eLSCP.Shore], 
+	("req: -1 Treasure; res: +2 Treasure"));
+develArray[eDEVEL.AuctionHouse].cost = [];
+develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = 3;
+develArray[eDEVEL.AuctionHouse].cost[eCOST.Treasure] = 1;
+develArray[eDEVEL.AuctionHouse].requirement = []
+develArray[eDEVEL.AuctionHouse].requirement[eREQ.Treasure] = 1;
+develArray[eDEVEL.AuctionHouse].result = [];
+develArray[eDEVEL.AuctionHouse].result[eRES.Treasure] = 2;
+
+develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, 
+	"envoyharbor.png", "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], 
+	("req: -1 Treasure; res: +2 Food, +2 Material"));
+develArray[eDEVEL.EnvoyHarbor].cost = [];
+develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Treasure] = 3;
+develArray[eDEVEL.EnvoyHarbor].requirement = []
+develArray[eDEVEL.EnvoyHarbor].requirement[eREQ.Treasure] = 1;
+develArray[eDEVEL.EnvoyHarbor].result = [];
+develArray[eDEVEL.EnvoyHarbor].result[eRES.Food] = 2;
+develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 2;
+
+develArray[eDEVEL.RicePaddy] = new Development(eDEVEL.RicePaddy, 
+	"ricepaddy.png", "Rice Paddy", eDCLR.Green, [eLSCP.Grassy], 
+	("res: +1 Food"));
+develArray[eDEVEL.RicePaddy].cost = [];
+develArray[eDEVEL.RicePaddy].cost[eCOST.Material] = 1;
+develArray[eDEVEL.RicePaddy].requirement = []
+develArray[eDEVEL.RicePaddy].result = [];
+develArray[eDEVEL.RicePaddy].result[eRES.Food] = 1;
+
+develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, 
+	"boarranch.png", "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], 
+	("req: -1 Food, res: +3 Food"));
+develArray[eDEVEL.BoarRanch].cost = [];
+develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 1;
+develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 1;
+develArray[eDEVEL.BoarRanch].requirement = []
+develArray[eDEVEL.BoarRanch].requirement[eCOST.Food] = 1;
+develArray[eDEVEL.BoarRanch].result = [];
+develArray[eDEVEL.BoarRanch].result[eRES.Food] = 3;
+
+develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, 
+	"huntingcamp.png", "Hunting Camp", eDCLR.Green, [eLSCP.Forested], 
+	("res: +1 Food, +1 Active"));
+develArray[eDEVEL.HuntingCamp].cost = [];
+develArray[eDEVEL.HuntingCamp].cost[eCOST.Material] = 2;
+develArray[eDEVEL.HuntingCamp].requirement = []
+develArray[eDEVEL.HuntingCamp].result = [];
+develArray[eDEVEL.HuntingCamp].result[eRES.Food] = 1;
+develArray[eDEVEL.HuntingCamp].result[eRES.Active] = 1;
+
+develArray[eDEVEL.SmokeHouse] = new Development(eDEVEL.SmokeHouse, 
+	"smokehouse.png", "Smoke House", eDCLR.Green, [eLSCP.Grassy], 
+	("req: -1 Material, res: +3 Food"));
+develArray[eDEVEL.SmokeHouse].cost = [];
+develArray[eDEVEL.SmokeHouse].cost[eCOST.Material] = 2;
+develArray[eDEVEL.SmokeHouse].requirement = []
+develArray[eDEVEL.SmokeHouse].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.SmokeHouse].result = [];
+develArray[eDEVEL.SmokeHouse].result[eRES.Food] = 3;
+
+develArray[eDEVEL.PeachOrchard] = new Development(eDEVEL.PeachOrchard, 
+	"peachorchard.png", "Peach Orchard", eDCLR.Green, [eLSCP.Grassy], 
+	("res: +2 Food"));
+develArray[eDEVEL.PeachOrchard].cost = [];
+develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = 2;
+develArray[eDEVEL.PeachOrchard].requirement = []
+develArray[eDEVEL.PeachOrchard].result = [];
+develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
+
 // develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
 // develArray[eDEVEL.Freshwater].sprID = "hex.png";
