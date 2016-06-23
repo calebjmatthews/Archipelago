@@ -62,44 +62,43 @@ function formEditBar() {
 		var chosenText = null;
 		let bScale = 0.2;
 		if (cButton < glbNumLscps) {
-			chosenPng = lscpArray[cButton].sprID;
-			chosenText = lscpArray[cButton].name;
+			buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
+			tb.makeInteractive(buttonArray[cButton]);
+			buttonArray[cButton].position.set((renderer.width-180), (20+40*cButton));
+			buttonArray[cButton].scale.set(bScale, bScale);
+			stage.addChild(buttonArray[cButton]);
+
+			msgArray[cButton] = new Text((lscpArray[cButton].name), 
+			{font: "16px sans-serif", fill: "white"});
+			msgArray[cButton].position.set((renderer.width-110), (25+40*cButton));
+			stage.addChild(msgArray[cButton]);
 		}
 		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
 			// Set up the development's background as the button
 			let bgLscp = develArray[cButton-glbNumLscps].lscpRequired[0];
-			chosenPng = lscpArray[bgLscp].sprID;
+			buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
+			tb.makeInteractive(buttonArray[cButton]);
+			buttonArray[cButton].position.set((renderer.width-180), (40 + 40*cButton));
+			buttonArray[cButton].scale.set(bScale, bScale);
+			stage.addChild(buttonArray[cButton]);
 
 			// Create the development as the text and as a facade
 			chosenText = develArray[cButton-glbNumLscps].name;
 			let devSprID = develArray[cButton-glbNumLscps].sprID;
 			let tDevSpr = new Sprite(sprMed[devSprID]);
 			tDevSpr.scale.set(bScale, bScale);
-			tDevSpr.position.set((renderer.width-180), (30+40*cButton));
+			tDevSpr.position.set((renderer.width-180), (10+40*cButton));
 			stage.addChild(tDevSpr);
 			devEditArray[cButton-glbNumLscps] = tDevSpr;
+
+			msgArray[cButton] = new Text((chosenText), 
+			{font: "16px sans-serif", fill: "white"});
+			msgArray[cButton].position.set((renderer.width-110), (45 + 40*cButton));
+			stage.addChild(msgArray[cButton]);
 		}
 		else {
 			console.log("Error: unexpected current button incremental variable.");
-			chosenPng = "hex.png"; 
-			chosenText = "Error"
 		}
-		buttonArray[cButton] = new Sprite(sprMed[chosenPng]);
-		tb.makeInteractive(buttonArray[cButton]);
-		
-
-		buttonArray[cButton].scale.set(bScale, bScale);
-		if (cButton < glbNumLscps) {
-			buttonArray[cButton].position.set((renderer.width-180), (20+40*cButton));
-		}
-		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
-			buttonArray[cButton].position.set((renderer.width-180), (40 + 40*cButton));
-		}
-		stage.addChild(buttonArray[cButton]);
-		msgArray[cButton] = new Text((chosenText), 
-			{font: "16px sans-serif", fill: "white"});
-		msgArray[cButton].position.set((renderer.width-110), (25+40*cButton));
-		stage.addChild(msgArray[cButton]);
 	}
 
 	// Can't use a for loop because press events act like watchers
@@ -122,8 +121,8 @@ function removeEditBar() {
 		stage.removeChild(buttonArray[cButton]);
 		stage.removeChild(msgArray[cButton]);
 	}
-	for (var cButton=0; cButton < develBGArray.length; cButton++) {
-		stage.removeChild(develBGArray[cButton]);
+	for (var cButton=0; cButton < devEditArray.length; cButton++) {
+		stage.removeChild(devEditArray[cButton]);
 	}
 }
 
