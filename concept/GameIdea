@@ -1,0 +1,19 @@
+Conceit: Strategically develop land to survive winter or compete with other players
+
+Resources: Three basic currencies used to build up a colony, remain between turns
+	Material	Used to develop
+	Food		Used to feed people/animals
+	Treasure	Used to trade for material/food/developments
+
+Developments: Three actions randomly available every month, with a supply of others already built
+	Name			Cost					Effect
+	Wheat Field		1 material				+1 food
+	Woodcutters		1 material				+1 material
+	Village			1 material				-1 food, +2 actions
+	Caravan			1 material				-1 treasure, +3 food
+	Wanderers		1 treasure				-1 treasure, +3 actions
+	Mine			2 material				-1 food, +1 treasure
+	Cattle Ranch	2 material, 1 food		+2 food
+	Horse Ranch		2 material, 1 food		+2 actions
+	Demolition		2 material				Destroy development, +1 material
+	Renovation		3 material				-1 food, destroy developemnt, replace with any 											development

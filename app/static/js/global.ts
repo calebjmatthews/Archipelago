@@ -27,7 +27,7 @@ enum eLSCP { Grassy, Forested, Rocky, Desert, Sea, Shore }
 // Enumerates options for developments
 enum eDEVEL { Jungle, Freshwater, Cave, FireCrew, LaborPort, SeasSideParade, TradeHarbor, 
 	AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, SmokeHouse, PeachOrchard, 
-	BambooCutters }
+	BambooCutters, SilverMine, StoneQuarry, Woodcutters }
 
 // Enumerates development color options
 enum eDCLR { Black, Blue, Green, Orange, Red, Violet }

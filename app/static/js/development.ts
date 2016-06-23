@@ -147,6 +147,44 @@ develArray[eDEVEL.PeachOrchard].requirement = []
 develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
 
+develArray[eDEVEL.BambooCutters] = new Development(eDEVEL.BambooCutters, 
+	"bamboocutters.png", "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], 
+	("res: +1 Material"));
+develArray[eDEVEL.BambooCutters].cost = [];
+develArray[eDEVEL.BambooCutters].cost[eCOST.Material] = 1;
+develArray[eDEVEL.BambooCutters].requirement = []
+develArray[eDEVEL.BambooCutters].result = [];
+develArray[eDEVEL.BambooCutters].result[eRES.Material] = 1;
+
+develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, 
+	"silvermine.png", "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], 
+	("req: -2 Food; res: +1 Treasure"));
+develArray[eDEVEL.SilverMine].cost = [];
+develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 2;
+develArray[eDEVEL.SilverMine].requirement = []
+develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 2;
+develArray[eDEVEL.SilverMine].result = [];
+develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 1;
+
+develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, 
+	"stonequarry.png", "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], 
+	("req: -1 Food; res: +3 Material"));
+develArray[eDEVEL.StoneQuarry].cost = [];
+develArray[eDEVEL.StoneQuarry].cost[eCOST.Material] = 2;
+develArray[eDEVEL.StoneQuarry].requirement = []
+develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = 1;
+develArray[eDEVEL.StoneQuarry].result = [];
+develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 3;
+
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, 
+	"woodcutters.png", "Woodcutters", eDCLR.Orange, [eLSCP.Rocky], 
+	("res: +2 Material"));
+develArray[eDEVEL.Woodcutters].cost = [];
+develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = 2;
+develArray[eDEVEL.Woodcutters].requirement = []
+develArray[eDEVEL.Woodcutters].result = [];
+develArray[eDEVEL.Woodcutters].result[eRES.Material] = 2;
+
 // develArray[eDEVEL.Cave].sprID = "hex.png";
 develArray[eDEVEL.FireCrew].sprID = "hex.png";
 // develArray[eDEVEL.Freshwater].sprID = "hex.png";
