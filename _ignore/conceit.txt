@@ -1,0 +1,46 @@
+Main menu with selection between:
+Single player
+	Player vs computer
+	Player vs 2-3 computers, possible teams
+	Player vs no one (peaceful)
+Local multi player
+	Player vs player
+	Three players (with possible 1 computer)
+	Four players (with possible 1-2 computers)
+	Player vs player on separate islands (peaceful)
+
+After selection load pre-created island or generate new island
+For random generation can select: size, shape (round, bay, twin, jagged, thin),
+	climate (grassy, forested, rocky, desert)
+Load development options based on pre-created island choice or randomly select new 
+	options
+Player who moves first is randomly selected
+First player chooses where to place their base camp
+Second player chooses where to place their base camp, then begins first month
+First month only has base camp avaialble with 1 Food and 1 Material
+Turns work like this:
+	Three developments are randomly selected and become active
+	Active developments can be used, can give additional actions
+	If an additional action is given, an unused development is randomly selected
+	Developments which have been used cannot be re-used until next month
+		Development effects (for now) have these possibilites:
+		-Resources / +Resources
+		Destroy a development
+		Build a development
+		Build a development irregardless of distance
+		For remainer of month, other developments effects are changed
+		Copy the effect of an adjacent development
+		Some allow the user a choice between multiple effects
+	Once all developments are used up or the player passes, the player can build
+	Building is unlimited, but consumes Food/Material/Treasure
+		Building should be done with a function that takes option and cost variables
+		Option can be the normal set for the game, could be something specific (if triggered
+		by a development effect)
+		Cost (for now) could only be normal or none (if triggered by a development effect)
+		Normally, developments can only be built next to existing developments
+		Some developments require special action to build
+		Can build a ship, which sails away
+	Once building is finished, the player's month is over
+The game ends after month ten
+The player with the most ships built wins
+In the case of a tie, the player with the most treasures wins, then materials, then food
