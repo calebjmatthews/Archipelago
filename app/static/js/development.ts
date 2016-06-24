@@ -39,7 +39,7 @@ develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"],
 	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = -1;
-develArray[eDEVEL.LaborPort].requirement = [];
+develArray[eDEVEL.FireCrew].requirement = [];
 develArray[eDEVEL.FireCrew].result = [];
 develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result[eRES.Active] = 1;
@@ -260,7 +260,7 @@ develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip,
 	null, ("req: Destroy 1 Blue Development to build this; res: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = -2;
-develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = -1;
+develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = -1;
 develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 1;
 develArray[eDEVEL.MerchantShip].requirement = [];
 develArray[eDEVEL.MerchantShip].result = [];
@@ -271,7 +271,7 @@ develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip,
 	null, ("req: Destroy 1 Green Development to build this; res: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = -4;
-develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = -1;
+develArray[eDEVEL.VentureShip].cost[eCOST.Material] = -1;
 develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 1;
 develArray[eDEVEL.VentureShip].requirement = [];
 develArray[eDEVEL.VentureShip].result = [];
@@ -291,7 +291,7 @@ develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel,
 	["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, null, ("res: +1 Ship"));
 develArray[eDEVEL.OpulentVessel].cost = [];
 develArray[eDEVEL.OpulentVessel].cost[eCOST.Treasure] = -3;
-develArray[eDEVEL.AbundantVessel].cost[eCOST.Material] = -2;
+develArray[eDEVEL.OpulentVessel].cost[eCOST.Material] = -2;
 develArray[eDEVEL.OpulentVessel].requirement = [];
 develArray[eDEVEL.OpulentVessel].result = [];
 develArray[eDEVEL.OpulentVessel].result[eRES.Ship] = 1;

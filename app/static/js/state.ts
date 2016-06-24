@@ -1,5 +1,26 @@
 /// <reference path="references.ts" />
 
+function describeDevel(descPoint, descTile) {
+	let dPosition = [];
+	// Make display card on right
+	if (descPoint[0] < (renderer.width/2)) {
+		dPosition[0] = 20;
+	}
+	// Make display card on left
+	else if (descPoint[1] >= (renderer.width/2)) {
+		dPosition[0] = renderer.width - 200 - 200 - 40;
+	}
+	else { console.log("Unexpected describing point value."); }
+	dPosition[1] = 20;
+
+	let tDevel = descTile.development;
+	console.log("At" + dPosition + ":");
+	console.log("Header: " + tDevel.name + ", " + tDevel.color);
+	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
+	console.log("Description: " + tDevel.description);
+	console.log("Cost: " + tDevel.cost);
+}
+
 function editClick(clkPoint) {
 
 	let clkAxial = pointToHex(clkPoint);
@@ -17,6 +38,9 @@ function editClick(clkPoint) {
 					console.log("Error, unexpected global painting value.");
 				}
 				clkTile.reDrawTile();
+			}
+			else if (glbPainting === null) {
+				describeDevel(clkPoint, clkTile);
 			}
 		}
 	}

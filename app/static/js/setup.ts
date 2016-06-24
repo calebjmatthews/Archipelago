@@ -33,11 +33,11 @@ var tb = null;
 var state = edit;
 var pointer = null;
 
+// Initiate game values (to be obsoleted)
 let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
 let currLand = littleLand;
-var msgPoint = null;
-var msgAxial = null;
-var msgLastAx = null;
+let player1 = new Player();
+let player2 = new Player();
 
 var buttonArray = [];
 var devEditArray = [];
@@ -84,7 +84,7 @@ function formEditBar() {
 
 			// Create the development as the text and as a facade
 			chosenText = develArray[cButton-glbNumLscps].name;
-			let devSprID = develArray[cButton-glbNumLscps].sprID;
+			let devSprID = develArray[cButton-glbNumLscps].sprID[0];
 			let tDevSpr = new Sprite(sprMed[devSprID]);
 			tDevSpr.scale.set(bScale, bScale);
 			tDevSpr.position.set((renderer.width-180), (10+40*cButton));
@@ -116,6 +116,8 @@ function formEditBar() {
 		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
+var msgPoint = null;
+var msgAxial = null;
 function removeEditBar() {
 	for (var cButton=0; cButton < buttonArray.length; cButton++ ) {
 		stage.removeChild(buttonArray[cButton]);

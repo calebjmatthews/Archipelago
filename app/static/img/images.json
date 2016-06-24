@@ -63,7 +63,7 @@
 	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"cave.png":
+"cave1.png":
 {
 	"frame": {"x":304,"y":154,"w":300,"h":300},
 	"rotated": false,
@@ -81,7 +81,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"freshwater.png":
+"freshwater1.png":
 {
 	"frame": {"x":908,"y":154,"w":300,"h":300},
 	"rotated": false,
@@ -90,7 +90,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"jungle.png":
+"jungle1.png":
 {
 	"frame": {"x":1210,"y":154,"w":300,"h":300},
 	"rotated": false,
@@ -106,6 +106,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1814,"h":456},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:ead76f0df46a43eb8d8f9d9e2d114d58:816d9393ffd6eef37f3296dae924e248:9be8c185d95a5be4a06ec0067a3d8380$"
+	"smartupdate": "$TexturePacker:SmartUpdate:e43ebd93b037b35b4ee6ee099f8d36a5:622e0cc2082d12873b9239c73a29cde2:9be8c185d95a5be4a06ec0067a3d8380$"
 }
 }

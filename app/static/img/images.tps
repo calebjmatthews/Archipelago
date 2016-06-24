@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
+        <string>C:/Users/cmatthews/Documents/JS/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -188,13 +188,13 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">cave.png</key>
+            <key type="filename">cave1.png</key>
             <key type="filename">desert.png</key>
             <key type="filename">forested.png</key>
-            <key type="filename">freshwater.png</key>
+            <key type="filename">freshwater1.png</key>
             <key type="filename">grassy.png</key>
             <key type="filename">hex.png</key>
-            <key type="filename">jungle.png</key>
+            <key type="filename">jungle1.png</key>
             <key type="filename">rocky.png</key>
             <key type="filename">sea.png</key>
             <key type="filename">shore.png</key>
@@ -213,10 +213,10 @@
             <filename>sea.png</filename>
             <filename>shore.png</filename>
             <filename>rocky.png</filename>
-            <filename>cave.png</filename>
-            <filename>freshwater.png</filename>
-            <filename>jungle.png</filename>
             <filename>tall hex.png</filename>
+            <filename>cave1.png</filename>
+            <filename>freshwater1.png</filename>
+            <filename>jungle1.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
