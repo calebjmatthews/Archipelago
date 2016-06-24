@@ -25,9 +25,11 @@ enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied, Jungle, Wet, Mountain }
 enum eLSCP { Grassy, Forested, Rocky, Desert, Sea, Shore }
 
 // Enumerates options for developments
-enum eDEVEL { Jungle, Freshwater, Cave, FireCrew, LaborPort, SeasSideParade, TradeHarbor, 
-	AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, SmokeHouse, PeachOrchard, 
-	BambooCutters, SilverMine, StoneQuarry, Woodcutters }
+enum eDEVEL { Jungle, Freshwater, Cave, FireCrew, LaborPort, SeasSideParade, 
+	TradeHarbor, AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, 
+	SmokeHouse, PeachOrchard, BambooCutters, SilverMine, StoneQuarry, Woodcutters, 
+	CobaltMine, WorkerVillage, TeaHouse, Demolition, ShepherdVillage, Town, 
+	MerchantShip, VentureShip, WorkmanShip, OpulentVessel, AbundantVessel, SteadyVessel };
 
 // Enumerates development color options
 enum eDCLR { Black, Blue, Green, Orange, Red, Violet }
