@@ -584,7 +584,7 @@ var Land = (function () {
                         tDevSpr = new Sprite(sprMed["tallhex.png"]);
                     }
                     else {
-                        tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID]);
+                        tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
                     }
                     tDevSpr.scale.set(tTile.scale, tTile.scale);
                     var sdPos = hexToPoint([currX, currY]);
