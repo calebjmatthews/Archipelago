@@ -13,7 +13,7 @@ function describeDevel(descPoint, descTile) {
 	else { console.log("Unexpected describing point value."); }
 	dPosition[1] = 20;
 
-	let tDevel = descTile.development;
+	let tDevel = develArray[descTile.development];
 	console.log("At" + dPosition + ":");
 	console.log("Header: " + tDevel.name + ", " + tDevel.color);
 	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);

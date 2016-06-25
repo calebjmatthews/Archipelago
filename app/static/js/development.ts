@@ -27,13 +27,22 @@ var develArray = [];
 develArray[eDEVEL.Jungle] = new Development(eDEVEL.Jungle, 
 	["jungle1.png", "jungle2.png"], 
 	"Jungle", eDCLR.Black, [eLSCP.Forested], "No effect");
+develArray[eDEVEL.Jungle].cost = [];
+develArray[eDEVEL.Jungle].requirement = [];
+develArray[eDEVEL.Jungle].result = [];
 
 develArray[eDEVEL.Freshwater] = new Development(eDEVEL.Freshwater, 
 	["freshwater1.png", "freshwater2.png"], 
 	"Freshwater", eDCLR.Black, [eLSCP.Grassy], "No effect");
+develArray[eDEVEL.Freshwater].cost = [];
+develArray[eDEVEL.Freshwater].requirement = [];
+develArray[eDEVEL.Freshwater].result = [];
 
 develArray[eDEVEL.Cave] = new Development(eDEVEL.Cave, 
 	["cave1.png", "cave2.png"], "Cave", eDCLR.Black, [eLSCP.Rocky], "No effect");
+develArray[eDEVEL.Cave].cost = [];
+develArray[eDEVEL.Cave].requirement = [];
+develArray[eDEVEL.Cave].result = [];
 
 develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], 
 	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
