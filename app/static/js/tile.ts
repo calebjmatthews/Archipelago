@@ -83,7 +83,7 @@ class Tile extends Hex {
 		let tDevSpr = currLand.sprDevArray[arraySpot];
 		tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
 		if (this.development != null) {
-			tDevSpr.texture = sprMed[develArray[this.development].sprID];
+			tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
 		}
 	}
 }

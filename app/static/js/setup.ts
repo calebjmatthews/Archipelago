@@ -23,6 +23,10 @@
 	document.body.appendChild(renderer.view);
 	var stage = new Container();
 
+	// Edit origin to be renderer specific
+	glbOrigin[0] = ((renderer.width - 200) / 2);
+	glbOrigin[1] = (renderer.height / 2);
+
 	loader
 		.add("static/img/images.json")
 		.load(onImageLoad);

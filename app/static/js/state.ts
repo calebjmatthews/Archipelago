@@ -3,11 +3,11 @@
 function describeDevel(descPoint, descTile) {
 	let dPosition = [];
 	// Make display card on right
-	if (descPoint[0] < (renderer.width/2)) {
+	if (descPoint[0] < 0) {
 		dPosition[0] = 20;
 	}
 	// Make display card on left
-	else if (descPoint[1] >= (renderer.width/2)) {
+	else if (descPoint[0] >= 0) {
 		dPosition[0] = renderer.width - 200 - 200 - 40;
 	}
 	else { console.log("Unexpected describing point value."); }

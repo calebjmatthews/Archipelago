@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 /// <reference path="references.ts" />
 // Global gameplay variables
 var glbBoundary = 14;
-var glbOrigin = [508, 288];
+var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
 var glbHWidth = 60;
 var glbPainting = null;
@@ -304,7 +304,7 @@ var Tile = (function (_super) {
         var tDevSpr = currLand.sprDevArray[arraySpot];
         tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
         if (this.development != null) {
-            tDevSpr.texture = sprMed[develArray[this.development].sprID];
+            tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
         }
     };
     return Tile;
@@ -690,8 +690,17 @@ var Development = (function () {
 }());
 var develArray = [];
 develArray[eDEVEL.Jungle] = new Development(eDEVEL.Jungle, ["jungle1.png", "jungle2.png"], "Jungle", eDCLR.Black, [eLSCP.Forested], "No effect");
+develArray[eDEVEL.Jungle].cost = [];
+develArray[eDEVEL.Jungle].requirement = [];
+develArray[eDEVEL.Jungle].result = [];
 develArray[eDEVEL.Freshwater] = new Development(eDEVEL.Freshwater, ["freshwater1.png", "freshwater2.png"], "Freshwater", eDCLR.Black, [eLSCP.Grassy], "No effect");
+develArray[eDEVEL.Freshwater].cost = [];
+develArray[eDEVEL.Freshwater].requirement = [];
+develArray[eDEVEL.Freshwater].result = [];
 develArray[eDEVEL.Cave] = new Development(eDEVEL.Cave, ["cave1.png", "cave2.png"], "Cave", eDCLR.Black, [eLSCP.Rocky], "No effect");
+develArray[eDEVEL.Cave].cost = [];
+develArray[eDEVEL.Cave].requirement = [];
+develArray[eDEVEL.Cave].result = [];
 develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = -1;
@@ -910,6 +919,9 @@ renderer.resize(window.innerWidth, window.innerHeight);
 // Apply renderer
 document.body.appendChild(renderer.view);
 var stage = new Container();
+// Edit origin to be renderer specific
+glbOrigin[0] = ((renderer.width - 200) / 2);
+glbOrigin[1] = (renderer.height / 2);
 loader
     .add("static/img/images.json")
     .load(onImageLoad);
@@ -1044,10 +1056,10 @@ function paintLscp(clkTile) {
 function describeDevel(descPoint, descTile) {
     var dPosition = [];
     // Make display card on right
-    if (descPoint[0] < (renderer.width / 2)) {
+    if (descPoint[0] < 0) {
         dPosition[0] = 20;
     }
-    else if (descPoint[1] >= (renderer.width / 2)) {
+    else if (descPoint[0] >= 0) {
         dPosition[0] = renderer.width - 200 - 200 - 40;
     }
     else {
