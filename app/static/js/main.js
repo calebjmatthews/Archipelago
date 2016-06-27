@@ -935,6 +935,16 @@ var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
 var currLand = littleLand;
 var player1 = new Player();
 var player2 = new Player();
+function formPlayerBar() {
+    // Create blank background for player bar
+    var plrBG = new Graphics();
+    plrBG.beginFill(0x000000);
+    plrBG.drawRect(0, 0, (renderer.width - 200), 20);
+    plrBG.endFill();
+    plrBG.x = 0;
+    plrBG.y = 0;
+    stage.addChild(plrBG);
+}
 var buttonArray = [];
 var devEditArray = [];
 var msgArray = [];
@@ -945,7 +955,7 @@ function formEditBar() {
     // Create blank background for edit bar
     var designBG = new Graphics();
     designBG.beginFill(0x000000);
-    designBG.drawRect(0, 0, 205, (renderer.height));
+    designBG.drawRect(0, 0, 200, (renderer.height));
     designBG.endFill();
     designBG.x = renderer.width - 200;
     designBG.y = 0;
@@ -1006,8 +1016,6 @@ function formEditBar() {
         glbPainting = glbNumLscps + eDEVEL.Jungle;
     };
 }
-var msgPoint = null;
-var msgAxial = null;
 function removeEditBar() {
     for (var cButton = 0; cButton < buttonArray.length; cButton++) {
         stage.removeChild(buttonArray[cButton]);
@@ -1017,8 +1025,8 @@ function removeEditBar() {
         stage.removeChild(devEditArray[cButton]);
     }
 }
-function formPlayerBar() {
-}
+var msgPoint = null;
+var msgAxial = null;
 function formDebugBar() {
     // Display text
     msgPoint = new Text(("Coords: "), { font: "16px sans-serif", fill: "white" });
@@ -1091,7 +1099,7 @@ function editClick(clkPoint) {
                 }
                 clkTile.reDrawTile();
             }
-            else if (glbPainting === null) {
+            else if ((glbPainting === null) && (clkTile.development != null)) {
                 describeDevel(clkPoint, clkTile);
             }
         }
@@ -1130,6 +1138,7 @@ function onImageLoad() {
     // This code runs when the texture atlas has loaded
     currLand.generateLand();
     currLand.displayLand();
+    formPlayerBar();
     formEditBar();
     // Start the game loop
     gameLoop();

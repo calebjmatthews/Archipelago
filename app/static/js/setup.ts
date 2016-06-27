@@ -43,6 +43,16 @@ let currLand = littleLand;
 let player1 = new Player();
 let player2 = new Player();
 
+function formPlayerBar() {
+	// Create blank background for player bar
+	var plrBG = new Graphics();
+	plrBG.beginFill(0x000000);
+	plrBG.drawRect(0, 0, (renderer.width - 200), 20);
+	plrBG.endFill();
+	plrBG.x = 0; plrBG.y = 0;
+	stage.addChild(plrBG);
+}
+
 var buttonArray = [];
 var devEditArray = [];
 var msgArray = [];
@@ -54,7 +64,7 @@ function formEditBar() {
 	// Create blank background for edit bar
 	var designBG = new Graphics();
 	designBG.beginFill(0x000000);
-	designBG.drawRect(0, 0, 205, (renderer.height));
+	designBG.drawRect(0, 0, 200, (renderer.height));
 	designBG.endFill();
 	designBG.x = renderer.width-200;
 	designBG.y = 0;
@@ -120,8 +130,6 @@ function formEditBar() {
 		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
-var msgPoint = null;
-var msgAxial = null;
 function removeEditBar() {
 	for (var cButton=0; cButton < buttonArray.length; cButton++ ) {
 		stage.removeChild(buttonArray[cButton]);
@@ -132,10 +140,8 @@ function removeEditBar() {
 	}
 }
 
-function formPlayerBar() {
-	
-}
-
+var msgPoint = null;
+var msgAxial = null;
 function formDebugBar() {
 	// Display text
 	msgPoint = new Text(

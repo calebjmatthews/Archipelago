@@ -39,7 +39,7 @@ function editClick(clkPoint) {
 				}
 				clkTile.reDrawTile();
 			}
-			else if (glbPainting === null) {
+			else if ((glbPainting === null) && (clkTile.development != null)) {
 				describeDevel(clkPoint, clkTile);
 			}
 		}
@@ -85,6 +85,7 @@ function onImageLoad() {
 	currLand.generateLand();
 	currLand.displayLand();
 
+	formPlayerBar();
 	formEditBar();
 	
 	// Start the game loop
