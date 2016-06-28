@@ -139,6 +139,15 @@ var eRES;
     eRES[eRES["BlueTreasure"] = 6] = "BlueTreasure";
     eRES[eRES["RedActive"] = 7] = "RedActive";
 })(eRES || (eRES = {}));
+// ~~~~ General purpose functions ~~~~
+function rgbToHclr(rgb) {
+    var result = [];
+    for (var iii = 0; iii < 3; iii++) {
+        var hClr = rgb[iii].toString(16);
+        result[iii] = hClr.length == 1 ? "0" + hClr : hClr;
+    }
+    return parseInt("0x" + result[0] + result[1] + result[2]);
+}
 // ~~~~ Hex functions ~~~~
 function hexToCube(tHex) {
     var axialRow = tHex[0];
@@ -945,26 +954,27 @@ function formPlayerBar() {
     var plrBG = new Graphics();
     plrBG.beginFill(0x000000);
     plrBG.drawRect(0, 0, (renderer.width - 200), 20);
+    plrBG.alpha = 0.8;
     plrBG.endFill();
     plrBG.x = 0;
     plrBG.y = 0;
     stage.addChild(plrBG);
     var plrMsgContent = "Empty.";
     plrMsg = new Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
-    plrMsg.position.set(3, 0);
+    plrMsg.position.set(3, 1);
     stage.addChild(plrMsg);
     updatePlayerBar();
 }
 function updatePlayerBar() {
     stage.removeChild(plrMsg);
-    var plrMsgContent = "Month " + glbMonth;
+    var plrMsgContent = "Month " + (glbMonth + 1);
     for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
         plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder + 1) + ": " +
             "F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material +
             " T-" + cPlayerArray[tPlr].treasure);
     }
     plrMsg = new Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
-    plrMsg.position.set(3, 0);
+    plrMsg.position.set(3, 1);
     stage.addChild(plrMsg);
 }
 var buttonArray = [];
@@ -1135,16 +1145,17 @@ function hoverTile(corPoint) {
             if (lastHex != null) {
                 var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
                 if (currLand.spriteArray[lastArraySpot] != undefined) {
-                    currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+                    var test = rgbToHclr([255, 255, 255]);
+                    currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
                 }
             }
-            currLand.spriteArray[hovArraySpot].tint = 0x424949;
+            currLand.spriteArray[hovArraySpot].tint = rgbToHclr([120, 120, 120]);
             lastHex = hovAxial;
         }
         else {
             if (lastHex != null) {
                 var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
-                currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+                currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
             }
         }
     }
@@ -1162,6 +1173,7 @@ function onImageLoad() {
     currLand.displayLand();
     formPlayerBar();
     formEditBar();
+    console.log(rgbToHclr([125, 125, 125]));
     // Start the game loop
     gameLoop();
 }

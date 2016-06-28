@@ -50,6 +50,7 @@ function formPlayerBar() {
 	var plrBG = new Graphics();
 	plrBG.beginFill(0x000000);
 	plrBG.drawRect(0, 0, (renderer.width - 200), 20);
+	plrBG.alpha = 0.8;
 	plrBG.endFill();
 	plrBG.x = 0; plrBG.y = 0;
 	stage.addChild(plrBG);
@@ -57,14 +58,14 @@ function formPlayerBar() {
 	let plrMsgContent = "Empty.";
 
 	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
-	plrMsg.position.set(3, 0);
+	plrMsg.position.set(3, 1);
 	stage.addChild(plrMsg);
 	updatePlayerBar();
 }
 
 function updatePlayerBar() {
 	stage.removeChild(plrMsg);
-	let plrMsgContent = "Month " + glbMonth;
+	let plrMsgContent = "Month " + (glbMonth+1);
 
 	for (let tPlr=0; tPlr < cPlayerArray.length; tPlr++) {
 		plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder+1) + ": " + 
@@ -73,7 +74,7 @@ function updatePlayerBar() {
 	}
 
 	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
-	plrMsg.position.set(3, 0);
+	plrMsg.position.set(3, 1);
 	stage.addChild(plrMsg);
 }
 

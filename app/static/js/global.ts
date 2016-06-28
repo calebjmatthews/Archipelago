@@ -44,6 +44,16 @@ enum eREQ { Food, Material, Treasure, Ship, Active, Destroy }
 // Enumerates the result of development effects
 enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedActive }
 
+// ~~~~ General purpose functions ~~~~
+	function rgbToHclr(rgb: number[]) {
+		let result = [];
+		for (let iii=0; iii<3; iii++) {
+			let hClr = rgb[iii].toString(16);
+			result[iii] = hClr.length == 1 ? "0" + hClr : hClr;
+		}
+		return parseInt("0x" + result[0] + result[1] + result[2]);
+	}
+
 // ~~~~ Hex functions ~~~~
 
 	function hexToCube(tHex: [number, number]) {

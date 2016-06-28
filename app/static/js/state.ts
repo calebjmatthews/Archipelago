@@ -55,16 +55,17 @@ function hoverTile(corPoint) {
 			if (lastHex != null) {
 				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
 				if (currLand.spriteArray[lastArraySpot] != undefined) {
-					currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+					var test = rgbToHclr([255, 255, 255]);
+					currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
 				}
 			}
-			currLand.spriteArray[hovArraySpot].tint = 0x424949;
+			currLand.spriteArray[hovArraySpot].tint = rgbToHclr([120, 120, 120]);
 			lastHex = hovAxial;
 		}
 		else {
 			if (lastHex != null) {
 				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
-				currLand.spriteArray[lastArraySpot].tint = 0xffffff;
+				currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
 			}
 		}
 	}
@@ -87,6 +88,8 @@ function onImageLoad() {
 
 	formPlayerBar();
 	formEditBar();
+
+	console.log(rgbToHclr([125, 125, 125]));
 	
 	// Start the game loop
 	gameLoop();
