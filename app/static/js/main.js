@@ -13,6 +13,8 @@ var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbMonth = 0;
+// Initiate visual effect variables
+var glbPulseArray = [];
 // Enumerates the convention of how hex direction is ordered within this program
 var eHEXD;
 (function (eHEXD) {
@@ -1083,6 +1085,32 @@ function paintLscp(clkTile) {
         console.log("Error, unexpected glbPainting value.");
     }
 }
+/// <reference path="references.ts" />
+// The selected array of tileIDs pulse over time
+var pulseState = 0;
+function vePulse(selTiles) {
+    for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
+        // If the pulse state is between 0 and 50, increase darkness; vice versa if between
+        //  50 and 100, if greater than 100 reset
+        var pVal = 255;
+        pulseState++;
+        if ((pulseState < 200) && (pulseState >= 100)) {
+            pVal = 255 - (100 - (pulseState - 100));
+        }
+        else if (pulseState < 100) {
+            pVal = 255 - pulseState;
+        }
+        else {
+            pulseState = 0;
+        }
+        currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([pVal, pVal, pVal]);
+    }
+}
+function veAllEffects() {
+    if (glbPulseArray != []) {
+        vePulse(glbPulseArray);
+    }
+}
 /// <reference path="global.ts" />
 /// <reference path="tile.ts" />
 /// <reference path="player.ts" />
@@ -1091,6 +1119,7 @@ function paintLscp(clkTile) {
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
+/// <reference path="effect.ts" />
 /// <reference path="state.ts" /> 
 /// <reference path="references.ts" />
 function describeDevel(descPoint, descTile) {
@@ -1145,11 +1174,10 @@ function hoverTile(corPoint) {
             if (lastHex != null) {
                 var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
                 if (currLand.spriteArray[lastArraySpot] != undefined) {
-                    var test = rgbToHclr([255, 255, 255]);
                     currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
                 }
             }
-            currLand.spriteArray[hovArraySpot].tint = rgbToHclr([120, 120, 120]);
+            currLand.spriteArray[hovArraySpot].tint = rgbToHclr([160, 160, 160]);
             lastHex = hovAxial;
         }
         else {
@@ -1173,7 +1201,6 @@ function onImageLoad() {
     currLand.displayLand();
     formPlayerBar();
     formEditBar();
-    console.log(rgbToHclr([125, 125, 125]));
     // Start the game loop
     gameLoop();
 }
@@ -1181,6 +1208,8 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
     // Update Tink
     tb.update();
+    // Process any visual effects
+    veAllEffects();
     // Utilize the current game state
     state();
     renderer.render(stage);

@@ -87,8 +87,6 @@ function onImageLoad() {
 
 	formPlayerBar();
 	formEditBar();
-
-	console.log(rgbToHclr([125, 125, 125]));
 	
 	// Start the game loop
 	gameLoop();
@@ -102,7 +100,7 @@ function gameLoop() {
 	tb.update();
 
 	// Process any visual effects
-
+	veAllEffects();
 
 	// Utilize the current game state
 	state();

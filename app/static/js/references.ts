@@ -6,4 +6,5 @@
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
+/// <reference path="effect.ts" />
 /// <reference path="state.ts" />

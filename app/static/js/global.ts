@@ -10,6 +10,9 @@ var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbMonth = 0;
 
+// Initiate visual effect variables
+var glbPulseArray = [];
+
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }
 
