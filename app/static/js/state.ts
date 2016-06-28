@@ -55,11 +55,10 @@ function hoverTile(corPoint) {
 			if (lastHex != null) {
 				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
 				if (currLand.spriteArray[lastArraySpot] != undefined) {
-					var test = rgbToHclr([255, 255, 255]);
 					currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
 				}
 			}
-			currLand.spriteArray[hovArraySpot].tint = rgbToHclr([120, 120, 120]);
+			currLand.spriteArray[hovArraySpot].tint = rgbToHclr([160, 160, 160]);
 			lastHex = hovAxial;
 		}
 		else {
@@ -101,6 +100,9 @@ function gameLoop() {
 
 	// Update Tink
 	tb.update();
+
+	// Process any visual effects
+
 
 	// Utilize the current game state
 	state();
