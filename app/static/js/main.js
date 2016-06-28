@@ -12,6 +12,7 @@ var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbMonth = 0;
 // Enumerates the convention of how hex direction is ordered within this program
 var eHEXD;
 (function (eHEXD) {
@@ -933,8 +934,12 @@ var pointer = null;
 // Initiate game values (to be obsoleted)
 var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
 var currLand = littleLand;
-var player1 = new Player();
-var player2 = new Player();
+var cPlayerArray = [];
+cPlayerArray[0] = new Player();
+cPlayerArray[0].playerOrder = 0;
+cPlayerArray[1] = new Player();
+cPlayerArray[1].playerOrder = 1;
+var plrMsg = null;
 function formPlayerBar() {
     // Create blank background for player bar
     var plrBG = new Graphics();
@@ -944,10 +949,27 @@ function formPlayerBar() {
     plrBG.x = 0;
     plrBG.y = 0;
     stage.addChild(plrBG);
+    var plrMsgContent = "Empty.";
+    plrMsg = new Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
+    plrMsg.position.set(3, 0);
+    stage.addChild(plrMsg);
+    updatePlayerBar();
+}
+function updatePlayerBar() {
+    stage.removeChild(plrMsg);
+    var plrMsgContent = "Month " + glbMonth;
+    for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
+        plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder + 1) + ": " +
+            "F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material +
+            " T-" + cPlayerArray[tPlr].treasure);
+    }
+    plrMsg = new Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
+    plrMsg.position.set(3, 0);
+    stage.addChild(plrMsg);
 }
 var buttonArray = [];
 var devEditArray = [];
-var msgArray = [];
+var editMsgArray = [];
 function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
     //  for loop needs to be compensate for the total number of landscapes when iterating
@@ -971,9 +993,9 @@ function formEditBar() {
             buttonArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
             buttonArray[cButton].scale.set(bScale, bScale);
             stage.addChild(buttonArray[cButton]);
-            msgArray[cButton] = new Text((lscpArray[cButton].name), { font: "16px sans-serif", fill: "white" });
-            msgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
-            stage.addChild(msgArray[cButton]);
+            editMsgArray[cButton] = new Text((lscpArray[cButton].name), { font: "16px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
+            stage.addChild(editMsgArray[cButton]);
         }
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
             // Set up the development's background as the button
@@ -991,9 +1013,9 @@ function formEditBar() {
             tDevSpr.position.set((renderer.width - 180), (10 + 40 * cButton));
             stage.addChild(tDevSpr);
             devEditArray[cButton - glbNumLscps] = tDevSpr;
-            msgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
-            msgArray[cButton].position.set((renderer.width - 110), (45 + 40 * cButton));
-            stage.addChild(msgArray[cButton]);
+            editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 110), (45 + 40 * cButton));
+            stage.addChild(editMsgArray[cButton]);
         }
         else {
             console.log("Error: unexpected current button incremental variable.");
@@ -1019,7 +1041,7 @@ function formEditBar() {
 function removeEditBar() {
     for (var cButton = 0; cButton < buttonArray.length; cButton++) {
         stage.removeChild(buttonArray[cButton]);
-        stage.removeChild(msgArray[cButton]);
+        stage.removeChild(editMsgArray[cButton]);
     }
     for (var cButton = 0; cButton < devEditArray.length; cButton++) {
         stage.removeChild(devEditArray[cButton]);

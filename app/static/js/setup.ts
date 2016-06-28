@@ -40,9 +40,11 @@ var pointer = null;
 // Initiate game values (to be obsoleted)
 let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
 let currLand = littleLand;
-let player1 = new Player();
-let player2 = new Player();
+let cPlayerArray = [];
+cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
+cPlayerArray[1] = new Player(); cPlayerArray[1].playerOrder = 1;
 
+let plrMsg = null;
 function formPlayerBar() {
 	// Create blank background for player bar
 	var plrBG = new Graphics();
@@ -51,11 +53,33 @@ function formPlayerBar() {
 	plrBG.endFill();
 	plrBG.x = 0; plrBG.y = 0;
 	stage.addChild(plrBG);
+
+	let plrMsgContent = "Empty.";
+
+	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
+	plrMsg.position.set(3, 0);
+	stage.addChild(plrMsg);
+	updatePlayerBar();
+}
+
+function updatePlayerBar() {
+	stage.removeChild(plrMsg);
+	let plrMsgContent = "Month " + glbMonth;
+
+	for (let tPlr=0; tPlr < cPlayerArray.length; tPlr++) {
+		plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder+1) + ": " + 
+			"F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material + 
+			" T-" + cPlayerArray[tPlr].treasure);
+	}
+
+	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
+	plrMsg.position.set(3, 0);
+	stage.addChild(plrMsg);
 }
 
 var buttonArray = [];
 var devEditArray = [];
-var msgArray = [];
+var editMsgArray = [];
 function formEditBar() {
 	// Since the edit bar includes both landscapes and some black developments, the
 	//  for loop needs to be compensate for the total number of landscapes when iterating
@@ -82,10 +106,10 @@ function formEditBar() {
 			buttonArray[cButton].scale.set(bScale, bScale);
 			stage.addChild(buttonArray[cButton]);
 
-			msgArray[cButton] = new Text((lscpArray[cButton].name), 
+			editMsgArray[cButton] = new Text((lscpArray[cButton].name), 
 			{font: "16px sans-serif", fill: "white"});
-			msgArray[cButton].position.set((renderer.width-110), (25+40*cButton));
-			stage.addChild(msgArray[cButton]);
+			editMsgArray[cButton].position.set((renderer.width-110), (25+40*cButton));
+			stage.addChild(editMsgArray[cButton]);
 		}
 		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
 			// Set up the development's background as the button
@@ -105,10 +129,10 @@ function formEditBar() {
 			stage.addChild(tDevSpr);
 			devEditArray[cButton-glbNumLscps] = tDevSpr;
 
-			msgArray[cButton] = new Text((chosenText), 
+			editMsgArray[cButton] = new Text((chosenText), 
 			{font: "16px sans-serif", fill: "white"});
-			msgArray[cButton].position.set((renderer.width-110), (45 + 40*cButton));
-			stage.addChild(msgArray[cButton]);
+			editMsgArray[cButton].position.set((renderer.width-110), (45 + 40*cButton));
+			stage.addChild(editMsgArray[cButton]);
 		}
 		else {
 			console.log("Error: unexpected current button incremental variable.");
@@ -133,7 +157,7 @@ function formEditBar() {
 function removeEditBar() {
 	for (var cButton=0; cButton < buttonArray.length; cButton++ ) {
 		stage.removeChild(buttonArray[cButton]);
-		stage.removeChild(msgArray[cButton]);
+		stage.removeChild(editMsgArray[cButton]);
 	}
 	for (var cButton=0; cButton < devEditArray.length; cButton++) {
 		stage.removeChild(devEditArray[cButton]);

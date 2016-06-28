@@ -8,6 +8,7 @@ var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbMonth = 0;
 
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }
