@@ -149,13 +149,13 @@ function buy() {
 }
 
 // Set up the graphical/logical backing for the building state
-function buildSetup(dID: number) {
-	let tDevel = develArray[dID];
-	glbSelArray = currLand.getSel(null, tDevel.reqLandscape);
+function buildSetup() {
+	let tDevel = develArray[glbBuildSel];
+	glbTileSelArray = currLand.getSel(null, tDevel.reqLandscape);
 
-	if (glbSelArray != []) {
-		glbPulseArray = glbSelArray;
-		glbState = build();
+	if (glbTileSelArray != []) {
+		glbPulseArray = glbTileSelArray;
+		glbState = build;
 	}
 	else {
 		console.log("No applicable tile.")
@@ -163,7 +163,7 @@ function buildSetup(dID: number) {
 }
 
 // Player chooses where to build a newly bought development
-function build(dID: number) {
+function build() {
 
 }
 

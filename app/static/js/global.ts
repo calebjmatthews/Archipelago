@@ -10,7 +10,8 @@ var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbMonth = 0;
-var glbSelArray = [];
+var glbBuildSel = null;
+var glbTileSelArray = [];
 
 // Initiate visual effect variables
 var glbPulseArray = [];
