@@ -103,7 +103,7 @@ function gameLoop() {
 	veAllEffects();
 
 	// Utilize the current game state
-	state();
+	glbState();
 
 	renderer.render(stage);
 }
@@ -151,11 +151,14 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup(dID: number) {
 	let tDevel = develArray[dID];
+	glbSelArray = currLand.getSel(null, tDevel.reqLandscape);
 
-	// Special behavior for base camp
-	if (dID === eDEVEL.BaseCamp) {
-		glbSelArray = currLand.getSel(null, tDevel.reqLandscape);
+	if (glbSelArray != []) {
 		glbPulseArray = glbSelArray;
+		glbState = build();
+	}
+	else {
+		console.log("No applicable tile.")
 	}
 }
 

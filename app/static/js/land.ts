@@ -32,7 +32,22 @@ class Land {
 	// Returns an array of applicable tileIDs when given a player's territory and
 	//  an array of landscape types
 	getSel(sTerr: number[], sLscp: number[]) {
-		
+		let landWidth = (this.lSize+2)*2;
+		let selResult = [];
+		for (var ringWidth = 0; ringWidth < (landWidth+12); ringWidth++) {
+			var thisRing = [];
+			if (ringWidth === 0) { thisRing[0] = [0, 0]; }
+			else { thisRing = this.tileArray[0].getRing(ringWidth); }
+
+			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+				if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) && 
+					(inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
+					selResult.push(thisRing[ringTile]);
+				}
+			}
+
+		}
+		return selResult;
 	}
 
 	// Read land tile data from json file

@@ -1,6 +1,7 @@
 /// <reference path="references.ts" />
 
 // Global gameplay variables
+var glbState = edit;
 var glbBoundary = 14;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
@@ -56,6 +57,15 @@ enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedAc
 			result[iii] = hClr.length == 1 ? "0" + hClr : hClr;
 		}
 		return parseInt("0x" + result[0] + result[1] + result[2]);
+	}
+
+	function inArr(array: any[], query: any) {
+		for (let iii=0; iii < array.length; iii++) {
+			if (array[iii] === query) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 // ~~~~ Hex functions ~~~~

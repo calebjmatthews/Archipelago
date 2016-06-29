@@ -34,7 +34,7 @@
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'edit'
-var state = edit;
+glbState = edit;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
