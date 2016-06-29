@@ -61,6 +61,15 @@ enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedAc
 	}
 
 	function inArr(array: any[], query: any) {
+		if (array === undefined) {
+			return false;
+		}
+		else if (array === null) {
+			return false;
+		}
+		else if (array === []) {
+			return false;
+		}
 		for (let iii=0; iii < array.length; iii++) {
 			if (array[iii] === query) {
 				return true;

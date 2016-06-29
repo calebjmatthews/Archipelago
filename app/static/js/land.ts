@@ -40,12 +40,13 @@ class Land {
 			else { thisRing = this.tileArray[0].getRing(ringWidth); }
 
 			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
-				if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) && 
-					(inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
-					selResult.push(thisRing[ringTile]);
+				if (currLand.tileArray[thisRing[ringTile]] != undefined) {
+					if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) && 
+						(inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
+						selResult.push(thisRing[ringTile]);
+					}
 				}
 			}
-
 		}
 		return selResult;
 	}

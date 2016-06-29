@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /// <reference path="references.ts" />
 // Global gameplay variables
+var glbState = edit;
 var glbBoundary = 14;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
@@ -13,6 +14,8 @@ var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbMonth = 0;
+var glbBuildSel = null;
+var glbTileSelArray = [];
 // Initiate visual effect variables
 var glbPulseArray = [];
 // Enumerates the convention of how hex direction is ordered within this program
@@ -70,33 +73,34 @@ var eDEVEL;
     eDEVEL[eDEVEL["Jungle"] = 0] = "Jungle";
     eDEVEL[eDEVEL["Freshwater"] = 1] = "Freshwater";
     eDEVEL[eDEVEL["Cave"] = 2] = "Cave";
-    eDEVEL[eDEVEL["FireCrew"] = 3] = "FireCrew";
-    eDEVEL[eDEVEL["LaborPort"] = 4] = "LaborPort";
-    eDEVEL[eDEVEL["SeasSideParade"] = 5] = "SeasSideParade";
-    eDEVEL[eDEVEL["TradeHarbor"] = 6] = "TradeHarbor";
-    eDEVEL[eDEVEL["AuctionHouse"] = 7] = "AuctionHouse";
-    eDEVEL[eDEVEL["EnvoyHarbor"] = 8] = "EnvoyHarbor";
-    eDEVEL[eDEVEL["RicePaddy"] = 9] = "RicePaddy";
-    eDEVEL[eDEVEL["BoarRanch"] = 10] = "BoarRanch";
-    eDEVEL[eDEVEL["HuntingCamp"] = 11] = "HuntingCamp";
-    eDEVEL[eDEVEL["SmokeHouse"] = 12] = "SmokeHouse";
-    eDEVEL[eDEVEL["PeachOrchard"] = 13] = "PeachOrchard";
-    eDEVEL[eDEVEL["BambooCutters"] = 14] = "BambooCutters";
-    eDEVEL[eDEVEL["SilverMine"] = 15] = "SilverMine";
-    eDEVEL[eDEVEL["StoneQuarry"] = 16] = "StoneQuarry";
-    eDEVEL[eDEVEL["Woodcutters"] = 17] = "Woodcutters";
-    eDEVEL[eDEVEL["CobaltMine"] = 18] = "CobaltMine";
-    eDEVEL[eDEVEL["WorkerVillage"] = 19] = "WorkerVillage";
-    eDEVEL[eDEVEL["TeaHouse"] = 20] = "TeaHouse";
-    eDEVEL[eDEVEL["Demolition"] = 21] = "Demolition";
-    eDEVEL[eDEVEL["ShepherdVillage"] = 22] = "ShepherdVillage";
-    eDEVEL[eDEVEL["Town"] = 23] = "Town";
-    eDEVEL[eDEVEL["MerchantShip"] = 24] = "MerchantShip";
-    eDEVEL[eDEVEL["VentureShip"] = 25] = "VentureShip";
-    eDEVEL[eDEVEL["WorkmanShip"] = 26] = "WorkmanShip";
-    eDEVEL[eDEVEL["OpulentVessel"] = 27] = "OpulentVessel";
-    eDEVEL[eDEVEL["AbundantVessel"] = 28] = "AbundantVessel";
-    eDEVEL[eDEVEL["SteadyVessel"] = 29] = "SteadyVessel";
+    eDEVEL[eDEVEL["BaseCamp"] = 3] = "BaseCamp";
+    eDEVEL[eDEVEL["FireCrew"] = 4] = "FireCrew";
+    eDEVEL[eDEVEL["LaborPort"] = 5] = "LaborPort";
+    eDEVEL[eDEVEL["SeasSideParade"] = 6] = "SeasSideParade";
+    eDEVEL[eDEVEL["TradeHarbor"] = 7] = "TradeHarbor";
+    eDEVEL[eDEVEL["AuctionHouse"] = 8] = "AuctionHouse";
+    eDEVEL[eDEVEL["EnvoyHarbor"] = 9] = "EnvoyHarbor";
+    eDEVEL[eDEVEL["RicePaddy"] = 10] = "RicePaddy";
+    eDEVEL[eDEVEL["BoarRanch"] = 11] = "BoarRanch";
+    eDEVEL[eDEVEL["HuntingCamp"] = 12] = "HuntingCamp";
+    eDEVEL[eDEVEL["SmokeHouse"] = 13] = "SmokeHouse";
+    eDEVEL[eDEVEL["PeachOrchard"] = 14] = "PeachOrchard";
+    eDEVEL[eDEVEL["BambooCutters"] = 15] = "BambooCutters";
+    eDEVEL[eDEVEL["SilverMine"] = 16] = "SilverMine";
+    eDEVEL[eDEVEL["StoneQuarry"] = 17] = "StoneQuarry";
+    eDEVEL[eDEVEL["Woodcutters"] = 18] = "Woodcutters";
+    eDEVEL[eDEVEL["CobaltMine"] = 19] = "CobaltMine";
+    eDEVEL[eDEVEL["WorkerVillage"] = 20] = "WorkerVillage";
+    eDEVEL[eDEVEL["TeaHouse"] = 21] = "TeaHouse";
+    eDEVEL[eDEVEL["Demolition"] = 22] = "Demolition";
+    eDEVEL[eDEVEL["ShepherdVillage"] = 23] = "ShepherdVillage";
+    eDEVEL[eDEVEL["Town"] = 24] = "Town";
+    eDEVEL[eDEVEL["MerchantShip"] = 25] = "MerchantShip";
+    eDEVEL[eDEVEL["VentureShip"] = 26] = "VentureShip";
+    eDEVEL[eDEVEL["WorkmanShip"] = 27] = "WorkmanShip";
+    eDEVEL[eDEVEL["OpulentVessel"] = 28] = "OpulentVessel";
+    eDEVEL[eDEVEL["AbundantVessel"] = 29] = "AbundantVessel";
+    eDEVEL[eDEVEL["SteadyVessel"] = 30] = "SteadyVessel";
 })(eDEVEL || (eDEVEL = {}));
 ;
 // Enumerates development color options
@@ -149,6 +153,23 @@ function rgbToHclr(rgb) {
         result[iii] = hClr.length == 1 ? "0" + hClr : hClr;
     }
     return parseInt("0x" + result[0] + result[1] + result[2]);
+}
+function inArr(array, query) {
+    if (array === undefined) {
+        return false;
+    }
+    else if (array === null) {
+        return false;
+    }
+    else if (array === []) {
+        return false;
+    }
+    for (var iii = 0; iii < array.length; iii++) {
+        if (array[iii] === query) {
+            return true;
+        }
+    }
+    return false;
 }
 // ~~~~ Hex functions ~~~~
 function hexToCube(tHex) {
@@ -308,6 +329,7 @@ var Tile = (function (_super) {
         this.landscape = 0;
         this.development = null;
         this.ownedBy = null;
+        this.selected = false;
     }
     Tile.prototype.reDrawTile = function () {
         var sprMed = loader.resources["static/img/images.json"].textures;
@@ -355,6 +377,30 @@ var Land = (function () {
             }
         }
         return null;
+    };
+    // Returns an array of applicable tileIDs when given a player's territory and
+    //  an array of landscape types
+    Land.prototype.getSel = function (sTerr, sLscp) {
+        var landWidth = (this.lSize + 2) * 2;
+        var selResult = [];
+        for (var ringWidth = 0; ringWidth < (landWidth + 12); ringWidth++) {
+            var thisRing = [];
+            if (ringWidth === 0) {
+                thisRing[0] = [0, 0];
+            }
+            else {
+                thisRing = this.tileArray[0].getRing(ringWidth);
+            }
+            for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
+                if (currLand.tileArray[thisRing[ringTile]] != undefined) {
+                    if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) &&
+                        (inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
+                        selResult.push(thisRing[ringTile]);
+                    }
+                }
+            }
+        }
+        return selResult;
     };
     // Read land tile data from json file
     Land.prototype.readLand = function () {
@@ -713,7 +759,13 @@ develArray[eDEVEL.Cave] = new Development(eDEVEL.Cave, ["cave1.png", "cave2.png"
 develArray[eDEVEL.Cave].cost = [];
 develArray[eDEVEL.Cave].requirement = [];
 develArray[eDEVEL.Cave].result = [];
-develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
+develArray[eDEVEL.BaseCamp] = new Development(eDEVEL.BaseCamp, ["basecamp.png"], "Base Camp", eDCLR.Black, [eLSCP.Shore], "res: +1 Food, +1 Material");
+develArray[eDEVEL.BaseCamp].cost = [];
+develArray[eDEVEL.BaseCamp].requirement = [];
+develArray[eDEVEL.BaseCamp].result = [];
+develArray[eDEVEL.BaseCamp].result[eRES.Food] = 1;
+develArray[eDEVEL.BaseCamp].result[eRES.Material] = 1;
+develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development, +1 Active");
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = -1;
 develArray[eDEVEL.FireCrew].requirement = [];
@@ -940,7 +992,8 @@ loader
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'edit'
-var state = edit;
+glbBuildSel = eDEVEL.BaseCamp;
+glbState = buildSetup;
 var pointer = null;
 // Initiate game values (to be obsoleted)
 var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
@@ -1211,7 +1264,7 @@ function gameLoop() {
     // Process any visual effects
     veAllEffects();
     // Utilize the current game state
-    state();
+    glbState();
     renderer.render(stage);
 }
 // Executes on loop when game is in 'play' state
@@ -1240,6 +1293,18 @@ function selDevel() {
 }
 // Player chooses new developments to purchase
 function buy() {
+}
+// Set up the graphical/logical backing for the building state
+function buildSetup() {
+    var tDevel = develArray[glbBuildSel];
+    glbTileSelArray = currLand.getSel(null, tDevel.reqLandscape);
+    if (glbTileSelArray != []) {
+        glbPulseArray = glbTileSelArray;
+        glbState = build;
+    }
+    else {
+        console.log("No applicable tile.");
+    }
 }
 // Player chooses where to build a newly bought development
 function build() {
