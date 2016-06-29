@@ -75,6 +75,7 @@ class Tile extends Hex {
 	landscape: number = 0;
 	development: number = null;
 	ownedBy: number = null;
+	selected: boolean = false;
 
 	reDrawTile() {
 		let sprMed = loader.resources["static/img/images.json"].textures;

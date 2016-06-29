@@ -148,8 +148,19 @@ function buy() {
 
 }
 
+// Set up the graphical/logical backing for the building state
+function buildSetup(dID: number) {
+	let tDevel = develArray[dID];
+
+	// Special behavior for base camp
+	if (dID === eDEVEL.BaseCamp) {
+		glbSelArray = currLand.getSel(null, tDevel.reqLandscape);
+		glbPulseArray = glbSelArray;
+	}
+}
+
 // Player chooses where to build a newly bought development
-function build() {
+function build(dID: number) {
 
 }
 

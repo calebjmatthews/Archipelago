@@ -44,8 +44,17 @@ develArray[eDEVEL.Cave].cost = [];
 develArray[eDEVEL.Cave].requirement = [];
 develArray[eDEVEL.Cave].result = [];
 
+develArray[eDEVEL.BaseCamp] = new Development(eDEVEL.BaseCamp, ["basecamp.png"], 
+	"Base Camp", eDCLR.Black, [eLSCP.Shore], 
+	"res: +1 Food, +1 Material");
+develArray[eDEVEL.BaseCamp].cost = [];
+develArray[eDEVEL.BaseCamp].requirement = [];
+develArray[eDEVEL.BaseCamp].result = [];
+develArray[eDEVEL.BaseCamp].result[eRES.Food] = 1;
+develArray[eDEVEL.BaseCamp].result[eRES.Material] = 1;
+
 develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], 
-	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development; res: +1 Active");
+	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "res: Destroy Development, +1 Active");
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = -1;
 develArray[eDEVEL.FireCrew].requirement = [];

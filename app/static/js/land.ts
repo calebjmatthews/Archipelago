@@ -29,6 +29,12 @@ class Land {
 		return null;
 	}
 
+	// Returns an array of applicable tileIDs when given a player's territory and
+	//  an array of landscape types
+	getSel(sTerr: number[], sLscp: number[]) {
+		
+	}
+
 	// Read land tile data from json file
 	readLand() {
 

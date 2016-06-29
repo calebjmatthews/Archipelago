@@ -12,6 +12,7 @@ class Player {
 	ships: number = 0;
 	activeEffects: string;
 	canClick: boolean = false;
+	territory: number[];
 
 	constructor() {
 		this.playerID = playerIncrement;
