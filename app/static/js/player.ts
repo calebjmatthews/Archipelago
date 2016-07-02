@@ -18,4 +18,17 @@ class Player {
 		this.playerID = playerIncrement;
 		playerIncrement ++;
 	}
+
+	addTerritory(tTileID) {
+		let tTile = currLand.tileArray[tTileID];
+		if (!(inArr(this.territory, tTileID))) {
+			this.territory.push(tTileID)
+		}
+		let neighbors = tTile.getNeighbors();
+		for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+			if (!(inArr(this.territory, neighbors[cNeigh]))) {
+				this.territory.push(neighbors[cNeigh]);
+			}
+		}
+	}
 }

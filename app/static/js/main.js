@@ -1143,42 +1143,6 @@ function paintLscp(clkTile) {
     }
 }
 /// <reference path="references.ts" />
-// The selected array of tileIDs pulse over time
-var pulseState = 0;
-function vePulse(selTiles) {
-    pulseState += 3;
-    for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
-        // If the pulse state is between 0 and 50, increase darkness; vice versa if between
-        //  50 and 100, if greater than 100 reset
-        var pVal = 220;
-        if ((pulseState < 200) && (pulseState >= 100)) {
-            pVal = 220 - (100 - (pulseState - 100));
-        }
-        else if (pulseState < 100) {
-            pVal = 220 - pulseState;
-        }
-        else {
-            pulseState = 0;
-        }
-        currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([pVal, pVal, pVal]);
-    }
-}
-function veAllEffects() {
-    if (glbPulseArray != []) {
-        vePulse(glbPulseArray);
-    }
-}
-/// <reference path="global.ts" />
-/// <reference path="tile.ts" />
-/// <reference path="player.ts" />
-/// <reference path="land.ts" />
-/// <reference path="climate.ts" />
-/// <reference path="landscape.ts" />
-/// <reference path="development.ts" />
-/// <reference path="setup.ts" />
-/// <reference path="effect.ts" />
-/// <reference path="state.ts" /> 
-/// <reference path="references.ts" />
 function describeDevel(descPoint, descTile) {
     var dPosition = [];
     // Make display card on right
@@ -1223,6 +1187,8 @@ function editClick(clkPoint) {
         }
     }
 }
+function buildClick(clkPoint) {
+}
 function hoverTile(corPoint) {
     var hovAxial = pointToHex(corPoint);
     if ((hovAxial != undefined) && ((corPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
@@ -1249,6 +1215,44 @@ function hoverTile(corPoint) {
         pointer.cursor = "auto";
     }
 }
+/// <reference path="references.ts" />
+// The selected array of tileIDs pulse over time
+var pulseState = 0;
+function vePulse(selTiles) {
+    pulseState += 3;
+    for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
+        // If the pulse state is between 0 and 50, increase darkness; vice versa if between
+        //  50 and 100, if greater than 100 reset
+        var pVal = 220;
+        if ((pulseState < 200) && (pulseState >= 100)) {
+            pVal = 220 - (100 - (pulseState - 100));
+        }
+        else if (pulseState < 100) {
+            pVal = 220 - pulseState;
+        }
+        else {
+            pulseState = 0;
+        }
+        currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([pVal, pVal, pVal]);
+    }
+}
+function veAllEffects() {
+    if (glbPulseArray != []) {
+        vePulse(glbPulseArray);
+    }
+}
+/// <reference path="global.ts" />
+/// <reference path="tile.ts" />
+/// <reference path="player.ts" />
+/// <reference path="land.ts" />
+/// <reference path="climate.ts" />
+/// <reference path="landscape.ts" />
+/// <reference path="development.ts" />
+/// <reference path="setup.ts" />
+/// <reference path="action.ts" />
+/// <reference path="effect.ts" />
+/// <reference path="state.ts" /> 
+/// <reference path="references.ts" />
 function onImageLoad() {
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
@@ -1271,7 +1275,7 @@ function gameLoop() {
     glbState();
     renderer.render(stage);
 }
-// Executes on loop when game is in 'play' state
+// Executes on loop when game is in 'edit' state
 var lastHex = null;
 function edit() {
     // Click event handling
@@ -1309,9 +1313,16 @@ function buildSetup() {
     else {
         console.log("No applicable tile.");
     }
+    glbState = build;
 }
 // Player chooses where to build a newly bought development
 function build() {
+    // Click event handling
+    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
+    if (pointer.isDown === true) {
+        buildClick(corPoint);
+    }
+    hoverTile(corPoint);
 }
 // Applies after a player has finished their turn
 function cleanup() {

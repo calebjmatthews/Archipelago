@@ -44,6 +44,7 @@ let currLand = littleLand;
 let cPlayerArray = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
 cPlayerArray[1] = new Player(); cPlayerArray[1].playerOrder = 1;
+let currPlayer = cPlayerArray[0];
 
 let plrMsg = null;
 function formPlayerBar() {
