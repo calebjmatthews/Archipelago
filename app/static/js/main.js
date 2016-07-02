@@ -392,10 +392,14 @@ var Land = (function () {
                 thisRing = this.tileArray[0].getRing(ringWidth);
             }
             for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
-                if (currLand.tileArray[thisRing[ringTile]] != undefined) {
-                    if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) &&
-                        (inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
-                        selResult.push(thisRing[ringTile]);
+                var tTileID = this.getID(thisRing[ringTile]);
+                var tTile = currLand.tileArray[tTileID];
+                if (tTile != null) {
+                    var test1 = inArr(sTerr, tTileID);
+                    var test2 = inArr(sLscp, tTile.landscape);
+                    if (((inArr(sTerr, tTileID)) || (sTerr === null)) &&
+                        (inArr(sLscp, tTile.landscape))) {
+                        selResult.push(tTileID);
                     }
                 }
             }
@@ -1142,16 +1146,16 @@ function paintLscp(clkTile) {
 // The selected array of tileIDs pulse over time
 var pulseState = 0;
 function vePulse(selTiles) {
+    pulseState += 3;
     for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
         // If the pulse state is between 0 and 50, increase darkness; vice versa if between
         //  50 and 100, if greater than 100 reset
-        var pVal = 255;
-        pulseState++;
+        var pVal = 220;
         if ((pulseState < 200) && (pulseState >= 100)) {
-            pVal = 255 - (100 - (pulseState - 100));
+            pVal = 220 - (100 - (pulseState - 100));
         }
         else if (pulseState < 100) {
-            pVal = 255 - pulseState;
+            pVal = 220 - pulseState;
         }
         else {
             pulseState = 0;
@@ -1297,7 +1301,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
     var tDevel = develArray[glbBuildSel];
-    glbTileSelArray = currLand.getSel(null, tDevel.reqLandscape);
+    glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
     if (glbTileSelArray != []) {
         glbPulseArray = glbTileSelArray;
         glbState = build;

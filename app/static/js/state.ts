@@ -151,7 +151,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	let tDevel = develArray[glbBuildSel];
-	glbTileSelArray = currLand.getSel(null, tDevel.reqLandscape);
+	glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
 
 	if (glbTileSelArray != []) {
 		glbPulseArray = glbTileSelArray;
@@ -160,6 +160,7 @@ function buildSetup() {
 	else {
 		console.log("No applicable tile.")
 	}
+	glbState = build;
 }
 
 // Player chooses where to build a newly bought development

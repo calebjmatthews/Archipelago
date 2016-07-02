@@ -34,16 +34,20 @@ class Land {
 	getSel(sTerr: number[], sLscp: number[]) {
 		let landWidth = (this.lSize+2)*2;
 		let selResult = [];
-		for (var ringWidth = 0; ringWidth < (landWidth+12); ringWidth++) {
-			var thisRing = [];
+		for (let ringWidth = 0; ringWidth < (landWidth+12); ringWidth++) {
+			let thisRing = [];
 			if (ringWidth === 0) { thisRing[0] = [0, 0]; }
 			else { thisRing = this.tileArray[0].getRing(ringWidth); }
 
-			for (var ringTile = 0; ringTile < thisRing.length; ringTile++) {
-				if (currLand.tileArray[thisRing[ringTile]] != undefined) {
-					if (((inArr(sTerr, thisRing[ringTile])) || (sTerr === null)) && 
-						(inArr(sLscp, currLand.tileArray[thisRing[ringTile]].landscape))) {
-						selResult.push(thisRing[ringTile]);
+			for (let ringTile = 0; ringTile < thisRing.length; ringTile++) {
+				let tTileID = this.getID(thisRing[ringTile]);
+				let tTile = currLand.tileArray[tTileID];
+				if (tTile != null) {
+					var test1 = inArr(sTerr, tTileID);
+					var test2 = inArr(sLscp, tTile.landscape);
+					if (((inArr(sTerr, tTileID)) || (sTerr === null)) && 
+						(inArr(sLscp, tTile.landscape))) {
+						selResult.push(tTileID);
 					}
 				}
 			}
