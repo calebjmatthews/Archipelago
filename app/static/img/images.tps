@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>C:/Users/cmatthews/Documents/JS/Archipelago/app/static/img/images.tps</string>
+        <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -188,6 +188,7 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">basecamp.png</key>
             <key type="filename">cave1.png</key>
             <key type="filename">desert.png</key>
             <key type="filename">forested.png</key>
@@ -217,6 +218,7 @@
             <filename>cave1.png</filename>
             <filename>freshwater1.png</filename>
             <filename>jungle1.png</filename>
+            <filename>basecamp.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
