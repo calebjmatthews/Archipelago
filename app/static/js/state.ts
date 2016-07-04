@@ -76,6 +76,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	let tDevel = develArray[glbBuildSel];
+	glbTileSelArray = [];
 	glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
 
 	if (glbTileSelArray != []) {

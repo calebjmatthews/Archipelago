@@ -9,6 +9,7 @@ class Land {
 	tileArray: Tile[];
 	spriteArray: Sprite[];
 	sprDevArray: Sprite[];
+	devSelection: number[] = [];
 
 	constructor(sentSettings: [number, number, number]) {
 		this.landID = landIncrement;
@@ -43,10 +44,9 @@ class Land {
 				let tTileID = this.getID(thisRing[ringTile]);
 				let tTile = currLand.tileArray[tTileID];
 				if (tTile != null) {
-					var test1 = inArr(sTerr, tTileID);
-					var test2 = inArr(sLscp, tTile.landscape);
 					if (((inArr(sTerr, tTileID)) || (sTerr === null)) && 
-						(inArr(sLscp, tTile.landscape))) {
+						(inArr(sLscp, tTile.landscape)) && 
+						(tTile.development === undefined)) {
 						selResult.push(tTileID);
 					}
 				}
@@ -328,5 +328,43 @@ class Land {
 		this.spriteArray = landSprites;
 		this.sprDevArray = landDevSprs;
 		renderer.render(stage);
+	}
+
+	getClrDev(devClr) {
+		for (let attempts=0; attempts < 20; attempts++) {
+			let randDev = Math.floor(Math.random() * 27) + 4;
+			if (devClr === null) {
+				if (!inArr(this.devSelection, randDev)) {
+					return randDev;
+				}
+			}
+			else {
+				if ((!inArr(this.devSelection, randDev)) && 
+					(develArray[randDev].color === devClr)) {
+					return randDev;
+				}
+			}
+		}
+		console.log("Error, could not return appropriate development.");
+		return 0;
+	}
+
+	genDevSelection() {
+		for (let tDev = 0; tDev < 12; tDev++) {
+			// Ensure 1 of each color except black, 2 of violet, and fill the rest of the 12 
+			//  randomly
+			if (tDev < 4) {
+				this.devSelection.push(this.getClrDev(tDev+1));
+			}
+			else if (tDev === 4) {
+				this.devSelection.push(this.getClrDev(tDev+1));
+				this.devSelection.push(this.getClrDev(tDev+1));
+				tDev++;
+			}
+			else {
+				let randClr = Math.floor(Math.random() * 4) + 1;
+				this.devSelection.push(this.getClrDev(randClr));
+			}
+		}
 	}
 }

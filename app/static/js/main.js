@@ -352,10 +352,23 @@ var Player = (function () {
         this.material = 2;
         this.treasure = 0;
         this.ships = 0;
+        this.territory = [];
         this.canClick = false;
         this.playerID = playerIncrement;
         playerIncrement++;
     }
+    Player.prototype.addTerritory = function (tTileID) {
+        var tTile = currLand.tileArray[tTileID];
+        if (!(inArr(this.territory, tTileID))) {
+            this.territory.push(tTileID);
+        }
+        var neighbors = tTile.getNeighbors();
+        for (var cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+            if (!(inArr(this.territory, neighbors[cNeigh]))) {
+                this.territory.push(neighbors[cNeigh]);
+            }
+        }
+    };
     return Player;
 }());
 /// <reference path="references.ts" />
@@ -395,10 +408,9 @@ var Land = (function () {
                 var tTileID = this.getID(thisRing[ringTile]);
                 var tTile = currLand.tileArray[tTileID];
                 if (tTile != null) {
-                    var test1 = inArr(sTerr, tTileID);
-                    var test2 = inArr(sLscp, tTile.landscape);
                     if (((inArr(sTerr, tTileID)) || (sTerr === null)) &&
-                        (inArr(sLscp, tTile.landscape))) {
+                        (inArr(sLscp, tTile.landscape)) &&
+                        (tTile.development === undefined)) {
                         selResult.push(tTileID);
                     }
                 }
@@ -1007,6 +1019,7 @@ cPlayerArray[0] = new Player();
 cPlayerArray[0].playerOrder = 0;
 cPlayerArray[1] = new Player();
 cPlayerArray[1].playerOrder = 1;
+var currPlayer = cPlayerArray[0];
 var plrMsg = null;
 function formPlayerBar() {
     // Create blank background for player bar
@@ -1188,6 +1201,30 @@ function editClick(clkPoint) {
     }
 }
 function buildClick(clkPoint) {
+    var clkAxial = pointToHex(clkPoint);
+    var clkTileID = currLand.getID(clkAxial);
+    var clkTile = currLand.tileArray[clkTileID];
+    if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+        if (clkTile != undefined) {
+            if (inArr(glbTileSelArray, clkTileID)) {
+                // Build the selected development and set the current player as its owner
+                clkTile.development = glbBuildSel;
+                clkTile.ownedBy = currPlayer.playerID;
+                currPlayer.addTerritory(clkTileID);
+                clkTile.reDrawTile();
+                if (currPlayer.playerID === 0) {
+                    currPlayer = cPlayerArray[1];
+                    glbState = buildSetup;
+                }
+                else if (currPlayer.playerID === 1) {
+                    glbState = plrMonSetup;
+                }
+                else {
+                    console.log("Error, unexpected player ID.");
+                }
+            }
+        }
+    }
 }
 function hoverTile(corPoint) {
     var hovAxial = pointToHex(corPoint);
@@ -1305,6 +1342,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
     var tDevel = develArray[glbBuildSel];
+    glbTileSelArray = [];
     glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
     if (glbTileSelArray != []) {
         glbPulseArray = glbTileSelArray;
@@ -1313,7 +1351,6 @@ function buildSetup() {
     else {
         console.log("No applicable tile.");
     }
-    glbState = build;
 }
 // Player chooses where to build a newly bought development
 function build() {

@@ -59,7 +59,9 @@ function buildClick(clkPoint) {
 				// Build the selected development and set the current player as its owner
 				clkTile.development = glbBuildSel;
 				clkTile.ownedBy = currPlayer.playerID;
+				currPlayer.ownedDevs.push(clkTileID);
 				currPlayer.addTerritory(clkTileID);
+				glbTileSelArray = []; glbPulseArray = [];
 				clkTile.reDrawTile();
 
 				if (currPlayer.playerID === 0) {

@@ -2,7 +2,7 @@
 
 var playerIncrement = 0; // Global incrementing variable used to set playerID
 class Player {
-	// playerID is defined as a defacto default, playerOrder is determined by a coin 
+	// playerID is defined as a de facto default, playerOrder is determined by a coin 
 	//  toss analogue and is used in practice for the rest of the game
 	playerID: number;
 	playerOrder: number = 0;
@@ -10,9 +10,14 @@ class Player {
 	material: number = 2;
 	treasure: number = 0;
 	ships: number = 0;
+	territory: number[] = [];
+	ownedDevs: number[]= [];
+	deck: number[] = [];
+	hand: number[] = [];
+	discard: number[] = [];
+	trash: number[] = [];
 	activeEffects: string;
 	canClick: boolean = false;
-	territory: number[];
 
 	constructor() {
 		this.playerID = playerIncrement;
