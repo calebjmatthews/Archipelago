@@ -9,6 +9,7 @@ function onImageLoad() {
 	// This code runs when the texture atlas has loaded
 	currLand.generateLand();
 	currLand.displayLand();
+	currLand.genDevSelection();
 
 	formPlayerBar();
 	formEditBar();

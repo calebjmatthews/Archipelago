@@ -353,6 +353,11 @@ var Player = (function () {
         this.treasure = 0;
         this.ships = 0;
         this.territory = [];
+        this.ownedDevs = [];
+        this.deck = [];
+        this.hand = [];
+        this.discard = [];
+        this.trash = [];
         this.canClick = false;
         this.playerID = playerIncrement;
         playerIncrement++;
@@ -375,6 +380,7 @@ var Player = (function () {
 var landIncrement = 0; // Global incrementing variable used to set landID
 var Land = (function () {
     function Land(sentSettings) {
+        this.devSelection = [];
         this.landID = landIncrement;
         landIncrement++;
         this.lSize = sentSettings[0];
@@ -673,6 +679,42 @@ var Land = (function () {
         this.spriteArray = landSprites;
         this.sprDevArray = landDevSprs;
         renderer.render(stage);
+    };
+    Land.prototype.getClrDev = function (devClr) {
+        for (var attempts = 0; attempts < 20; attempts++) {
+            var randDev = Math.floor(Math.random() * 27) + 4;
+            if (devClr === null) {
+                if (!inArr(this.devSelection, randDev)) {
+                    return randDev;
+                }
+            }
+            else {
+                if ((!inArr(this.devSelection, randDev)) &&
+                    (develArray[randDev].color === devClr)) {
+                    return randDev;
+                }
+            }
+        }
+        console.log("Error, could not return appropriate development.");
+        return 0;
+    };
+    Land.prototype.genDevSelection = function () {
+        for (var tDev = 0; tDev < 12; tDev++) {
+            // Ensure 1 of each color except black, 2 of violet, and fill the rest of the 12 
+            //  randomly
+            if (tDev < 4) {
+                this.devSelection.push(this.getClrDev(tDev + 1));
+            }
+            else if (tDev === 4) {
+                this.devSelection.push(this.getClrDev(tDev + 1));
+                this.devSelection.push(this.getClrDev(tDev + 1));
+                tDev++;
+            }
+            else {
+                var randClr = Math.floor(Math.random() * 4) + 1;
+                this.devSelection.push(this.getClrDev(randClr));
+            }
+        }
     };
     return Land;
 }());
@@ -1210,6 +1252,7 @@ function buildClick(clkPoint) {
                 // Build the selected development and set the current player as its owner
                 clkTile.development = glbBuildSel;
                 clkTile.ownedBy = currPlayer.playerID;
+                currPlayer.ownedDevs.push(clkTileID);
                 currPlayer.addTerritory(clkTileID);
                 clkTile.reDrawTile();
                 if (currPlayer.playerID === 0) {
@@ -1217,6 +1260,9 @@ function buildClick(clkPoint) {
                     glbState = buildSetup;
                 }
                 else if (currPlayer.playerID === 1) {
+                    veClearTint(glbPulseArray);
+                    glbTileSelArray = [];
+                    glbPulseArray = [];
                     glbState = plrMonSetup;
                 }
                 else {
@@ -1273,6 +1319,11 @@ function vePulse(selTiles) {
         currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([pVal, pVal, pVal]);
     }
 }
+function veClearTint(selTiles) {
+    for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
+        currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([255, 255, 255]);
+    }
+}
 function veAllEffects() {
     if (glbPulseArray != []) {
         vePulse(glbPulseArray);
@@ -1297,6 +1348,7 @@ function onImageLoad() {
     // This code runs when the texture atlas has loaded
     currLand.generateLand();
     currLand.displayLand();
+    currLand.genDevSelection();
     formPlayerBar();
     formEditBar();
     // Start the game loop

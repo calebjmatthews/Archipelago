@@ -61,7 +61,6 @@ function buildClick(clkPoint) {
 				clkTile.ownedBy = currPlayer.playerID;
 				currPlayer.ownedDevs.push(clkTileID);
 				currPlayer.addTerritory(clkTileID);
-				glbTileSelArray = []; glbPulseArray = [];
 				clkTile.reDrawTile();
 
 				if (currPlayer.playerID === 0) {
@@ -69,6 +68,8 @@ function buildClick(clkPoint) {
 					glbState = buildSetup;
 				}
 				else if (currPlayer.playerID === 1) {
+					veClearTint(glbPulseArray);
+					glbTileSelArray = []; glbPulseArray = [];
 					glbState = plrMonSetup;
 				}
 				else {
