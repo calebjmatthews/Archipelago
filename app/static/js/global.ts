@@ -2,7 +2,7 @@
 
 // Global gameplay variables
 var glbState = edit;
-var glbBoundary = 14;
+var glbBoundary = 18;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
 var glbHWidth = 60;

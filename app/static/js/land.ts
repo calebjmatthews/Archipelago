@@ -306,6 +306,18 @@ class Land {
 					let sPos = hexToPoint([currX, currY]);
 					tSprite.position.set(sPos[0], sPos[1]);
 
+					stage.addChild(tSprite);
+					landSprites[arraySpot] = tSprite;
+				}
+			}
+		}
+
+		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
+			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
+				let arraySpot = this.getID([currX, currY]);
+				if (arraySpot != null) {
+					let tTile = lTiles[arraySpot];
+
 					let tDevSpr = null;
 					// If there is no development for this tile, insert an empty hex as placeholder
 					if (tTile.development === undefined) {
@@ -318,8 +330,6 @@ class Land {
 					let sdPos = hexToPoint([currX, currY]);
 					tDevSpr.position.set(sdPos[0], (sdPos[1] - glbHHeight));
 
-					stage.addChild(tSprite);
-					landSprites[arraySpot] = tSprite;
 					stage.addChild(tDevSpr);
 					landDevSprs[arraySpot] = tDevSpr;
 				}

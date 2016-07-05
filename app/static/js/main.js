@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 /// <reference path="references.ts" />
 // Global gameplay variables
 var glbState = edit;
-var glbBoundary = 14;
+var glbBoundary = 18;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
 var glbHWidth = 60;
@@ -658,6 +658,16 @@ var Land = (function () {
                     tSprite.scale.set(tTile.scale, tTile.scale);
                     var sPos = hexToPoint([currX, currY]);
                     tSprite.position.set(sPos[0], sPos[1]);
+                    stage.addChild(tSprite);
+                    landSprites[arraySpot] = tSprite;
+                }
+            }
+        }
+        for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
+            for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
+                var arraySpot = this.getID([currX, currY]);
+                if (arraySpot != null) {
+                    var tTile = lTiles[arraySpot];
                     var tDevSpr = null;
                     // If there is no development for this tile, insert an empty hex as placeholder
                     if (tTile.development === undefined) {
@@ -669,8 +679,6 @@ var Land = (function () {
                     tDevSpr.scale.set(tTile.scale, tTile.scale);
                     var sdPos = hexToPoint([currX, currY]);
                     tDevSpr.position.set(sdPos[0], (sdPos[1] - glbHHeight));
-                    stage.addChild(tSprite);
-                    landSprites[arraySpot] = tSprite;
                     stage.addChild(tDevSpr);
                     landDevSprs[arraySpot] = tDevSpr;
                 }
