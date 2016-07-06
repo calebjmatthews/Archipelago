@@ -5,3 +5,4 @@ app/__init__.pyc
 app/views.pyc
 config.pyc
 typings/
+_ignore/
