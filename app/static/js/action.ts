@@ -60,14 +60,16 @@ function buildClick(clkPoint) {
 				clkTile.development = glbBuildSel;
 				clkTile.ownedBy = currPlayer.playerID;
 				currPlayer.ownedDevs.push(clkTileID);
+				currPlayer.discard.push(clkTileID);
 				currPlayer.addTerritory(clkTileID);
 				clkTile.reDrawTile();
 
-				if (currPlayer.playerID === 0) {
+				// Move to the next game state
+				if ((glbMonth ===0) && (currPlayer.playerID === 0)) {
 					currPlayer = cPlayerArray[1];
 					glbState = buildSetup;
 				}
-				else if (currPlayer.playerID === 1) {
+				else if ((glbMonth ===0) && currPlayer.playerID === 1) {
 					veClearTint(glbPulseArray);
 					glbTileSelArray = []; glbPulseArray = [];
 					glbState = plrMonSetup;

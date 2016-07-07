@@ -56,7 +56,16 @@ function monthSetup() {
 
 // Applies prior to each player's round
 function plrMonSetup() {
-
+	// Draw the hand of three developments
+	for (let tCard=0; tCard < 3; tCard++) {
+		if (currPlayer.deck === []) {
+			currPlayer.shuffleDeck();
+			currPlayer.drawDev();
+		}
+		else {
+			currPlayer.drawDev();
+		}
+	}
 }
 
 // Player chooses which of their active developments to use

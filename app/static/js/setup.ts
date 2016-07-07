@@ -67,7 +67,7 @@ function formPlayerBar() {
 
 function updatePlayerBar() {
 	stage.removeChild(plrMsg);
-	let plrMsgContent = "Month " + (glbMonth+1);
+	let plrMsgContent = "Month " + (glbMonth);
 
 	for (let tPlr=0; tPlr < cPlayerArray.length; tPlr++) {
 		plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder+1) + ": " + 

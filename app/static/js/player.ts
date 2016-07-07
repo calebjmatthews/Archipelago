@@ -36,4 +36,36 @@ class Player {
 			}
 		}
 	}
+
+	shuffleDeck() {
+		if (this.deck === []) {
+			this.deck = this.discard;
+			this.discard = [];
+
+			for (let deckSpot = this.deck.length-1; deckSpot > 0; deckSpot --) {
+				// randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+				let randDev = Math.floor(Math.random() * (deckSpot+1));
+				let dsValue = this.deck[deckSpot];
+				let rdValue = this.deck[randDev];
+				// Exchange values
+				this.deck[deckSpot] = rdValue;
+				this.deck[randDev] = dsValue;
+			}
+		}
+		else {
+			// Incomplete, shuffling code to be added
+		}
+	}
+
+	drawDev() {
+		let removedDev = this.deck[this.deck.length-1];
+		this.hand.push(removedDev);
+
+		// Rebuild the deck, excluding the removed card
+		let newDeck = [];
+		for (let deckSpot = 0; deckSpot < this.deck.length-1; deckSpot++) {
+			newDeck[deckSpot] = this.deck[deckSpot];
+		}
+		this.deck = newDeck;
+	}
 }
