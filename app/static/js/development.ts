@@ -167,14 +167,14 @@ develArray[eDEVEL.PeachOrchard].requirement = [];
 develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
 
-develArray[eDEVEL.BambooCutters] = new Development(eDEVEL.BambooCutters, 
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, 
 	["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], 
 	("res: +1 Material"));
-develArray[eDEVEL.BambooCutters].cost = [];
-develArray[eDEVEL.BambooCutters].cost[eCOST.Material] = -1;
-develArray[eDEVEL.BambooCutters].requirement = [];
-develArray[eDEVEL.BambooCutters].result = [];
-develArray[eDEVEL.BambooCutters].result[eRES.Material] = 1;
+develArray[eDEVEL.Woodcutters].cost = [];
+develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -1;
+develArray[eDEVEL.Woodcutters].requirement = [];
+develArray[eDEVEL.Woodcutters].result = [];
+develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
 
 develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, 
 	["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], 
@@ -196,14 +196,15 @@ develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = -1;
 develArray[eDEVEL.StoneQuarry].result = [];
 develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 3;
 
-develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, 
-	["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Rocky], 
+develArray[eDEVEL.CharcoalFurnace] = new Development(eDEVEL.CharcoalFurnace, 
+	["charcoalfurnace.png"], "Charcoal Furnace", eDCLR.Orange, [eLSCP.Forested], 
 	("res: +2 Material"));
-develArray[eDEVEL.Woodcutters].cost = [];
-develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -2;
-develArray[eDEVEL.Woodcutters].requirement = [];
-develArray[eDEVEL.Woodcutters].result = [];
-develArray[eDEVEL.Woodcutters].result[eRES.Material] = 2;
+develArray[eDEVEL.CharcoalFurnace].cost = [];
+develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = -2;
+develArray[eDEVEL.CharcoalFurnace].requirement = [];
+develArray[eDEVEL.CharcoalFurnace].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.CharcoalFurnace].result = [];
+develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
 
 develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, 
 	["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], 

@@ -34,7 +34,7 @@ enum eLSCP { Grassy, Forested, Rocky, Desert, Sea, Shore }
 // Enumerates options for developments
 enum eDEVEL { Jungle, Freshwater, Cave, BaseCamp, FireCrew, LaborPort, SeasSideParade, 
 	TradeHarbor, AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, 
-	SmokeHouse, PeachOrchard, BambooCutters, SilverMine, StoneQuarry, Woodcutters, 
+	SmokeHouse, PeachOrchard, Woodcutters, SilverMine, StoneQuarry, CharcoalFurnace, 
 	CobaltMine, WorkerVillage, TeaHouse, Demolition, ShepherdVillage, Town, 
 	MerchantShip, VentureShip, WorkmanShip, OpulentVessel, AbundantVessel, SteadyVessel };
 
