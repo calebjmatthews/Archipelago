@@ -85,10 +85,10 @@ var eDEVEL;
     eDEVEL[eDEVEL["HuntingCamp"] = 12] = "HuntingCamp";
     eDEVEL[eDEVEL["SmokeHouse"] = 13] = "SmokeHouse";
     eDEVEL[eDEVEL["PeachOrchard"] = 14] = "PeachOrchard";
-    eDEVEL[eDEVEL["BambooCutters"] = 15] = "BambooCutters";
+    eDEVEL[eDEVEL["Woodcutters"] = 15] = "Woodcutters";
     eDEVEL[eDEVEL["SilverMine"] = 16] = "SilverMine";
     eDEVEL[eDEVEL["StoneQuarry"] = 17] = "StoneQuarry";
-    eDEVEL[eDEVEL["Woodcutters"] = 18] = "Woodcutters";
+    eDEVEL[eDEVEL["CharcoalFurnace"] = 18] = "CharcoalFurnace";
     eDEVEL[eDEVEL["CobaltMine"] = 19] = "CobaltMine";
     eDEVEL[eDEVEL["WorkerVillage"] = 20] = "WorkerVillage";
     eDEVEL[eDEVEL["TeaHouse"] = 21] = "TeaHouse";
@@ -359,6 +359,7 @@ var Player = (function () {
         this.discard = [];
         this.trash = [];
         this.canClick = false;
+        this.activeSprArray = [];
         this.playerID = playerIncrement;
         playerIncrement++;
     }
@@ -372,6 +373,71 @@ var Player = (function () {
             if (!(inArr(this.territory, neighbors[cNeigh]))) {
                 this.territory.push(neighbors[cNeigh]);
             }
+        }
+    };
+    Player.prototype.shuffleDeck = function () {
+        if (this.deck === []) {
+            this.deck = this.discard;
+            this.discard = [];
+        }
+        else {
+        }
+        for (var deckSpot = this.deck.length - 1; deckSpot > 0; deckSpot--) {
+            // randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+            var randDev = Math.floor(Math.random() * (deckSpot + 1));
+            var dsValue = this.deck[deckSpot];
+            var rdValue = this.deck[randDev];
+            // Exchange values
+            this.deck[deckSpot] = rdValue;
+            this.deck[randDev] = dsValue;
+        }
+    };
+    Player.prototype.drawDev = function () {
+        var removedDev = this.deck[this.deck.length - 1];
+        this.hand.push(removedDev);
+        // Rebuild the deck, excluding the removed card
+        var newDeck = [];
+        for (var deckSpot = 0; deckSpot < this.deck.length - 1; deckSpot++) {
+            newDeck[deckSpot] = this.deck[deckSpot];
+        }
+        this.deck = newDeck;
+    };
+    Player.prototype.displayActives = function () {
+        var sprMed = loader.resources["static/img/images.json"].textures;
+        var numActives = 0;
+        if (this.hand.length < 3) {
+            numActives = 3;
+        }
+        else {
+            numActives = this.hand.length;
+        }
+        for (var activeSpot = 0; activeSpot < numActives; activeSpot++) {
+            var xPos = 0;
+            var yPos = 0;
+            if ((activeSpot % 3) === 0) {
+                xPos = 100 - (glbHWidth / 2);
+                // Y positioning uses hex width in order to create an even margin on  both 
+                //  top and sides
+                yPos = 100 - (glbHWidth / 2) + ((activeSpot / 3) * glbHHeight);
+            }
+            else if (((activeSpot - 1) % 3) === 0) {
+                xPos = 100 - glbHWidth - (glbHWidth / 2);
+                yPos = 100 - glbHHeight - (glbHWidth / 2) +
+                    (((activeSpot - 1) / 3) * glbHHeight);
+            }
+            else if (((activeSpot - 2) % 3) === 0) {
+                xPos = 100 + (glbHWidth / 2);
+                yPos = 100 - glbHHeight - (glbHWidth / 2) +
+                    (((activeSpot - 2) / 3) * glbHHeight);
+            }
+            else {
+                console.log("Error, unexpected development hand value.");
+            }
+            var tSprite = new Sprite(sprMed["whitehex.png"]);
+            tSprite.scale.set(0.2, 0.2);
+            tSprite.position.set(xPos, yPos);
+            stage.addChild(tSprite);
+            this.activeSprArray[activeSpot] = tSprite;
         }
     };
     return Player;
@@ -914,12 +980,12 @@ develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = -2;
 develArray[eDEVEL.PeachOrchard].requirement = [];
 develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
-develArray[eDEVEL.BambooCutters] = new Development(eDEVEL.BambooCutters, ["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], ("res: +1 Material"));
-develArray[eDEVEL.BambooCutters].cost = [];
-develArray[eDEVEL.BambooCutters].cost[eCOST.Material] = -1;
-develArray[eDEVEL.BambooCutters].requirement = [];
-develArray[eDEVEL.BambooCutters].result = [];
-develArray[eDEVEL.BambooCutters].result[eRES.Material] = 1;
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], ("res: +1 Material"));
+develArray[eDEVEL.Woodcutters].cost = [];
+develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -1;
+develArray[eDEVEL.Woodcutters].requirement = [];
+develArray[eDEVEL.Woodcutters].result = [];
+develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
 develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("req: -2 Food; res: +1 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
 develArray[eDEVEL.SilverMine].cost[eCOST.Material] = -2;
@@ -934,12 +1000,13 @@ develArray[eDEVEL.StoneQuarry].requirement = [];
 develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = -1;
 develArray[eDEVEL.StoneQuarry].result = [];
 develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 3;
-develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Rocky], ("res: +2 Material"));
-develArray[eDEVEL.Woodcutters].cost = [];
-develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -2;
-develArray[eDEVEL.Woodcutters].requirement = [];
-develArray[eDEVEL.Woodcutters].result = [];
-develArray[eDEVEL.Woodcutters].result[eRES.Material] = 2;
+develArray[eDEVEL.CharcoalFurnace] = new Development(eDEVEL.CharcoalFurnace, ["charcoalfurnace.png"], "Charcoal Furnace", eDCLR.Orange, [eLSCP.Forested], ("res: +2 Material"));
+develArray[eDEVEL.CharcoalFurnace].cost = [];
+develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = -2;
+develArray[eDEVEL.CharcoalFurnace].requirement = [];
+develArray[eDEVEL.CharcoalFurnace].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.CharcoalFurnace].result = [];
+develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
 develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, ["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], ("res: +1 Treasure"));
 develArray[eDEVEL.CobaltMine].cost = [];
 develArray[eDEVEL.CobaltMine].cost[eCOST.Material] = -4;
@@ -1089,7 +1156,7 @@ function formPlayerBar() {
 }
 function updatePlayerBar() {
     stage.removeChild(plrMsg);
-    var plrMsgContent = "Month " + (glbMonth + 1);
+    var plrMsgContent = "Month " + (glbMonth);
     for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
         plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder + 1) + ": " +
             "F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material +
@@ -1261,13 +1328,15 @@ function buildClick(clkPoint) {
                 clkTile.development = glbBuildSel;
                 clkTile.ownedBy = currPlayer.playerID;
                 currPlayer.ownedDevs.push(clkTileID);
+                currPlayer.discard.push(clkTileID);
                 currPlayer.addTerritory(clkTileID);
                 clkTile.reDrawTile();
-                if (currPlayer.playerID === 0) {
+                // Move to the next game state
+                if ((glbMonth === 0) && (currPlayer.playerID === 0)) {
                     currPlayer = cPlayerArray[1];
                     glbState = buildSetup;
                 }
-                else if (currPlayer.playerID === 1) {
+                else if ((glbMonth === 0) && currPlayer.playerID === 1) {
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
                     glbPulseArray = [];
@@ -1389,6 +1458,18 @@ function monthSetup() {
 }
 // Applies prior to each player's round
 function plrMonSetup() {
+    // Draw the hand of three developments
+    for (var tCard = 0; tCard < 3; tCard++) {
+        if (currPlayer.deck === []) {
+            currPlayer.shuffleDeck();
+            currPlayer.drawDev();
+        }
+        else {
+            currPlayer.drawDev();
+        }
+    }
+    currPlayer.displayActives();
+    glbState = active;
 }
 // Player chooses which of their active developments to use
 function active() {

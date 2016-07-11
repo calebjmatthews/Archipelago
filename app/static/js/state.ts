@@ -66,6 +66,9 @@ function plrMonSetup() {
 			currPlayer.drawDev();
 		}
 	}
+
+	currPlayer.displayActives();
+	glbState = active;
 }
 
 // Player chooses which of their active developments to use

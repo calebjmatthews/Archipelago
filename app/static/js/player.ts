@@ -18,6 +18,7 @@ class Player {
 	trash: number[] = [];
 	activeEffects: string;
 	canClick: boolean = false;
+	activeSprArray: Sprite[] = [];
 
 	constructor() {
 		this.playerID = playerIncrement;
@@ -41,19 +42,19 @@ class Player {
 		if (this.deck === []) {
 			this.deck = this.discard;
 			this.discard = [];
-
-			for (let deckSpot = this.deck.length-1; deckSpot > 0; deckSpot --) {
-				// randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
-				let randDev = Math.floor(Math.random() * (deckSpot+1));
-				let dsValue = this.deck[deckSpot];
-				let rdValue = this.deck[randDev];
-				// Exchange values
-				this.deck[deckSpot] = rdValue;
-				this.deck[randDev] = dsValue;
-			}
 		}
 		else {
-			// Incomplete, shuffling code to be added
+			// Full/semi-full deck shuffling code to be added
+		}
+
+		for (let deckSpot = this.deck.length-1; deckSpot > 0; deckSpot --) {
+			// randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+			let randDev = Math.floor(Math.random() * (deckSpot+1));
+			let dsValue = this.deck[deckSpot];
+			let rdValue = this.deck[randDev];
+			// Exchange values
+			this.deck[deckSpot] = rdValue;
+			this.deck[randDev] = dsValue;
 		}
 	}
 
@@ -67,5 +68,46 @@ class Player {
 			newDeck[deckSpot] = this.deck[deckSpot];
 		}
 		this.deck = newDeck;
+	}
+
+	displayActives() {
+		let sprMed = loader.resources["static/img/images.json"].textures;
+
+		let numActives = 0;
+		if (this.hand.length < 3) {
+			numActives = 3;
+		}
+		else { numActives = this.hand.length; }
+
+		for (let activeSpot = 0; activeSpot < numActives; activeSpot++) {
+			let xPos = 0;
+			let yPos = 0;
+			if ((activeSpot % 3) === 0) {
+				xPos = 100 - (glbHWidth / 2);
+				// Y positioning uses hex width in order to create an even margin on  both 
+				//  top and sides
+				yPos = 100 - (glbHWidth / 2) + ((activeSpot/3) * glbHHeight);
+			}
+			else if (((activeSpot-1) % 3) === 0) {
+				xPos = 100 - glbHWidth - (glbHWidth/2);
+				yPos = 100 - glbHHeight - (glbHWidth / 2) + 
+					(((activeSpot-1)/3) * glbHHeight);
+			}
+			else if (((activeSpot-2) % 3) === 0) {
+				xPos = 100 + (glbHWidth/2);
+				yPos = 100 - glbHHeight - (glbHWidth / 2) + 
+					(((activeSpot-2)/3) * glbHHeight);
+			}
+			else {
+				console.log("Error, unexpected development hand value.");
+			}
+
+			
+			let tSprite = new Sprite(sprMed["whitehex.png"]);
+			tSprite.scale.set(0.2, 0.2);
+			tSprite.position.set(xPos, yPos);
+			stage.addChild(tSprite);
+			this.activeSprArray[activeSpot] = tSprite;
+		}
 	}
 }
