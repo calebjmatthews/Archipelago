@@ -101,6 +101,8 @@ class Player {
 			else {
 				console.log("Error, unexpected development hand value.");
 			}
+			// Corect for position of sidebar
+			xPos = renderer.width - 200 + xPos;
 
 			
 			let tSprite = new Sprite(sprMed["whitehex.png"]);

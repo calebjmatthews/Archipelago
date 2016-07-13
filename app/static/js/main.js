@@ -433,6 +433,8 @@ var Player = (function () {
             else {
                 console.log("Error, unexpected development hand value.");
             }
+            // Corect for position of sidebar
+            xPos = renderer.width - 200 + xPos;
             var tSprite = new Sprite(sprMed["whitehex.png"]);
             tSprite.scale.set(0.2, 0.2);
             tSprite.position.set(xPos, yPos);
@@ -755,7 +757,7 @@ var Land = (function () {
         renderer.render(stage);
     };
     Land.prototype.getClrDev = function (devClr) {
-        for (var attempts = 0; attempts < 20; attempts++) {
+        for (var attempts = 0; attempts < 80; attempts++) {
             var randDev = Math.floor(Math.random() * 27) + 4;
             if (devClr === null) {
                 if (!inArr(this.devSelection, randDev)) {
@@ -1468,6 +1470,7 @@ function plrMonSetup() {
             currPlayer.drawDev();
         }
     }
+    removeEditBar();
     currPlayer.displayActives();
     glbState = active;
 }

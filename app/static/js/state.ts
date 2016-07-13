@@ -67,6 +67,7 @@ function plrMonSetup() {
 		}
 	}
 
+	removeEditBar();
 	currPlayer.displayActives();
 	glbState = active;
 }

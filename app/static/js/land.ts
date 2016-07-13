@@ -341,7 +341,7 @@ class Land {
 	}
 
 	getClrDev(devClr) {
-		for (let attempts=0; attempts < 20; attempts++) {
+		for (let attempts=0; attempts < 80; attempts++) {
 			let randDev = Math.floor(Math.random() * 27) + 4;
 			if (devClr === null) {
 				if (!inArr(this.devSelection, randDev)) {

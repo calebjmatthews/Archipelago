@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
+        <string>C:/Users/cmatthews/Documents/JS/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -200,6 +200,7 @@
             <key type="filename">sea.png</key>
             <key type="filename">shore.png</key>
             <key type="filename">tall hex.png</key>
+            <key type="filename">whitehex.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -219,6 +220,7 @@
             <filename>freshwater1.png</filename>
             <filename>jungle1.png</filename>
             <filename>basecamp.png</filename>
+            <filename>whitehex.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
