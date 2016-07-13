@@ -13,6 +13,7 @@ var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbBuildSel = null;
 var glbTileSelArray = [];
@@ -533,10 +534,10 @@ var Land = (function () {
             probArray[iii] *= climateProb[iii];
             probSum += probArray[iii];
         }
-        // If the total of the probabilities is above 0.5, adjust downwards
-        if (probSum >= 0.15) {
+        // If the total of the probabilities is above a ceiling constant, adjust downwards
+        if (probSum >= glbLscpCeil) {
             for (var jjj = 0; jjj < 4; jjj++) {
-                probArray[jjj] *= (0.15 / probSum);
+                probArray[jjj] *= (glbLscpCeil / probSum);
             }
         }
         // If a non-sea tile borders the sea, calculate probability of change (n/6/2)
@@ -578,7 +579,8 @@ var Land = (function () {
             }
         }
         if ((clustered) && (lscpArray[tTile.landscape].black != null)) {
-            if (Math.random() < climateArray[this.lClimate].devel) {
+            if (Math.random() < (climateArray[this.lClimate].prob[tTile.landscape] *
+                climateArray[this.lClimate].devel)) {
                 return lscpArray[tTile.landscape].black;
             }
         }
@@ -803,43 +805,43 @@ var Climate = (function () {
     return Climate;
 }());
 var climateArray = [];
-climateArray[eCLIMATE.Desert] = new Climate(eCLIMATE.Desert, 0.1);
+climateArray[eCLIMATE.Desert] = new Climate(eCLIMATE.Desert, 0.25);
 climateArray[eCLIMATE.Desert].prob = [];
 climateArray[eCLIMATE.Desert].prob[eLSCP.Desert] = 0.3;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Forested] = 0.05;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Grassy] = 0.15;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Forested] = new Climate(eCLIMATE.Forested, 0.1);
+climateArray[eCLIMATE.Forested] = new Climate(eCLIMATE.Forested, 0.25);
 climateArray[eCLIMATE.Forested].prob = [];
 climateArray[eCLIMATE.Forested].prob[eLSCP.Desert] = 0.05;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Forested] = 0.6;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Grassy] = new Climate(eCLIMATE.Grassy, 0.1);
+climateArray[eCLIMATE.Grassy] = new Climate(eCLIMATE.Grassy, 0.25);
 climateArray[eCLIMATE.Grassy].prob = [];
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Forested] = 0.2;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Rocky] = new Climate(eCLIMATE.Rocky, 0.1);
+climateArray[eCLIMATE.Rocky] = new Climate(eCLIMATE.Rocky, 0.25);
 climateArray[eCLIMATE.Rocky].prob = [];
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Forested] = 0.1;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Rocky] = 0.4;
-climateArray[eCLIMATE.Varied] = new Climate(eCLIMATE.Varied, 0.2);
+climateArray[eCLIMATE.Varied] = new Climate(eCLIMATE.Varied, 0.4);
 climateArray[eCLIMATE.Varied].prob = [];
 climateArray[eCLIMATE.Varied].prob[eLSCP.Desert] = 0.2;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Forested] = 0.4;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Rocky] = 0.4;
-climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.25);
+climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.5);
 climateArray[eCLIMATE.Jungle].prob = [];
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Desert] = 0.05;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.6;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.05;
-climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.25);
+climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.5);
 climateArray[eCLIMATE.Mountain].prob = [];
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Forested] = 0.1;
@@ -847,7 +849,7 @@ climateArray[eCLIMATE.Mountain].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Rocky] = 0.6;
 climateArray[eCLIMATE.Wet] = new Climate(eCLIMATE.Wet, 0.5);
 climateArray[eCLIMATE.Wet].prob = [];
-climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.01;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Forested] = 0.2;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
@@ -1131,7 +1133,7 @@ glbBuildSel = eDEVEL.BaseCamp;
 glbState = buildSetup;
 var pointer = null;
 // Initiate game values (to be obsoleted)
-var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
+var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Forested]);
 var currLand = littleLand;
 var cPlayerArray = [];
 cPlayerArray[0] = new Player();

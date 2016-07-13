@@ -100,10 +100,10 @@ class Land {
 			probSum += probArray[iii];
 		}
 
-		// If the total of the probabilities is above 0.5, adjust downwards
-		if (probSum >= 0.15) {
+		// If the total of the probabilities is above a ceiling constant, adjust downwards
+		if (probSum >= glbLscpCeil) {
 			for (let jjj = 0; jjj < 4; jjj++) {
-				probArray[jjj] *= (0.15 / probSum);
+				probArray[jjj] *= (glbLscpCeil / probSum);
 			}
 		}
 
@@ -152,7 +152,8 @@ class Land {
 		}
 
 		if ((clustered) && (lscpArray[tTile.landscape].black != null)) {
-			if (Math.random() < climateArray[this.lClimate].devel) {
+			if (Math.random() < (climateArray[this.lClimate].prob[tTile.landscape] *
+				climateArray[this.lClimate].devel)) {
 				return lscpArray[tTile.landscape].black;
 			}
 		}

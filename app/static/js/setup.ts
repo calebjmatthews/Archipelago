@@ -39,7 +39,7 @@ glbState = buildSetup;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
-let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
+let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Forested]);
 let currLand = littleLand;
 let cPlayerArray = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
