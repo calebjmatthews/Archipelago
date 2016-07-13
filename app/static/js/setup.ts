@@ -35,7 +35,7 @@
 var tb = null;
 // Set the default game state to 'edit'
 glbBuildSel = eDEVEL.BaseCamp;
-glbState = buildSetup;
+glbState = edit;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
@@ -85,7 +85,7 @@ var devEditArray = [];
 var editMsgArray = [];
 function formEditBar() {
 	// Since the edit bar includes both landscapes and some black developments, the
-	//  for loop needs to be compensate for the total number of landscapes when iterating
+	//  for loop needs to be compensate for the total number of options when iterating
 	//  through black developments
 
 	// Create blank background for edit bar
@@ -104,7 +104,6 @@ function formEditBar() {
 		let bScale = 0.2;
 		if (cButton < glbNumLscps) {
 			buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-			tb.makeInteractive(buttonArray[cButton]);
 			buttonArray[cButton].position.set((renderer.width-180), (20+40*cButton));
 			buttonArray[cButton].scale.set(bScale, bScale);
 			stage.addChild(buttonArray[cButton]);
@@ -118,8 +117,7 @@ function formEditBar() {
 			// Set up the development's background as the button
 			let bgLscp = develArray[cButton-glbNumLscps].lscpRequired[0];
 			buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-			tb.makeInteractive(buttonArray[cButton]);
-			buttonArray[cButton].position.set((renderer.width-180), (40 + 40*cButton));
+			buttonArray[cButton].position.set((renderer.width-180), (50 + 40*cButton));
 			buttonArray[cButton].scale.set(bScale, bScale);
 			stage.addChild(buttonArray[cButton]);
 
@@ -128,33 +126,19 @@ function formEditBar() {
 			let devSprID = develArray[cButton-glbNumLscps].sprID[0];
 			let tDevSpr = new Sprite(sprMed[devSprID]);
 			tDevSpr.scale.set(bScale, bScale);
-			tDevSpr.position.set((renderer.width-180), (10+40*cButton));
+			tDevSpr.position.set((renderer.width-180), (20+40*cButton));
 			stage.addChild(tDevSpr);
 			devEditArray[cButton-glbNumLscps] = tDevSpr;
 
 			editMsgArray[cButton] = new Text((chosenText), 
 			{font: "16px sans-serif", fill: "white"});
-			editMsgArray[cButton].position.set((renderer.width-110), (45 + 40*cButton));
+			editMsgArray[cButton].position.set((renderer.width-110), (55 + 40*cButton));
 			stage.addChild(editMsgArray[cButton]);
 		}
 		else {
 			console.log("Error: unexpected current button incremental variable.");
 		}
 	}
-
-	// Can't use a for loop because press events act like watchers
-	buttonArray[eLSCP.Grassy].press = () => { glbPainting = eLSCP.Grassy; }
-	buttonArray[eLSCP.Shore].press = () => { glbPainting = eLSCP.Shore; }
-	buttonArray[eLSCP.Forested].press = () => { glbPainting = eLSCP.Forested; }
-	buttonArray[eLSCP.Rocky].press = () => { glbPainting = eLSCP.Rocky; }
-	buttonArray[eLSCP.Desert].press = () => { glbPainting = eLSCP.Desert; }
-	buttonArray[eLSCP.Sea].press = () => { glbPainting = eLSCP.Sea; }
-	buttonArray[(glbNumLscps + eDEVEL.Cave)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Cave; }
-	buttonArray[(glbNumLscps + eDEVEL.Freshwater)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Freshwater; }
-	buttonArray[(glbNumLscps + eDEVEL.Jungle)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
 function removeEditBar() {

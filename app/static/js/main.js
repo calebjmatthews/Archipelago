@@ -1130,7 +1130,7 @@ loader
 var tb = null;
 // Set the default game state to 'edit'
 glbBuildSel = eDEVEL.BaseCamp;
-glbState = buildSetup;
+glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
 var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Forested]);
@@ -1175,7 +1175,7 @@ var devEditArray = [];
 var editMsgArray = [];
 function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
-    //  for loop needs to be compensate for the total number of landscapes when iterating
+    //  for loop needs to be compensate for the total number of options when iterating
     //  through black developments
     // Create blank background for edit bar
     var designBG = new Graphics();
@@ -1192,7 +1192,6 @@ function formEditBar() {
         var bScale = 0.2;
         if (cButton < glbNumLscps) {
             buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-            tb.makeInteractive(buttonArray[cButton]);
             buttonArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
             buttonArray[cButton].scale.set(bScale, bScale);
             stage.addChild(buttonArray[cButton]);
@@ -1204,8 +1203,7 @@ function formEditBar() {
             // Set up the development's background as the button
             var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
             buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-            tb.makeInteractive(buttonArray[cButton]);
-            buttonArray[cButton].position.set((renderer.width - 180), (40 + 40 * cButton));
+            buttonArray[cButton].position.set((renderer.width - 180), (50 + 40 * cButton));
             buttonArray[cButton].scale.set(bScale, bScale);
             stage.addChild(buttonArray[cButton]);
             // Create the development as the text and as a facade
@@ -1213,33 +1211,17 @@ function formEditBar() {
             var devSprID = develArray[cButton - glbNumLscps].sprID[0];
             var tDevSpr = new Sprite(sprMed[devSprID]);
             tDevSpr.scale.set(bScale, bScale);
-            tDevSpr.position.set((renderer.width - 180), (10 + 40 * cButton));
+            tDevSpr.position.set((renderer.width - 180), (20 + 40 * cButton));
             stage.addChild(tDevSpr);
             devEditArray[cButton - glbNumLscps] = tDevSpr;
             editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 110), (45 + 40 * cButton));
+            editMsgArray[cButton].position.set((renderer.width - 110), (55 + 40 * cButton));
             stage.addChild(editMsgArray[cButton]);
         }
         else {
             console.log("Error: unexpected current button incremental variable.");
         }
     }
-    // Can't use a for loop because press events act like watchers
-    buttonArray[eLSCP.Grassy].press = function () { glbPainting = eLSCP.Grassy; };
-    buttonArray[eLSCP.Shore].press = function () { glbPainting = eLSCP.Shore; };
-    buttonArray[eLSCP.Forested].press = function () { glbPainting = eLSCP.Forested; };
-    buttonArray[eLSCP.Rocky].press = function () { glbPainting = eLSCP.Rocky; };
-    buttonArray[eLSCP.Desert].press = function () { glbPainting = eLSCP.Desert; };
-    buttonArray[eLSCP.Sea].press = function () { glbPainting = eLSCP.Sea; };
-    buttonArray[(glbNumLscps + eDEVEL.Cave)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Cave;
-    };
-    buttonArray[(glbNumLscps + eDEVEL.Freshwater)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Freshwater;
-    };
-    buttonArray[(glbNumLscps + eDEVEL.Jungle)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Jungle;
-    };
 }
 function removeEditBar() {
     for (var cButton = 0; cButton < buttonArray.length; cButton++) {
@@ -1297,7 +1279,8 @@ function describeDevel(descPoint, descTile) {
     console.log("Description: " + tDevel.description);
     console.log("Cost: " + tDevel.cost);
 }
-function editClick(clkPoint) {
+function editClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
@@ -1321,7 +1304,31 @@ function editClick(clkPoint) {
         }
     }
 }
-function buildClick(clkPoint) {
+function editBarClick(clkPoint) {
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels); cOption++) {
+        if (cOption < glbNumLscps) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (20 + (40 * cOption)) &&
+                (clkPoint[1]) < (60 * (1 + cOption))) {
+                glbPainting = cOption;
+            }
+        }
+        else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (50 + (40 * cOption)) &&
+                (clkPoint[1]) < (90 * (1 + cOption))) {
+                glbPainting = cOption;
+            }
+        }
+        else {
+            console.log("Unexpected edit bar value.");
+        }
+    }
+}
+function buildClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTileID = currLand.getID(clkAxial);
     var clkTile = currLand.tileArray[clkTileID];
@@ -1354,8 +1361,9 @@ function buildClick(clkPoint) {
     }
 }
 function hoverTile(corPoint) {
-    var hovAxial = pointToHex(corPoint);
-    if ((hovAxial != undefined) && ((corPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+    var hovAxial = pointToHex(clkPoint);
+    if ((hovAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
         if (currLand.spriteArray[hovArraySpot] != undefined) {
             if (lastHex != null) {
@@ -1449,13 +1457,15 @@ function gameLoop() {
 var lastHex = null;
 function edit() {
     // Click event handling
-    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        editClick(corPoint);
+        if ((pointer.x) < (renderer.width - 200)) {
+            editClick([pointer.x, pointer.y]);
+        }
+        else {
+            editBarClick([pointer.x, pointer.y]);
+        }
     }
-    hoverTile(corPoint);
-    // msgPoint.text = ("Coords: " + corPoint);
-    // msgAxial.text = ("Hex: " + hovAxial);
+    hoverTile([pointer.x, pointer.y]);
 }
 // Applies prior to every game round
 function monthSetup() {
@@ -1501,11 +1511,10 @@ function buildSetup() {
 // Player chooses where to build a newly bought development
 function build() {
     // Click event handling
-    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        buildClick(corPoint);
+        buildClick([pointer.x, pointer.y]);
     }
-    hoverTile(corPoint);
+    hoverTile([pointer.x, pointer.y]);
 }
 // Applies after a player has finished their turn
 function cleanup() {
