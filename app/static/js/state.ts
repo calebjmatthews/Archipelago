@@ -48,7 +48,10 @@ function edit() {
 		}
 	}
 
-	hoverTile([pointer.x, pointer.y]);
+	if (pointer.x < (renderer.width - 200)) {
+		hoverTile([pointer.x, pointer.y]);
+	}
+	else { hoverEditBar([pointer.x, pointer.y]); }
 }
 
 // Applies prior to every game round

@@ -15,6 +15,7 @@ var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
+var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
 // Initiate visual effect variables
@@ -1170,7 +1171,8 @@ function updatePlayerBar() {
     plrMsg.position.set(3, 1);
     stage.addChild(plrMsg);
 }
-var buttonArray = [];
+var editBgArray = [];
+var editBtnArray = [];
 var devEditArray = [];
 var editMsgArray = [];
 function formEditBar() {
@@ -1191,21 +1193,41 @@ function formEditBar() {
         var chosenText = null;
         var bScale = 0.2;
         if (cButton < glbNumLscps) {
-            buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-            buttonArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
-            buttonArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(buttonArray[cButton]);
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (20 + (40 * cButton));
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // An example of the landscape tile in question
+            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
+            editBtnArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
+            editBtnArray[cButton].scale.set(bScale, bScale);
+            stage.addChild(editBtnArray[cButton]);
+            // Accompanying text
             editMsgArray[cButton] = new Text((lscpArray[cButton].name), { font: "16px sans-serif", fill: "white" });
             editMsgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
             stage.addChild(editMsgArray[cButton]);
         }
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 40);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (50 + (40 * cButton));
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
             // Set up the development's background as the button
             var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
-            buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-            buttonArray[cButton].position.set((renderer.width - 180), (50 + 40 * cButton));
-            buttonArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(buttonArray[cButton]);
+            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
+            editBtnArray[cButton].position.set((renderer.width - 180), (50 + 40 * cButton));
+            editBtnArray[cButton].scale.set(bScale, bScale);
+            stage.addChild(editBtnArray[cButton]);
             // Create the development as the text and as a facade
             chosenText = develArray[cButton - glbNumLscps].name;
             var devSprID = develArray[cButton - glbNumLscps].sprID[0];
@@ -1214,6 +1236,7 @@ function formEditBar() {
             tDevSpr.position.set((renderer.width - 180), (20 + 40 * cButton));
             stage.addChild(tDevSpr);
             devEditArray[cButton - glbNumLscps] = tDevSpr;
+            // Accompanying text
             editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
             editMsgArray[cButton].position.set((renderer.width - 110), (55 + 40 * cButton));
             stage.addChild(editMsgArray[cButton]);
@@ -1224,8 +1247,8 @@ function formEditBar() {
     }
 }
 function removeEditBar() {
-    for (var cButton = 0; cButton < buttonArray.length; cButton++) {
-        stage.removeChild(buttonArray[cButton]);
+    for (var cButton = 0; cButton < editBtnArray.length; cButton++) {
+        stage.removeChild(editBtnArray[cButton]);
         stage.removeChild(editMsgArray[cButton]);
     }
     for (var cButton = 0; cButton < devEditArray.length; cButton++) {
@@ -1305,6 +1328,7 @@ function editClick(corPoint) {
     }
 }
 function editBarClick(clkPoint) {
+    var actionTaken = false;
     for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels); cOption++) {
         if (cOption < glbNumLscps) {
             if ((clkPoint[0] > (renderer.width - 180)) &&
@@ -1312,6 +1336,9 @@ function editBarClick(clkPoint) {
                 (clkPoint[1]) > (20 + (40 * cOption)) &&
                 (clkPoint[1]) < (60 * (1 + cOption))) {
                 glbPainting = cOption;
+                glbEditBarSel = cOption;
+                editBgArray[cOption].alpha = 0.4;
+                actionTaken = true;
             }
         }
         else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
@@ -1320,11 +1347,18 @@ function editBarClick(clkPoint) {
                 (clkPoint[1]) > (50 + (40 * cOption)) &&
                 (clkPoint[1]) < (90 * (1 + cOption))) {
                 glbPainting = cOption;
+                glbEditBarSel = cOption;
+                editBgArray[cOption].alpha = 0.4;
+                actionTaken = true;
             }
         }
         else {
             console.log("Unexpected edit bar value.");
         }
+    }
+    if (actionTaken === false) {
+        glbPainting = null;
+        glbEditBarSel = null;
     }
 }
 function buildClick(corPoint) {
@@ -1363,7 +1397,7 @@ function buildClick(corPoint) {
 function hoverTile(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var hovAxial = pointToHex(clkPoint);
-    if ((hovAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+    if (hovAxial != undefined) {
         var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
         if (currLand.spriteArray[hovArraySpot] != undefined) {
             if (lastHex != null) {
@@ -1382,9 +1416,40 @@ function hoverTile(corPoint) {
             }
         }
     }
-    // Normal cursor when hovering over final edit bar button
-    if (pointer.hitTestSprite(buttonArray[(glbNumLscps + glbNumBlkDevels) - 1])) {
-        pointer.cursor = "auto";
+}
+function hoverEditBar(corPoint) {
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels); cOption++) {
+        if (cOption < glbNumLscps) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (20 + (40 * cOption)) &&
+                (corPoint[1]) < (10 + 40 * (1 + cOption))) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
+            }
+        }
+        else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (50 + (40 * cOption)) &&
+                (corPoint[1]) < (40 + 40 * (1 + cOption))) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
+            }
+        }
+        else {
+            console.log("Unexpected edit bar value.");
+        }
     }
 }
 /// <reference path="references.ts" />
@@ -1465,7 +1530,12 @@ function edit() {
             editBarClick([pointer.x, pointer.y]);
         }
     }
-    hoverTile([pointer.x, pointer.y]);
+    if (pointer.x < (renderer.width - 200)) {
+        hoverTile([pointer.x, pointer.y]);
+    }
+    else {
+        hoverEditBar([pointer.x, pointer.y]);
+    }
 }
 // Applies prior to every game round
 function monthSetup() {
