@@ -39,7 +39,7 @@ glbState = edit;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
-let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Forested]);
+let littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
 let currLand = littleLand;
 let cPlayerArray = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
@@ -98,7 +98,7 @@ function formEditBar() {
 	designBG.y = 0;
 	stage.addChild(designBG);
 
-	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels); cButton++) {
+	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		var chosenPng = null;
 		var chosenText = null;
@@ -131,7 +131,7 @@ function formEditBar() {
 			// Initially invisible background for hovering/selecting effects
 			editBgArray[cButton] = new Graphics();
 			editBgArray[cButton].beginFill(0xFFFFFF);
-			editBgArray[cButton].drawRect(0, 0, 160, 40);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
 			editBgArray[cButton].endFill();
 			editBgArray[cButton].x = (renderer.width - 180);
 			editBgArray[cButton].y = (50 + (40*cButton));
@@ -158,6 +158,42 @@ function formEditBar() {
 			editMsgArray[cButton] = new Text((chosenText), 
 			{font: "16px sans-serif", fill: "white"});
 			editMsgArray[cButton].position.set((renderer.width-110), (55 + 40*cButton));
+			stage.addChild(editMsgArray[cButton]);
+		}
+		// Randomize button
+		else if (cButton === (glbNumLscps+glbNumBlkDevels)) {
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (renderer.height - 90);
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
+
+			// Accompanying text
+			editMsgArray[cButton] = new Text(("Randomize"), 
+				{font: "18px sans-serif", fill: "white"});
+			editMsgArray[cButton].position.set((renderer.width-175), (renderer.height-85));
+			stage.addChild(editMsgArray[cButton]);
+		}
+		// Finish button
+		else if (cButton === (glbNumLscps+glbNumBlkDevels+1)) {
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (renderer.height - 50);
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
+
+			// Accompanying text
+			editMsgArray[cButton] = new Text(("Finish"), 
+				{font: "18px sans-serif", fill: "white"});
+			editMsgArray[cButton].position.set((renderer.width-175), (renderer.height-45));
 			stage.addChild(editMsgArray[cButton]);
 		}
 		else {

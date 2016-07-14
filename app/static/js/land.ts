@@ -341,6 +341,10 @@ class Land {
 		renderer.render(stage);
 	}
 
+	refreshLandSpr() {
+
+	}
+
 	getClrDev(devClr) {
 		for (let attempts=0; attempts < 80; attempts++) {
 			let randDev = Math.floor(Math.random() * 27) + 4;

@@ -1134,7 +1134,7 @@ glbBuildSel = eDEVEL.BaseCamp;
 glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
-var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Forested]);
+var littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
 var currLand = littleLand;
 var cPlayerArray = [];
 cPlayerArray[0] = new Player();
@@ -1187,7 +1187,7 @@ function formEditBar() {
     designBG.x = renderer.width - 200;
     designBG.y = 0;
     stage.addChild(designBG);
-    for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels); cButton++) {
+    for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
@@ -1216,7 +1216,7 @@ function formEditBar() {
             // Initially invisible background for hovering/selecting effects
             editBgArray[cButton] = new Graphics();
             editBgArray[cButton].beginFill(0xFFFFFF);
-            editBgArray[cButton].drawRect(0, 0, 160, 40);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
             editBgArray[cButton].endFill();
             editBgArray[cButton].x = (renderer.width - 180);
             editBgArray[cButton].y = (50 + (40 * cButton));
@@ -1239,6 +1239,36 @@ function formEditBar() {
             // Accompanying text
             editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
             editMsgArray[cButton].position.set((renderer.width - 110), (55 + 40 * cButton));
+            stage.addChild(editMsgArray[cButton]);
+        }
+        else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (renderer.height - 90);
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // Accompanying text
+            editMsgArray[cButton] = new Text(("Randomize"), { font: "18px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 85));
+            stage.addChild(editMsgArray[cButton]);
+        }
+        else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (renderer.height - 50);
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // Accompanying text
+            editMsgArray[cButton] = new Text(("Finish"), { font: "18px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 45));
             stage.addChild(editMsgArray[cButton]);
         }
         else {
@@ -1329,12 +1359,12 @@ function editClick(corPoint) {
 }
 function editBarClick(clkPoint) {
     var actionTaken = false;
-    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels); cOption++) {
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
         if (cOption < glbNumLscps) {
             if ((clkPoint[0] > (renderer.width - 180)) &&
                 (clkPoint[0]) < (renderer.width - 20) &&
                 (clkPoint[1]) > (20 + (40 * cOption)) &&
-                (clkPoint[1]) < (60 * (1 + cOption))) {
+                (clkPoint[1]) < (10 + 40 * (1 + cOption))) {
                 glbPainting = cOption;
                 glbEditBarSel = cOption;
                 editBgArray[cOption].alpha = 0.4;
@@ -1345,11 +1375,28 @@ function editBarClick(clkPoint) {
             if ((clkPoint[0] > (renderer.width - 180)) &&
                 (clkPoint[0]) < (renderer.width - 20) &&
                 (clkPoint[1]) > (50 + (40 * cOption)) &&
-                (clkPoint[1]) < (90 * (1 + cOption))) {
+                (clkPoint[1]) < (40 + 40 * (1 + cOption))) {
                 glbPainting = cOption;
                 glbEditBarSel = cOption;
                 editBgArray[cOption].alpha = 0.4;
                 actionTaken = true;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels)) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (renderer.height - 90) &&
+                (clkPoint[1]) < (renderer.height - 60)) {
+                currLand.lClimate = Math.floor(Math.random() * 7);
+                currLand.generateLand();
+                currLand.displayLand();
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (renderer.height - 50) &&
+                (clkPoint[1]) < (renderer.height - 20)) {
             }
         }
         else {
@@ -1418,7 +1465,7 @@ function hoverTile(corPoint) {
     }
 }
 function hoverEditBar(corPoint) {
-    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels); cOption++) {
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
         if (cOption < glbNumLscps) {
             if ((corPoint[0] > (renderer.width - 180)) &&
                 (corPoint[0]) < (renderer.width - 20) &&
@@ -1445,6 +1492,22 @@ function hoverEditBar(corPoint) {
             }
             else {
                 editBgArray[cOption].alpha = 0.4;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels)) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (renderer.height - 90) &&
+                (corPoint[1]) < (renderer.height - 60)) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (renderer.height - 50) &&
+                (corPoint[1]) < (renderer.height - 20)) {
+                editBgArray[cOption].alpha = 0.6;
             }
         }
         else {
