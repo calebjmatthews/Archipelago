@@ -21,7 +21,9 @@ function describeDevel(descPoint, descTile) {
 	console.log("Cost: " + tDevel.cost);
 }
 
-function editClick(clkPoint) {
+function editClick(corPoint) {
+
+	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
 	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
@@ -46,7 +48,61 @@ function editClick(clkPoint) {
 	}
 }
 
-function buildClick(clkPoint) {
+function editBarClick(clkPoint) {
+	let actionTaken = false;
+	for (let cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
+		if (cOption < glbNumLscps) {
+			if ((clkPoint[0] > (renderer.width - 180)) && 
+				(clkPoint[0]) < (renderer.width - 20) && 
+				(clkPoint[1]) > (20 + (40*cOption)) && 
+				(clkPoint[1]) < (10 + 40 * (1+cOption))) {
+				glbPainting = cOption;
+				glbEditBarSel = cOption;
+				editBgArray[cOption].alpha = 0.4;
+				actionTaken = true;
+			}
+		}
+		else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps+glbNumBlkDevels))) {
+			if ((clkPoint[0] > (renderer.width - 180)) && 
+				(clkPoint[0]) < (renderer.width - 20) && 
+				(clkPoint[1]) > (50 + (40*cOption)) && 
+				(clkPoint[1]) < (40 + 40 * (1+cOption))) {
+				glbPainting = cOption;
+				glbEditBarSel = cOption;
+				editBgArray[cOption].alpha = 0.4;
+				actionTaken = true
+			}
+		}
+		// Randomize button
+		else if (cOption === (glbNumLscps+glbNumBlkDevels)) {
+			if ((clkPoint[0] > (renderer.width - 180)) && 
+				(clkPoint[0]) < (renderer.width - 20) && 
+				(clkPoint[1]) > (renderer.height - 90) && 
+				(clkPoint[1]) < (renderer.height - 60)) {
+				currLand.lClimate = Math.floor(Math.random() * 7);
+				currLand.generateLand();
+				currLand.refreshLandSpr();
+			}
+		}
+		// Finish button
+		else if (cOption === (glbNumLscps+glbNumBlkDevels+1)) {
+			if ((clkPoint[0] > (renderer.width - 180)) && 
+				(clkPoint[0]) < (renderer.width - 20) && 
+				(clkPoint[1]) > (renderer.height - 50) && 
+				(clkPoint[1]) < (renderer.height - 20)) {
+				//
+			}
+		}
+		else { console.log("Unexpected edit bar value."); }
+	}
+	if (actionTaken === false) {
+		glbPainting = null;
+		glbEditBarSel = null;
+	}
+}
+
+function buildClick(corPoint) {
+	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
 	let clkTileID = currLand.getID(clkAxial);
@@ -83,8 +139,10 @@ function buildClick(clkPoint) {
 }
 
 function hoverTile(corPoint) {
-	let hovAxial = pointToHex(corPoint);
-	if ((hovAxial != undefined) && ((corPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
+	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+
+	let hovAxial = pointToHex(clkPoint);
+	if (hovAxial != undefined) {
 		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
 		if (currLand.spriteArray[hovArraySpot] != undefined) {
 			if (lastHex != null) {
@@ -103,9 +161,54 @@ function hoverTile(corPoint) {
 			}
 		}
 	}
+}
 
-	// Normal cursor when hovering over final edit bar button
-	if (pointer.hitTestSprite(buttonArray[(glbNumLscps+glbNumBlkDevels)-1])) {
-		pointer.cursor = "auto";
+function hoverEditBar(corPoint) {
+	for (let cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
+		if (cOption < glbNumLscps) {
+			if ((corPoint[0] > (renderer.width - 180)) && 
+				(corPoint[0]) < (renderer.width - 20) && 
+				(corPoint[1]) > (20 + (40*cOption)) && 
+				(corPoint[1]) < (10 + 40 * (1+cOption))) {
+				editBgArray[cOption].alpha = 0.6;
+			}
+			else if (glbEditBarSel != cOption) {
+				editBgArray[cOption].alpha = 0;
+			}
+			else {
+				editBgArray[cOption].alpha = 0.4;
+			}
+		}
+		else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps+glbNumBlkDevels))) {
+			if ((corPoint[0] > (renderer.width - 180)) && 
+				(corPoint[0]) < (renderer.width - 20) && 
+				(corPoint[1]) > (50 + (40*cOption)) && 
+				(corPoint[1]) < (40 + 40 * (1+cOption))) {
+				editBgArray[cOption].alpha = 0.6;
+			}
+			else if (glbEditBarSel != cOption) {
+				editBgArray[cOption].alpha = 0;
+			}
+			else {
+				editBgArray[cOption].alpha = 0.4;
+			}
+		}
+		else if (cOption === (glbNumLscps+glbNumBlkDevels)) {
+			if ((corPoint[0] > (renderer.width - 180)) && 
+				(corPoint[0]) < (renderer.width - 20) && 
+				(corPoint[1]) > (renderer.height - 90) && 
+				(corPoint[1]) < (renderer.height - 60)) {
+				editBgArray[cOption].alpha = 0.6;
+			}
+		}
+		else if (cOption === (glbNumLscps+glbNumBlkDevels+1)) {
+			if ((corPoint[0] > (renderer.width - 180)) && 
+				(corPoint[0]) < (renderer.width - 20) && 
+				(corPoint[1]) > (renderer.height - 50) && 
+				(corPoint[1]) < (renderer.height - 20)) {
+				editBgArray[cOption].alpha = 0.6;
+			}
+		}
+		else { console.log("Unexpected edit bar value."); }
 	}
 }

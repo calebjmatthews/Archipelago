@@ -35,11 +35,11 @@
 var tb = null;
 // Set the default game state to 'edit'
 glbBuildSel = eDEVEL.BaseCamp;
-glbState = buildSetup;
+glbState = edit;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
-let littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
+let littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
 let currLand = littleLand;
 let cPlayerArray = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
@@ -80,12 +80,13 @@ function updatePlayerBar() {
 	stage.addChild(plrMsg);
 }
 
-var buttonArray = [];
+var editBgArray = [];
+var editBtnArray = [];
 var devEditArray = [];
 var editMsgArray = [];
 function formEditBar() {
 	// Since the edit bar includes both landscapes and some black developments, the
-	//  for loop needs to be compensate for the total number of landscapes when iterating
+	//  for loop needs to be compensate for the total number of options when iterating
 	//  through black developments
 
 	// Create blank background for edit bar
@@ -97,69 +98,113 @@ function formEditBar() {
 	designBG.y = 0;
 	stage.addChild(designBG);
 
-	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels); cButton++) {
+	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 		var chosenPng = null;
 		var chosenText = null;
 		let bScale = 0.2;
 		if (cButton < glbNumLscps) {
-			buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-			tb.makeInteractive(buttonArray[cButton]);
-			buttonArray[cButton].position.set((renderer.width-180), (20+40*cButton));
-			buttonArray[cButton].scale.set(bScale, bScale);
-			stage.addChild(buttonArray[cButton]);
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (20 + (40*cButton));
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
 
+			// An example of the landscape tile in question
+			editBtnArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
+			editBtnArray[cButton].position.set((renderer.width-180), (20+40*cButton));
+			editBtnArray[cButton].scale.set(bScale, bScale);
+			stage.addChild(editBtnArray[cButton]);
+
+			// Accompanying text
 			editMsgArray[cButton] = new Text((lscpArray[cButton].name), 
 			{font: "16px sans-serif", fill: "white"});
 			editMsgArray[cButton].position.set((renderer.width-110), (25+40*cButton));
 			stage.addChild(editMsgArray[cButton]);
 		}
+
 		else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps+glbNumBlkDevels))) {
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (50 + (40*cButton));
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
+
 			// Set up the development's background as the button
 			let bgLscp = develArray[cButton-glbNumLscps].lscpRequired[0];
-			buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-			tb.makeInteractive(buttonArray[cButton]);
-			buttonArray[cButton].position.set((renderer.width-180), (40 + 40*cButton));
-			buttonArray[cButton].scale.set(bScale, bScale);
-			stage.addChild(buttonArray[cButton]);
+			editBtnArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
+			editBtnArray[cButton].position.set((renderer.width-180), (50 + 40*cButton));
+			editBtnArray[cButton].scale.set(bScale, bScale);
+			stage.addChild(editBtnArray[cButton]);
 
 			// Create the development as the text and as a facade
 			chosenText = develArray[cButton-glbNumLscps].name;
 			let devSprID = develArray[cButton-glbNumLscps].sprID[0];
 			let tDevSpr = new Sprite(sprMed[devSprID]);
 			tDevSpr.scale.set(bScale, bScale);
-			tDevSpr.position.set((renderer.width-180), (10+40*cButton));
+			tDevSpr.position.set((renderer.width-180), (20+40*cButton));
 			stage.addChild(tDevSpr);
 			devEditArray[cButton-glbNumLscps] = tDevSpr;
 
+			// Accompanying text
 			editMsgArray[cButton] = new Text((chosenText), 
 			{font: "16px sans-serif", fill: "white"});
-			editMsgArray[cButton].position.set((renderer.width-110), (45 + 40*cButton));
+			editMsgArray[cButton].position.set((renderer.width-110), (55 + 40*cButton));
+			stage.addChild(editMsgArray[cButton]);
+		}
+		// Randomize button
+		else if (cButton === (glbNumLscps+glbNumBlkDevels)) {
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (renderer.height - 90);
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
+
+			// Accompanying text
+			editMsgArray[cButton] = new Text(("Randomize"), 
+				{font: "18px sans-serif", fill: "white"});
+			editMsgArray[cButton].position.set((renderer.width-175), (renderer.height-85));
+			stage.addChild(editMsgArray[cButton]);
+		}
+		// Finish button
+		else if (cButton === (glbNumLscps+glbNumBlkDevels+1)) {
+			// Initially invisible background for hovering/selecting effects
+			editBgArray[cButton] = new Graphics();
+			editBgArray[cButton].beginFill(0xFFFFFF);
+			editBgArray[cButton].drawRect(0, 0, 160, 30);
+			editBgArray[cButton].endFill();
+			editBgArray[cButton].x = (renderer.width - 180);
+			editBgArray[cButton].y = (renderer.height - 50);
+			editBgArray[cButton].alpha = 0;
+			stage.addChild(editBgArray[cButton]);
+
+			// Accompanying text
+			editMsgArray[cButton] = new Text(("Finish"), 
+				{font: "18px sans-serif", fill: "white"});
+			editMsgArray[cButton].position.set((renderer.width-175), (renderer.height-45));
 			stage.addChild(editMsgArray[cButton]);
 		}
 		else {
 			console.log("Error: unexpected current button incremental variable.");
 		}
 	}
-
-	// Can't use a for loop because press events act like watchers
-	buttonArray[eLSCP.Grassy].press = () => { glbPainting = eLSCP.Grassy; }
-	buttonArray[eLSCP.Shore].press = () => { glbPainting = eLSCP.Shore; }
-	buttonArray[eLSCP.Forested].press = () => { glbPainting = eLSCP.Forested; }
-	buttonArray[eLSCP.Rocky].press = () => { glbPainting = eLSCP.Rocky; }
-	buttonArray[eLSCP.Desert].press = () => { glbPainting = eLSCP.Desert; }
-	buttonArray[eLSCP.Sea].press = () => { glbPainting = eLSCP.Sea; }
-	buttonArray[(glbNumLscps + eDEVEL.Cave)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Cave; }
-	buttonArray[(glbNumLscps + eDEVEL.Freshwater)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Freshwater; }
-	buttonArray[(glbNumLscps + eDEVEL.Jungle)].press = () => { 
-		glbPainting = glbNumLscps + eDEVEL.Jungle; }
 }
 
 function removeEditBar() {
-	for (var cButton=0; cButton < buttonArray.length; cButton++ ) {
-		stage.removeChild(buttonArray[cButton]);
+	for (var cButton=0; cButton < editBtnArray.length; cButton++ ) {
+		stage.removeChild(editBtnArray[cButton]);
 		stage.removeChild(editMsgArray[cButton]);
 	}
 	for (var cButton=0; cButton < devEditArray.length; cButton++) {

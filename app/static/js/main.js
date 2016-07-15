@@ -13,7 +13,9 @@ var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbLscpCeil = 0.225;
 var glbMonth = 0;
+var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
 // Initiate visual effect variables
@@ -85,10 +87,10 @@ var eDEVEL;
     eDEVEL[eDEVEL["HuntingCamp"] = 12] = "HuntingCamp";
     eDEVEL[eDEVEL["SmokeHouse"] = 13] = "SmokeHouse";
     eDEVEL[eDEVEL["PeachOrchard"] = 14] = "PeachOrchard";
-    eDEVEL[eDEVEL["BambooCutters"] = 15] = "BambooCutters";
+    eDEVEL[eDEVEL["Woodcutters"] = 15] = "Woodcutters";
     eDEVEL[eDEVEL["SilverMine"] = 16] = "SilverMine";
     eDEVEL[eDEVEL["StoneQuarry"] = 17] = "StoneQuarry";
-    eDEVEL[eDEVEL["Woodcutters"] = 18] = "Woodcutters";
+    eDEVEL[eDEVEL["CharcoalFurnace"] = 18] = "CharcoalFurnace";
     eDEVEL[eDEVEL["CobaltMine"] = 19] = "CobaltMine";
     eDEVEL[eDEVEL["WorkerVillage"] = 20] = "WorkerVillage";
     eDEVEL[eDEVEL["TeaHouse"] = 21] = "TeaHouse";
@@ -359,6 +361,7 @@ var Player = (function () {
         this.discard = [];
         this.trash = [];
         this.canClick = false;
+        this.activeSprArray = [];
         this.playerID = playerIncrement;
         playerIncrement++;
     }
@@ -372,6 +375,73 @@ var Player = (function () {
             if (!(inArr(this.territory, neighbors[cNeigh]))) {
                 this.territory.push(neighbors[cNeigh]);
             }
+        }
+    };
+    Player.prototype.shuffleDeck = function () {
+        if (this.deck === []) {
+            this.deck = this.discard;
+            this.discard = [];
+        }
+        else {
+        }
+        for (var deckSpot = this.deck.length - 1; deckSpot > 0; deckSpot--) {
+            // randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+            var randDev = Math.floor(Math.random() * (deckSpot + 1));
+            var dsValue = this.deck[deckSpot];
+            var rdValue = this.deck[randDev];
+            // Exchange values
+            this.deck[deckSpot] = rdValue;
+            this.deck[randDev] = dsValue;
+        }
+    };
+    Player.prototype.drawDev = function () {
+        var removedDev = this.deck[this.deck.length - 1];
+        this.hand.push(removedDev);
+        // Rebuild the deck, excluding the removed card
+        var newDeck = [];
+        for (var deckSpot = 0; deckSpot < this.deck.length - 1; deckSpot++) {
+            newDeck[deckSpot] = this.deck[deckSpot];
+        }
+        this.deck = newDeck;
+    };
+    Player.prototype.displayActives = function () {
+        var sprMed = loader.resources["static/img/images.json"].textures;
+        var numActives = 0;
+        if (this.hand.length < 3) {
+            numActives = 3;
+        }
+        else {
+            numActives = this.hand.length;
+        }
+        for (var activeSpot = 0; activeSpot < numActives; activeSpot++) {
+            var xPos = 0;
+            var yPos = 0;
+            if ((activeSpot % 3) === 0) {
+                xPos = 100 - (glbHWidth / 2);
+                // Y positioning uses hex width in order to create an even margin on  both 
+                //  top and sides
+                yPos = 100 - (glbHWidth / 2) + ((activeSpot / 3) * glbHHeight);
+            }
+            else if (((activeSpot - 1) % 3) === 0) {
+                xPos = 100 - glbHWidth - (glbHWidth / 2);
+                yPos = 100 - glbHHeight - (glbHWidth / 2) +
+                    (((activeSpot - 1) / 3) * glbHHeight);
+            }
+            else if (((activeSpot - 2) % 3) === 0) {
+                xPos = 100 + (glbHWidth / 2);
+                yPos = 100 - glbHHeight - (glbHWidth / 2) +
+                    (((activeSpot - 2) / 3) * glbHHeight);
+            }
+            else {
+                console.log("Error, unexpected development hand value.");
+            }
+            // Corect for position of sidebar
+            xPos = renderer.width - 200 + xPos;
+            var tSprite = new Sprite(sprMed["whitehex.png"]);
+            tSprite.scale.set(0.2, 0.2);
+            tSprite.position.set(xPos, yPos);
+            stage.addChild(tSprite);
+            this.activeSprArray[activeSpot] = tSprite;
         }
     };
     return Player;
@@ -465,10 +535,10 @@ var Land = (function () {
             probArray[iii] *= climateProb[iii];
             probSum += probArray[iii];
         }
-        // If the total of the probabilities is above 0.5, adjust downwards
-        if (probSum >= 0.15) {
+        // If the total of the probabilities is above a ceiling constant, adjust downwards
+        if (probSum >= glbLscpCeil) {
             for (var jjj = 0; jjj < 4; jjj++) {
-                probArray[jjj] *= (0.15 / probSum);
+                probArray[jjj] *= (glbLscpCeil / probSum);
             }
         }
         // If a non-sea tile borders the sea, calculate probability of change (n/6/2)
@@ -510,7 +580,8 @@ var Land = (function () {
             }
         }
         if ((clustered) && (lscpArray[tTile.landscape].black != null)) {
-            if (Math.random() < climateArray[this.lClimate].devel) {
+            if (Math.random() < (climateArray[this.lClimate].prob[tTile.landscape] *
+                climateArray[this.lClimate].devel)) {
                 return lscpArray[tTile.landscape].black;
             }
         }
@@ -689,7 +760,7 @@ var Land = (function () {
         renderer.render(stage);
     };
     Land.prototype.getClrDev = function (devClr) {
-        for (var attempts = 0; attempts < 20; attempts++) {
+        for (var attempts = 0; attempts < 80; attempts++) {
             var randDev = Math.floor(Math.random() * 27) + 4;
             if (devClr === null) {
                 if (!inArr(this.devSelection, randDev)) {
@@ -735,43 +806,43 @@ var Climate = (function () {
     return Climate;
 }());
 var climateArray = [];
-climateArray[eCLIMATE.Desert] = new Climate(eCLIMATE.Desert, 0.1);
+climateArray[eCLIMATE.Desert] = new Climate(eCLIMATE.Desert, 0.25);
 climateArray[eCLIMATE.Desert].prob = [];
 climateArray[eCLIMATE.Desert].prob[eLSCP.Desert] = 0.3;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Forested] = 0.05;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Grassy] = 0.15;
 climateArray[eCLIMATE.Desert].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Forested] = new Climate(eCLIMATE.Forested, 0.1);
+climateArray[eCLIMATE.Forested] = new Climate(eCLIMATE.Forested, 0.25);
 climateArray[eCLIMATE.Forested].prob = [];
 climateArray[eCLIMATE.Forested].prob[eLSCP.Desert] = 0.05;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Forested] = 0.6;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Forested].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Grassy] = new Climate(eCLIMATE.Grassy, 0.1);
+climateArray[eCLIMATE.Grassy] = new Climate(eCLIMATE.Grassy, 0.25);
 climateArray[eCLIMATE.Grassy].prob = [];
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Forested] = 0.2;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Grassy].prob[eLSCP.Rocky] = 0.1;
-climateArray[eCLIMATE.Rocky] = new Climate(eCLIMATE.Rocky, 0.1);
+climateArray[eCLIMATE.Rocky] = new Climate(eCLIMATE.Rocky, 0.25);
 climateArray[eCLIMATE.Rocky].prob = [];
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Forested] = 0.1;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Rocky].prob[eLSCP.Rocky] = 0.4;
-climateArray[eCLIMATE.Varied] = new Climate(eCLIMATE.Varied, 0.2);
+climateArray[eCLIMATE.Varied] = new Climate(eCLIMATE.Varied, 0.4);
 climateArray[eCLIMATE.Varied].prob = [];
 climateArray[eCLIMATE.Varied].prob[eLSCP.Desert] = 0.2;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Forested] = 0.4;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Varied].prob[eLSCP.Rocky] = 0.4;
-climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.25);
+climateArray[eCLIMATE.Jungle] = new Climate(eCLIMATE.Jungle, 0.5);
 climateArray[eCLIMATE.Jungle].prob = [];
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Desert] = 0.05;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Forested] = 0.6;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Grassy] = 0.1;
 climateArray[eCLIMATE.Jungle].prob[eLSCP.Rocky] = 0.05;
-climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.25);
+climateArray[eCLIMATE.Mountain] = new Climate(eCLIMATE.Mountain, 0.5);
 climateArray[eCLIMATE.Mountain].prob = [];
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Desert] = 0.1;
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Forested] = 0.1;
@@ -779,7 +850,7 @@ climateArray[eCLIMATE.Mountain].prob[eLSCP.Grassy] = 0.2;
 climateArray[eCLIMATE.Mountain].prob[eLSCP.Rocky] = 0.6;
 climateArray[eCLIMATE.Wet] = new Climate(eCLIMATE.Wet, 0.5);
 climateArray[eCLIMATE.Wet].prob = [];
-climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.1;
+climateArray[eCLIMATE.Wet].prob[eLSCP.Desert] = 0.01;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Forested] = 0.2;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
@@ -914,12 +985,12 @@ develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = -2;
 develArray[eDEVEL.PeachOrchard].requirement = [];
 develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
-develArray[eDEVEL.BambooCutters] = new Development(eDEVEL.BambooCutters, ["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], ("res: +1 Material"));
-develArray[eDEVEL.BambooCutters].cost = [];
-develArray[eDEVEL.BambooCutters].cost[eCOST.Material] = -1;
-develArray[eDEVEL.BambooCutters].requirement = [];
-develArray[eDEVEL.BambooCutters].result = [];
-develArray[eDEVEL.BambooCutters].result[eRES.Material] = 1;
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], ("res: +1 Material"));
+develArray[eDEVEL.Woodcutters].cost = [];
+develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -1;
+develArray[eDEVEL.Woodcutters].requirement = [];
+develArray[eDEVEL.Woodcutters].result = [];
+develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
 develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("req: -2 Food; res: +1 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
 develArray[eDEVEL.SilverMine].cost[eCOST.Material] = -2;
@@ -934,12 +1005,13 @@ develArray[eDEVEL.StoneQuarry].requirement = [];
 develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = -1;
 develArray[eDEVEL.StoneQuarry].result = [];
 develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 3;
-develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Rocky], ("res: +2 Material"));
-develArray[eDEVEL.Woodcutters].cost = [];
-develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -2;
-develArray[eDEVEL.Woodcutters].requirement = [];
-develArray[eDEVEL.Woodcutters].result = [];
-develArray[eDEVEL.Woodcutters].result[eRES.Material] = 2;
+develArray[eDEVEL.CharcoalFurnace] = new Development(eDEVEL.CharcoalFurnace, ["charcoalfurnace.png"], "Charcoal Furnace", eDCLR.Orange, [eLSCP.Forested], ("res: +2 Material"));
+develArray[eDEVEL.CharcoalFurnace].cost = [];
+develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = -2;
+develArray[eDEVEL.CharcoalFurnace].requirement = [];
+develArray[eDEVEL.CharcoalFurnace].requirement[eREQ.Material] = 1;
+develArray[eDEVEL.CharcoalFurnace].result = [];
+develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
 develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, ["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], ("res: +1 Treasure"));
 develArray[eDEVEL.CobaltMine].cost = [];
 develArray[eDEVEL.CobaltMine].cost[eCOST.Material] = -4;
@@ -1059,10 +1131,10 @@ loader
 var tb = null;
 // Set the default game state to 'edit'
 glbBuildSel = eDEVEL.BaseCamp;
-glbState = buildSetup;
+glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
-var littleLand = new Land([eSIZE.Large, eSHAPE.Round, eCLIMATE.Jungle]);
+var littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
 var currLand = littleLand;
 var cPlayerArray = [];
 cPlayerArray[0] = new Player();
@@ -1089,7 +1161,7 @@ function formPlayerBar() {
 }
 function updatePlayerBar() {
     stage.removeChild(plrMsg);
-    var plrMsgContent = "Month " + (glbMonth + 1);
+    var plrMsgContent = "Month " + (glbMonth);
     for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
         plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder + 1) + ": " +
             "F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material +
@@ -1099,12 +1171,13 @@ function updatePlayerBar() {
     plrMsg.position.set(3, 1);
     stage.addChild(plrMsg);
 }
-var buttonArray = [];
+var editBgArray = [];
+var editBtnArray = [];
 var devEditArray = [];
 var editMsgArray = [];
 function formEditBar() {
     // Since the edit bar includes both landscapes and some black developments, the
-    //  for loop needs to be compensate for the total number of landscapes when iterating
+    //  for loop needs to be compensate for the total number of options when iterating
     //  through black developments
     // Create blank background for edit bar
     var designBG = new Graphics();
@@ -1114,65 +1187,98 @@ function formEditBar() {
     designBG.x = renderer.width - 200;
     designBG.y = 0;
     stage.addChild(designBG);
-    for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels); cButton++) {
+    for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
         var bScale = 0.2;
         if (cButton < glbNumLscps) {
-            buttonArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-            tb.makeInteractive(buttonArray[cButton]);
-            buttonArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
-            buttonArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(buttonArray[cButton]);
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (20 + (40 * cButton));
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // An example of the landscape tile in question
+            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
+            editBtnArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
+            editBtnArray[cButton].scale.set(bScale, bScale);
+            stage.addChild(editBtnArray[cButton]);
+            // Accompanying text
             editMsgArray[cButton] = new Text((lscpArray[cButton].name), { font: "16px sans-serif", fill: "white" });
             editMsgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
             stage.addChild(editMsgArray[cButton]);
         }
         else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (50 + (40 * cButton));
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
             // Set up the development's background as the button
             var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
-            buttonArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-            tb.makeInteractive(buttonArray[cButton]);
-            buttonArray[cButton].position.set((renderer.width - 180), (40 + 40 * cButton));
-            buttonArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(buttonArray[cButton]);
+            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
+            editBtnArray[cButton].position.set((renderer.width - 180), (50 + 40 * cButton));
+            editBtnArray[cButton].scale.set(bScale, bScale);
+            stage.addChild(editBtnArray[cButton]);
             // Create the development as the text and as a facade
             chosenText = develArray[cButton - glbNumLscps].name;
             var devSprID = develArray[cButton - glbNumLscps].sprID[0];
             var tDevSpr = new Sprite(sprMed[devSprID]);
             tDevSpr.scale.set(bScale, bScale);
-            tDevSpr.position.set((renderer.width - 180), (10 + 40 * cButton));
+            tDevSpr.position.set((renderer.width - 180), (20 + 40 * cButton));
             stage.addChild(tDevSpr);
             devEditArray[cButton - glbNumLscps] = tDevSpr;
+            // Accompanying text
             editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 110), (45 + 40 * cButton));
+            editMsgArray[cButton].position.set((renderer.width - 110), (55 + 40 * cButton));
+            stage.addChild(editMsgArray[cButton]);
+        }
+        else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (renderer.height - 90);
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // Accompanying text
+            editMsgArray[cButton] = new Text(("Randomize"), { font: "18px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 85));
+            stage.addChild(editMsgArray[cButton]);
+        }
+        else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+            // Initially invisible background for hovering/selecting effects
+            editBgArray[cButton] = new Graphics();
+            editBgArray[cButton].beginFill(0xFFFFFF);
+            editBgArray[cButton].drawRect(0, 0, 160, 30);
+            editBgArray[cButton].endFill();
+            editBgArray[cButton].x = (renderer.width - 180);
+            editBgArray[cButton].y = (renderer.height - 50);
+            editBgArray[cButton].alpha = 0;
+            stage.addChild(editBgArray[cButton]);
+            // Accompanying text
+            editMsgArray[cButton] = new Text(("Finish"), { font: "18px sans-serif", fill: "white" });
+            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 45));
             stage.addChild(editMsgArray[cButton]);
         }
         else {
             console.log("Error: unexpected current button incremental variable.");
         }
     }
-    // Can't use a for loop because press events act like watchers
-    buttonArray[eLSCP.Grassy].press = function () { glbPainting = eLSCP.Grassy; };
-    buttonArray[eLSCP.Shore].press = function () { glbPainting = eLSCP.Shore; };
-    buttonArray[eLSCP.Forested].press = function () { glbPainting = eLSCP.Forested; };
-    buttonArray[eLSCP.Rocky].press = function () { glbPainting = eLSCP.Rocky; };
-    buttonArray[eLSCP.Desert].press = function () { glbPainting = eLSCP.Desert; };
-    buttonArray[eLSCP.Sea].press = function () { glbPainting = eLSCP.Sea; };
-    buttonArray[(glbNumLscps + eDEVEL.Cave)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Cave;
-    };
-    buttonArray[(glbNumLscps + eDEVEL.Freshwater)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Freshwater;
-    };
-    buttonArray[(glbNumLscps + eDEVEL.Jungle)].press = function () {
-        glbPainting = glbNumLscps + eDEVEL.Jungle;
-    };
 }
 function removeEditBar() {
-    for (var cButton = 0; cButton < buttonArray.length; cButton++) {
-        stage.removeChild(buttonArray[cButton]);
+    for (var cButton = 0; cButton < editBtnArray.length; cButton++) {
+        stage.removeChild(editBtnArray[cButton]);
         stage.removeChild(editMsgArray[cButton]);
     }
     for (var cButton = 0; cButton < devEditArray.length; cButton++) {
@@ -1226,7 +1332,8 @@ function describeDevel(descPoint, descTile) {
     console.log("Description: " + tDevel.description);
     console.log("Cost: " + tDevel.cost);
 }
-function editClick(clkPoint) {
+function editClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
@@ -1250,7 +1357,59 @@ function editClick(clkPoint) {
         }
     }
 }
-function buildClick(clkPoint) {
+function editBarClick(clkPoint) {
+    var actionTaken = false;
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
+        if (cOption < glbNumLscps) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (20 + (40 * cOption)) &&
+                (clkPoint[1]) < (10 + 40 * (1 + cOption))) {
+                glbPainting = cOption;
+                glbEditBarSel = cOption;
+                editBgArray[cOption].alpha = 0.4;
+                actionTaken = true;
+            }
+        }
+        else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (50 + (40 * cOption)) &&
+                (clkPoint[1]) < (40 + 40 * (1 + cOption))) {
+                glbPainting = cOption;
+                glbEditBarSel = cOption;
+                editBgArray[cOption].alpha = 0.4;
+                actionTaken = true;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels)) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (renderer.height - 90) &&
+                (clkPoint[1]) < (renderer.height - 60)) {
+                currLand.lClimate = Math.floor(Math.random() * 7);
+                currLand.generateLand();
+                currLand.displayLand();
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
+            if ((clkPoint[0] > (renderer.width - 180)) &&
+                (clkPoint[0]) < (renderer.width - 20) &&
+                (clkPoint[1]) > (renderer.height - 50) &&
+                (clkPoint[1]) < (renderer.height - 20)) {
+            }
+        }
+        else {
+            console.log("Unexpected edit bar value.");
+        }
+    }
+    if (actionTaken === false) {
+        glbPainting = null;
+        glbEditBarSel = null;
+    }
+}
+function buildClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTileID = currLand.getID(clkAxial);
     var clkTile = currLand.tileArray[clkTileID];
@@ -1261,13 +1420,15 @@ function buildClick(clkPoint) {
                 clkTile.development = glbBuildSel;
                 clkTile.ownedBy = currPlayer.playerID;
                 currPlayer.ownedDevs.push(clkTileID);
+                currPlayer.discard.push(clkTileID);
                 currPlayer.addTerritory(clkTileID);
                 clkTile.reDrawTile();
-                if (currPlayer.playerID === 0) {
+                // Move to the next game state
+                if ((glbMonth === 0) && (currPlayer.playerID === 0)) {
                     currPlayer = cPlayerArray[1];
                     glbState = buildSetup;
                 }
-                else if (currPlayer.playerID === 1) {
+                else if ((glbMonth === 0) && currPlayer.playerID === 1) {
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
                     glbPulseArray = [];
@@ -1281,8 +1442,9 @@ function buildClick(clkPoint) {
     }
 }
 function hoverTile(corPoint) {
-    var hovAxial = pointToHex(corPoint);
-    if ((hovAxial != undefined) && ((corPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+    var hovAxial = pointToHex(clkPoint);
+    if (hovAxial != undefined) {
         var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
         if (currLand.spriteArray[hovArraySpot] != undefined) {
             if (lastHex != null) {
@@ -1301,9 +1463,56 @@ function hoverTile(corPoint) {
             }
         }
     }
-    // Normal cursor when hovering over final edit bar button
-    if (pointer.hitTestSprite(buttonArray[(glbNumLscps + glbNumBlkDevels) - 1])) {
-        pointer.cursor = "auto";
+}
+function hoverEditBar(corPoint) {
+    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
+        if (cOption < glbNumLscps) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (20 + (40 * cOption)) &&
+                (corPoint[1]) < (10 + 40 * (1 + cOption))) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
+            }
+        }
+        else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (50 + (40 * cOption)) &&
+                (corPoint[1]) < (40 + 40 * (1 + cOption))) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels)) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (renderer.height - 90) &&
+                (corPoint[1]) < (renderer.height - 60)) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+        }
+        else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
+            if ((corPoint[0] > (renderer.width - 180)) &&
+                (corPoint[0]) < (renderer.width - 20) &&
+                (corPoint[1]) > (renderer.height - 50) &&
+                (corPoint[1]) < (renderer.height - 20)) {
+                editBgArray[cOption].alpha = 0.6;
+            }
+        }
+        else {
+            console.log("Unexpected edit bar value.");
+        }
     }
 }
 /// <reference path="references.ts" />
@@ -1376,19 +1585,39 @@ function gameLoop() {
 var lastHex = null;
 function edit() {
     // Click event handling
-    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        editClick(corPoint);
+        if ((pointer.x) < (renderer.width - 200)) {
+            editClick([pointer.x, pointer.y]);
+        }
+        else {
+            editBarClick([pointer.x, pointer.y]);
+        }
     }
-    hoverTile(corPoint);
-    // msgPoint.text = ("Coords: " + corPoint);
-    // msgAxial.text = ("Hex: " + hovAxial);
+    if (pointer.x < (renderer.width - 200)) {
+        hoverTile([pointer.x, pointer.y]);
+    }
+    else {
+        hoverEditBar([pointer.x, pointer.y]);
+    }
 }
 // Applies prior to every game round
 function monthSetup() {
 }
 // Applies prior to each player's round
 function plrMonSetup() {
+    // Draw the hand of three developments
+    for (var tCard = 0; tCard < 3; tCard++) {
+        if (currPlayer.deck === []) {
+            currPlayer.shuffleDeck();
+            currPlayer.drawDev();
+        }
+        else {
+            currPlayer.drawDev();
+        }
+    }
+    removeEditBar();
+    currPlayer.displayActives();
+    glbState = active;
 }
 // Player chooses which of their active developments to use
 function active() {
@@ -1415,11 +1644,10 @@ function buildSetup() {
 // Player chooses where to build a newly bought development
 function build() {
     // Click event handling
-    var corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
     if (pointer.isDown === true) {
-        buildClick(corPoint);
+        buildClick([pointer.x, pointer.y]);
     }
-    hoverTile(corPoint);
+    hoverTile([pointer.x, pointer.y]);
 }
 // Applies after a player has finished their turn
 function cleanup() {

@@ -39,14 +39,19 @@ let lastHex = null;
 function edit() {
 
 	// Click event handling
-	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
 	if (pointer.isDown === true) {
-		editClick(corPoint);
+		if ((pointer.x) < (renderer.width-200)) {
+			editClick([pointer.x, pointer.y]);
+		}
+		else {
+			editBarClick([pointer.x, pointer.y]);
+		}
 	}
-	hoverTile(corPoint)
 
-	// msgPoint.text = ("Coords: " + corPoint);
-	// msgAxial.text = ("Hex: " + hovAxial);
+	if (pointer.x < (renderer.width - 200)) {
+		hoverTile([pointer.x, pointer.y]);
+	}
+	else { hoverEditBar([pointer.x, pointer.y]); }
 }
 
 // Applies prior to every game round
@@ -66,6 +71,10 @@ function plrMonSetup() {
 			currPlayer.drawDev();
 		}
 	}
+
+	removeEditBar();
+	currPlayer.displayActives();
+	glbState = active;
 }
 
 // Player chooses which of their active developments to use
@@ -101,11 +110,10 @@ function buildSetup() {
 // Player chooses where to build a newly bought development
 function build() {
 	// Click event handling
-	let corPoint = [(pointer.x - glbOrigin[0]), (pointer.y - glbOrigin[1])];
 	if (pointer.isDown === true) {
-		buildClick(corPoint);
+		buildClick([pointer.x, pointer.y]);
 	}
-	hoverTile(corPoint)
+	hoverTile([pointer.x, pointer.y])
 }
 
 // Applies after a player has finished their turn

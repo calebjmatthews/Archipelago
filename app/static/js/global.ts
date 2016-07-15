@@ -9,7 +9,9 @@ var glbHWidth = 60;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbLscpCeil = 0.225;
 var glbMonth = 0;
+var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
 
