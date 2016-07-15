@@ -86,5 +86,8 @@ class Tile extends Hex {
 		if (this.development != null) {
 			tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
 		}
+		else {
+			tDevSpr.texture = sprMed["tall hex.png"];
+		}
 	}
 }

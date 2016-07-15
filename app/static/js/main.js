@@ -342,6 +342,9 @@ var Tile = (function (_super) {
         if (this.development != null) {
             tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
         }
+        else {
+            tDevSpr.texture = sprMed["tall hex.png"];
+        }
     };
     return Tile;
 }(Hex));
@@ -584,6 +587,12 @@ var Land = (function () {
                 climateArray[this.lClimate].devel)) {
                 return lscpArray[tTile.landscape].black;
             }
+            else {
+                return null;
+            }
+        }
+        else {
+            return null;
         }
     };
     Land.prototype.genShore = function (landWidth) {
@@ -744,6 +753,9 @@ var Land = (function () {
                     if (tTile.development === undefined) {
                         tDevSpr = new Sprite(sprMed["tallhex.png"]);
                     }
+                    else if (tTile.development === null) {
+                        tDevSpr = new Sprite(sprMed["tallhex.png"]);
+                    }
                     else {
                         tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
                     }
@@ -758,6 +770,12 @@ var Land = (function () {
         this.spriteArray = landSprites;
         this.sprDevArray = landDevSprs;
         renderer.render(stage);
+    };
+    Land.prototype.refreshLandSpr = function () {
+        for (var cTileID = 0; cTileID < this.tileArray.length; cTileID++) {
+            var cTile = this.tileArray[cTileID];
+            cTile.reDrawTile();
+        }
     };
     Land.prototype.getClrDev = function (devClr) {
         for (var attempts = 0; attempts < 80; attempts++) {
@@ -1134,7 +1152,8 @@ glbBuildSel = eDEVEL.BaseCamp;
 glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
-var littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
+var littleLand = new Land([Math.floor(Math.random() * 3), eSHAPE.Round,
+    (Math.floor(Math.random() * 7))]);
 var currLand = littleLand;
 var cPlayerArray = [];
 cPlayerArray[0] = new Player();
@@ -1279,22 +1298,14 @@ function formEditBar() {
 function removeEditBar() {
     for (var cButton = 0; cButton < editBtnArray.length; cButton++) {
         stage.removeChild(editBtnArray[cButton]);
+    }
+    for (var cButton = 0; cButton < editBgArray.length; cButton++) {
+        stage.removeChild(editBgArray[cButton]);
         stage.removeChild(editMsgArray[cButton]);
     }
     for (var cButton = 0; cButton < devEditArray.length; cButton++) {
         stage.removeChild(devEditArray[cButton]);
     }
-}
-var msgPoint = null;
-var msgAxial = null;
-function formDebugBar() {
-    // Display text
-    msgPoint = new Text(("Coords: "), { font: "16px sans-serif", fill: "white" });
-    msgPoint.position.set((renderer.width - 180), 20);
-    stage.addChild(msgPoint);
-    msgAxial = new Text(("Hex: "), { font: "16px sans-serif", fill: "white" });
-    msgAxial.position.set((renderer.width - 180), 60);
-    stage.addChild(msgAxial);
 }
 function paintLscp(clkTile) {
     // Simple landscape alteration
@@ -1388,8 +1399,10 @@ function editBarClick(clkPoint) {
                 (clkPoint[1]) > (renderer.height - 90) &&
                 (clkPoint[1]) < (renderer.height - 60)) {
                 currLand.lClimate = Math.floor(Math.random() * 7);
+                currLand.lSize = Math.floor(Math.random() * 3);
                 currLand.generateLand();
-                currLand.displayLand();
+                currLand.genDevSelection();
+                currLand.refreshLandSpr();
             }
         }
         else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
@@ -1397,6 +1410,8 @@ function editBarClick(clkPoint) {
                 (clkPoint[0]) < (renderer.width - 20) &&
                 (clkPoint[1]) > (renderer.height - 50) &&
                 (clkPoint[1]) < (renderer.height - 20)) {
+                glbBuildSel = eDEVEL.BaseCamp;
+                glbState = buildSetup;
             }
         }
         else {
@@ -1589,10 +1604,12 @@ function edit() {
         if ((pointer.x) < (renderer.width - 200)) {
             editClick([pointer.x, pointer.y]);
         }
-        else {
+    }
+    pointer.tap = function () {
+        if ((pointer.x) > (renderer.width - 200)) {
             editBarClick([pointer.x, pointer.y]);
         }
-    }
+    };
     if (pointer.x < (renderer.width - 200)) {
         hoverTile([pointer.x, pointer.y]);
     }
@@ -1615,7 +1632,6 @@ function plrMonSetup() {
             currPlayer.drawDev();
         }
     }
-    removeEditBar();
     currPlayer.displayActives();
     glbState = active;
 }
@@ -1635,6 +1651,7 @@ function buildSetup() {
     glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
     if (glbTileSelArray != []) {
         glbPulseArray = glbTileSelArray;
+        removeEditBar();
         glbState = build;
     }
     else {

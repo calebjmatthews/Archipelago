@@ -39,7 +39,8 @@ glbState = edit;
 var pointer = null;
 
 // Initiate game values (to be obsoleted)
-let littleLand = new Land([eSIZE.Large, eSHAPE.Round, (Math.floor(Math.random() * 7))]);
+let littleLand = new Land([Math.floor(Math.random() * 3), eSHAPE.Round, 
+	(Math.floor(Math.random() * 7))]);
 let currLand = littleLand;
 let cPlayerArray = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
@@ -205,29 +206,14 @@ function formEditBar() {
 function removeEditBar() {
 	for (var cButton=0; cButton < editBtnArray.length; cButton++ ) {
 		stage.removeChild(editBtnArray[cButton]);
+	}
+	for (var cButton=0; cButton < editBgArray.length; cButton++ ) {
+		stage.removeChild(editBgArray[cButton]);
 		stage.removeChild(editMsgArray[cButton]);
 	}
 	for (var cButton=0; cButton < devEditArray.length; cButton++) {
 		stage.removeChild(devEditArray[cButton]);
 	}
-}
-
-var msgPoint = null;
-var msgAxial = null;
-function formDebugBar() {
-	// Display text
-	msgPoint = new Text(
-		("Coords: "),
-		{font: "16px sans-serif", fill: "white"}
-	);
-	msgPoint.position.set((renderer.width-180), 20);
-	stage.addChild(msgPoint);
-	msgAxial = new Text(
-		("Hex: "),
-		{font: "16px sans-serif", fill: "white"}
-	);
-	msgAxial.position.set((renderer.width-180), 60);
-	stage.addChild(msgAxial);
 }
 
 function paintLscp(clkTile) {

@@ -43,7 +43,9 @@ function edit() {
 		if ((pointer.x) < (renderer.width-200)) {
 			editClick([pointer.x, pointer.y]);
 		}
-		else {
+	}
+	pointer.tap = () => {
+		if ((pointer.x) > (renderer.width-200)) {
 			editBarClick([pointer.x, pointer.y]);
 		}
 	}
@@ -72,7 +74,6 @@ function plrMonSetup() {
 		}
 	}
 
-	removeEditBar();
 	currPlayer.displayActives();
 	glbState = active;
 }
@@ -100,6 +101,7 @@ function buildSetup() {
 
 	if (glbTileSelArray != []) {
 		glbPulseArray = glbTileSelArray;
+		removeEditBar();
 		glbState = build;
 	}
 	else {

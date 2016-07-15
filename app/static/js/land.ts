@@ -156,6 +156,12 @@ class Land {
 				climateArray[this.lClimate].devel)) {
 				return lscpArray[tTile.landscape].black;
 			}
+			else {
+				return null;
+			}
+		}
+		else {
+			return null;
 		}
 	}
 
@@ -324,6 +330,9 @@ class Land {
 					if (tTile.development === undefined) {
 						tDevSpr = new Sprite(sprMed["tallhex.png"]);
 					}
+					else if (tTile.development === null) {
+						tDevSpr = new Sprite(sprMed["tallhex.png"]);
+					}
 					else {
 						tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
 					}
@@ -342,7 +351,10 @@ class Land {
 	}
 
 	refreshLandSpr() {
-
+		for (let cTileID = 0; cTileID < this.tileArray.length; cTileID++) {
+			let cTile = this.tileArray[cTileID];
+			cTile.reDrawTile();
+		}
 	}
 
 	getClrDev(devClr) {

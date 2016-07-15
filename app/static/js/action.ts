@@ -80,7 +80,9 @@ function editBarClick(clkPoint) {
 				(clkPoint[1]) > (renderer.height - 90) && 
 				(clkPoint[1]) < (renderer.height - 60)) {
 				currLand.lClimate = Math.floor(Math.random() * 7);
+				currLand.lSize = Math.floor(Math.random() * 3);
 				currLand.generateLand();
+				currLand.genDevSelection();
 				currLand.refreshLandSpr();
 			}
 		}
@@ -90,7 +92,8 @@ function editBarClick(clkPoint) {
 				(clkPoint[0]) < (renderer.width - 20) && 
 				(clkPoint[1]) > (renderer.height - 50) && 
 				(clkPoint[1]) < (renderer.height - 20)) {
-				//
+				glbBuildSel = eDEVEL.BaseCamp;
+				glbState = buildSetup;
 			}
 		}
 		else { console.log("Unexpected edit bar value."); }
