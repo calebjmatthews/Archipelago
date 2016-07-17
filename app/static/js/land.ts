@@ -46,7 +46,7 @@ class Land {
 				if (tTile != null) {
 					if (((inArr(sTerr, tTileID)) || (sTerr === null)) && 
 						(inArr(sLscp, tTile.landscape)) && 
-						(tTile.development === undefined)) {
+						((tTile.development === undefined) || (tTile.development === null))) {
 						selResult.push(tTileID);
 					}
 				}
@@ -328,10 +328,10 @@ class Land {
 					let tDevSpr = null;
 					// If there is no development for this tile, insert an empty hex as placeholder
 					if (tTile.development === undefined) {
-						tDevSpr = new Sprite(sprMed["tallhex.png"]);
+						tDevSpr = new Sprite(sprMed["tallblank.png"]);
 					}
 					else if (tTile.development === null) {
-						tDevSpr = new Sprite(sprMed["tallhex.png"]);
+						tDevSpr = new Sprite(sprMed["tallblank.png"]);
 					}
 					else {
 						tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
@@ -351,7 +351,7 @@ class Land {
 	}
 
 	refreshLandSpr() {
-		for (let cTileID = 0; cTileID < this.tileArray.length; cTileID++) {
+		for (let cTileID = 0; cTileID < this.tileArray.length-12; cTileID++) {
 			let cTile = this.tileArray[cTileID];
 			cTile.reDrawTile();
 		}
@@ -377,6 +377,7 @@ class Land {
 	}
 
 	genDevSelection() {
+		this.devSelection = [];
 		for (let tDev = 0; tDev < 12; tDev++) {
 			// Ensure 1 of each color except black, 2 of violet, and fill the rest of the 12 
 			//  randomly

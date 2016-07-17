@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>C:/Users/cmatthews/Documents/JS/Archipelago/app/static/img/images.tps</string>
+        <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -188,19 +188,47 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">abundantvessel.png</key>
+            <key type="filename">auctionhouse.png</key>
             <key type="filename">basecamp.png</key>
+            <key type="filename">boarranch.png</key>
             <key type="filename">cave1.png</key>
+            <key type="filename">charcoalfurnace.png</key>
+            <key type="filename">cobaltmine.png</key>
+            <key type="filename">demolition.png</key>
             <key type="filename">desert.png</key>
+            <key type="filename">envoyharbor.png</key>
+            <key type="filename">firecrew.png</key>
             <key type="filename">forested.png</key>
             <key type="filename">freshwater1.png</key>
             <key type="filename">grassy.png</key>
             <key type="filename">hex.png</key>
+            <key type="filename">huntingcamp.png</key>
             <key type="filename">jungle1.png</key>
+            <key type="filename">laborport.png</key>
+            <key type="filename">merchantship.png</key>
+            <key type="filename">opulentvessel.png</key>
+            <key type="filename">peachorchard.png</key>
+            <key type="filename">ricepaddy.png</key>
             <key type="filename">rocky.png</key>
             <key type="filename">sea.png</key>
+            <key type="filename">seasideparade.png</key>
+            <key type="filename">shepherdvillage.png</key>
             <key type="filename">shore.png</key>
+            <key type="filename">silvermine.png</key>
+            <key type="filename">smokehouse.png</key>
+            <key type="filename">steadyvessel.png</key>
+            <key type="filename">stonequarry.png</key>
             <key type="filename">tall hex.png</key>
+            <key type="filename">tallblank.png</key>
+            <key type="filename">teahouse.png</key>
+            <key type="filename">town.png</key>
+            <key type="filename">tradeharbor.png</key>
+            <key type="filename">ventureship.png</key>
             <key type="filename">whitehex.png</key>
+            <key type="filename">woodcutters.png</key>
+            <key type="filename">workervillage.png</key>
+            <key type="filename">workmanship.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -221,6 +249,34 @@
             <filename>jungle1.png</filename>
             <filename>basecamp.png</filename>
             <filename>whitehex.png</filename>
+            <filename>abundantvessel.png</filename>
+            <filename>auctionhouse.png</filename>
+            <filename>boarranch.png</filename>
+            <filename>charcoalfurnace.png</filename>
+            <filename>cobaltmine.png</filename>
+            <filename>demolition.png</filename>
+            <filename>envoyharbor.png</filename>
+            <filename>firecrew.png</filename>
+            <filename>huntingcamp.png</filename>
+            <filename>laborport.png</filename>
+            <filename>merchantship.png</filename>
+            <filename>opulentvessel.png</filename>
+            <filename>peachorchard.png</filename>
+            <filename>ricepaddy.png</filename>
+            <filename>seasideparade.png</filename>
+            <filename>shepherdvillage.png</filename>
+            <filename>silvermine.png</filename>
+            <filename>smokehouse.png</filename>
+            <filename>steadyvessel.png</filename>
+            <filename>stonequarry.png</filename>
+            <filename>tallblank.png</filename>
+            <filename>teahouse.png</filename>
+            <filename>town.png</filename>
+            <filename>tradeharbor.png</filename>
+            <filename>ventureship.png</filename>
+            <filename>woodcutters.png</filename>
+            <filename>workervillage.png</filename>
+            <filename>workmanship.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

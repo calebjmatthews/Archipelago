@@ -65,7 +65,7 @@ function monthSetup() {
 function plrMonSetup() {
 	// Draw the hand of three developments
 	for (let tCard=0; tCard < 3; tCard++) {
-		if (currPlayer.deck === []) {
+		if (currPlayer.deck.length === 0) {
 			currPlayer.shuffleDeck();
 			currPlayer.drawDev();
 		}
@@ -80,7 +80,11 @@ function plrMonSetup() {
 
 // Player chooses which of their active developments to use
 function active() {
-
+	// Click event handling
+	if (pointer.isDown === true) {
+		activeClick([pointer.x, pointer.y]);
+	}
+	hoverTile([pointer.x, pointer.y])
 }
 
 // Choosing a target for a development's effect
@@ -95,6 +99,9 @@ function buy() {
 
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
+	if (glbMonth === 0) {
+		glbBuildSel = eDEVEL.BaseCamp;
+	}
 	let tDevel = develArray[glbBuildSel];
 	glbTileSelArray = [];
 	glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);

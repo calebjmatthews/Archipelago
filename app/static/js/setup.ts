@@ -34,7 +34,6 @@
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'edit'
-glbBuildSel = eDEVEL.BaseCamp;
 glbState = edit;
 var pointer = null;
 

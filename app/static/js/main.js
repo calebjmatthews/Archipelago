@@ -343,7 +343,7 @@ var Tile = (function (_super) {
             tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
         }
         else {
-            tDevSpr.texture = sprMed["tall hex.png"];
+            tDevSpr.texture = sprMed["tallblank.png"];
         }
     };
     return Tile;
@@ -381,13 +381,17 @@ var Player = (function () {
         }
     };
     Player.prototype.shuffleDeck = function () {
-        if (this.deck === []) {
+        if (this.deck.length === 0) {
             this.deck = this.discard;
             this.discard = [];
         }
         else {
+            for (var tDiscSpot = 0; tDiscSpot < this.discard.length; tDiscSpot++) {
+                this.deck.push(this.discard[tDiscSpot]);
+            }
+            this.discard = [];
         }
-        for (var deckSpot = this.deck.length - 1; deckSpot > 0; deckSpot--) {
+        for (var deckSpot = this.deck.length - 1; deckSpot >= 0; deckSpot--) {
             // randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
             var randDev = Math.floor(Math.random() * (deckSpot + 1));
             var dsValue = this.deck[deckSpot];
@@ -410,7 +414,7 @@ var Player = (function () {
     Player.prototype.displayActives = function () {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var numActives = 0;
-        if (this.hand.length < 3) {
+        if (this.hand.length = 3) {
             numActives = 3;
         }
         else {
@@ -423,17 +427,17 @@ var Player = (function () {
                 xPos = 100 - (glbHWidth / 2);
                 // Y positioning uses hex width in order to create an even margin on  both 
                 //  top and sides
-                yPos = 100 - (glbHWidth / 2) + ((activeSpot / 3) * glbHHeight);
+                yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
             }
             else if (((activeSpot - 1) % 3) === 0) {
                 xPos = 100 - glbHWidth - (glbHWidth / 2);
-                yPos = 100 - glbHHeight - (glbHWidth / 2) +
-                    (((activeSpot - 1) / 3) * glbHHeight);
+                yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                    ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
             }
             else if (((activeSpot - 2) % 3) === 0) {
                 xPos = 100 + (glbHWidth / 2);
-                yPos = 100 - glbHHeight - (glbHWidth / 2) +
-                    (((activeSpot - 2) / 3) * glbHHeight);
+                yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                    ((((activeSpot - 2) * 1.3) / 3) * glbHHeight);
             }
             else {
                 console.log("Error, unexpected development hand value.");
@@ -489,7 +493,7 @@ var Land = (function () {
                 if (tTile != null) {
                     if (((inArr(sTerr, tTileID)) || (sTerr === null)) &&
                         (inArr(sLscp, tTile.landscape)) &&
-                        (tTile.development === undefined)) {
+                        ((tTile.development === undefined) || (tTile.development === null))) {
                         selResult.push(tTileID);
                     }
                 }
@@ -751,10 +755,10 @@ var Land = (function () {
                     var tDevSpr = null;
                     // If there is no development for this tile, insert an empty hex as placeholder
                     if (tTile.development === undefined) {
-                        tDevSpr = new Sprite(sprMed["tallhex.png"]);
+                        tDevSpr = new Sprite(sprMed["tallblank.png"]);
                     }
                     else if (tTile.development === null) {
-                        tDevSpr = new Sprite(sprMed["tallhex.png"]);
+                        tDevSpr = new Sprite(sprMed["tallblank.png"]);
                     }
                     else {
                         tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
@@ -772,7 +776,7 @@ var Land = (function () {
         renderer.render(stage);
     };
     Land.prototype.refreshLandSpr = function () {
-        for (var cTileID = 0; cTileID < this.tileArray.length; cTileID++) {
+        for (var cTileID = 0; cTileID < this.tileArray.length - 12; cTileID++) {
             var cTile = this.tileArray[cTileID];
             cTile.reDrawTile();
         }
@@ -796,6 +800,7 @@ var Land = (function () {
         return 0;
     };
     Land.prototype.genDevSelection = function () {
+        this.devSelection = [];
         for (var tDev = 0; tDev < 12; tDev++) {
             // Ensure 1 of each color except black, 2 of violet, and fill the rest of the 12 
             //  randomly
@@ -1148,7 +1153,6 @@ loader
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'edit'
-glbBuildSel = eDEVEL.BaseCamp;
 glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
@@ -1456,6 +1460,8 @@ function buildClick(corPoint) {
         }
     }
 }
+function activeClick(corPoint) {
+}
 function hoverTile(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var hovAxial = pointToHex(clkPoint);
@@ -1516,6 +1522,12 @@ function hoverEditBar(corPoint) {
                 (corPoint[1]) < (renderer.height - 60)) {
                 editBgArray[cOption].alpha = 0.6;
             }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
+            }
         }
         else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
             if ((corPoint[0] > (renderer.width - 180)) &&
@@ -1523,6 +1535,12 @@ function hoverEditBar(corPoint) {
                 (corPoint[1]) > (renderer.height - 50) &&
                 (corPoint[1]) < (renderer.height - 20)) {
                 editBgArray[cOption].alpha = 0.6;
+            }
+            else if (glbEditBarSel != cOption) {
+                editBgArray[cOption].alpha = 0;
+            }
+            else {
+                editBgArray[cOption].alpha = 0.4;
             }
         }
         else {
@@ -1624,7 +1642,7 @@ function monthSetup() {
 function plrMonSetup() {
     // Draw the hand of three developments
     for (var tCard = 0; tCard < 3; tCard++) {
-        if (currPlayer.deck === []) {
+        if (currPlayer.deck.length === 0) {
             currPlayer.shuffleDeck();
             currPlayer.drawDev();
         }
@@ -1637,6 +1655,11 @@ function plrMonSetup() {
 }
 // Player chooses which of their active developments to use
 function active() {
+    // Click event handling
+    if (pointer.isDown === true) {
+        activeClick([pointer.x, pointer.y]);
+    }
+    hoverTile([pointer.x, pointer.y]);
 }
 // Choosing a target for a development's effect
 function selDevel() {
@@ -1646,6 +1669,9 @@ function buy() {
 }
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
+    if (glbMonth === 0) {
+        glbBuildSel = eDEVEL.BaseCamp;
+    }
     var tDevel = develArray[glbBuildSel];
     glbTileSelArray = [];
     glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);

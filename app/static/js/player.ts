@@ -39,15 +39,19 @@ class Player {
 	}
 
 	shuffleDeck() {
-		if (this.deck === []) {
+		if (this.deck.length === 0) {
 			this.deck = this.discard;
 			this.discard = [];
 		}
+		// If deck is full/semi-full, add existing discard to deck and empty discard
 		else {
-			// Full/semi-full deck shuffling code to be added
+			for (let tDiscSpot = 0; tDiscSpot < this.discard.length; tDiscSpot++) {
+				this.deck.push(this.discard[tDiscSpot]);
+			}
+			this.discard = [];
 		}
 
-		for (let deckSpot = this.deck.length-1; deckSpot > 0; deckSpot --) {
+		for (let deckSpot = this.deck.length-1; deckSpot >= 0; deckSpot --) {
 			// randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
 			let randDev = Math.floor(Math.random() * (deckSpot+1));
 			let dsValue = this.deck[deckSpot];
@@ -74,7 +78,7 @@ class Player {
 		let sprMed = loader.resources["static/img/images.json"].textures;
 
 		let numActives = 0;
-		if (this.hand.length < 3) {
+		if (this.hand.length = 3) {
 			numActives = 3;
 		}
 		else { numActives = this.hand.length; }
@@ -86,17 +90,17 @@ class Player {
 				xPos = 100 - (glbHWidth / 2);
 				// Y positioning uses hex width in order to create an even margin on  both 
 				//  top and sides
-				yPos = 100 - (glbHWidth / 2) + ((activeSpot/3) * glbHHeight);
+				yPos = (glbHWidth / 2) + (((activeSpot*1.3)/3) * glbHHeight);
 			}
 			else if (((activeSpot-1) % 3) === 0) {
 				xPos = 100 - glbHWidth - (glbHWidth/2);
-				yPos = 100 - glbHHeight - (glbHWidth / 2) + 
-					(((activeSpot-1)/3) * glbHHeight);
+				yPos = 110 - glbHHeight - (glbHWidth / 2) + 
+					((((activeSpot-1)*1.3)/3) * glbHHeight);
 			}
 			else if (((activeSpot-2) % 3) === 0) {
 				xPos = 100 + (glbHWidth/2);
-				yPos = 100 - glbHHeight - (glbHWidth / 2) + 
-					(((activeSpot-2)/3) * glbHHeight);
+				yPos = 110 - glbHHeight - (glbHWidth / 2) + 
+					((((activeSpot-2)*1.3)/3) * glbHHeight);
 			}
 			else {
 				console.log("Error, unexpected development hand value.");

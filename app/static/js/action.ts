@@ -141,6 +141,10 @@ function buildClick(corPoint) {
 	}
 }
 
+function activeClick(corPoint) {
+	
+}
+
 function hoverTile(corPoint) {
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
@@ -203,6 +207,12 @@ function hoverEditBar(corPoint) {
 				(corPoint[1]) < (renderer.height - 60)) {
 				editBgArray[cOption].alpha = 0.6;
 			}
+			else if (glbEditBarSel != cOption) {
+				editBgArray[cOption].alpha = 0;
+			}
+			else {
+				editBgArray[cOption].alpha = 0.4;
+			}
 		}
 		else if (cOption === (glbNumLscps+glbNumBlkDevels+1)) {
 			if ((corPoint[0] > (renderer.width - 180)) && 
@@ -210,6 +220,12 @@ function hoverEditBar(corPoint) {
 				(corPoint[1]) > (renderer.height - 50) && 
 				(corPoint[1]) < (renderer.height - 20)) {
 				editBgArray[cOption].alpha = 0.6;
+			}
+			else if (glbEditBarSel != cOption) {
+				editBgArray[cOption].alpha = 0;
+			}
+			else {
+				editBgArray[cOption].alpha = 0.4;
 			}
 		}
 		else { console.log("Unexpected edit bar value."); }
