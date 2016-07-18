@@ -1,6 +1,8 @@
 /// <reference path="references.ts" />
 
+let descDevArray = [];
 function describeDevel(descPoint, descTile) {
+	let sprMed = loader.resources["static/img/images.json"].textures;
 	let dPosition = [];
 	// Make display card on right
 	if (descPoint[0] < 0) {
@@ -14,6 +16,16 @@ function describeDevel(descPoint, descTile) {
 	dPosition[1] = 20;
 
 	let tDevel = develArray[descTile.development];
+	let sprName = "tallblank.png";
+	if (tDevel.color === eDCLR.Black) { sprName="blackcard.png"; }
+	else if (tDevel.color === eDCLR.Blue) { sprName="bluecard.png"; }
+	else if (tDevel.color === eDCLR.Green) { sprName="greencard.png"; }
+	else if (tDevel.color === eDCLR.Orange) { sprName="orangecard.png"; }
+	else if (tDevel.color === eDCLR.Red) { sprName="redcard.png"; }
+	else if (tDevel.color === eDCLR.Violet) { sprName="violetcard.png"; }
+	else { console.log("Error, unexpected dev color value."); }
+	descDevArray[0] = new Sprite(sprMed[sprName]);
+
 	console.log("At" + dPosition + ":");
 	console.log("Header: " + tDevel.name + ", " + tDevel.color);
 	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
@@ -21,8 +33,14 @@ function describeDevel(descPoint, descTile) {
 	console.log("Cost: " + tDevel.cost);
 }
 
-function editClick(corPoint) {
+function removeDevDescription() {
+	for (let tDescSpr = 0; tDescSpr < descDevArray.length; tDescSpr++) {
+		stage.removeChild(descDevArray[tDescSpr]);
+	}
+	descDevArray = [];
+}
 
+function editClick(corPoint) {
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
@@ -142,7 +160,35 @@ function buildClick(corPoint) {
 }
 
 function activeClick(corPoint) {
-	
+	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+
+	let clkAxial = pointToHex(clkPoint);
+	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+
+	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
+		if (clkTile != undefined) {
+			if (clkTile.development != null) {
+				describeDevel(clkPoint, clkTile);
+			}
+		}
+	}
+}
+
+function activeBarClick(corPoint) {
+	for (let activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+			let activePos = currPlayer.getActivePos(activeSpot);
+  		if (currPlayer.inActiveHex(activePos, corPoint)) {
+  			activeChoiceClick(activePos); 
+  		}
+		}
+}
+
+function activeChoiceClick(activePos) {
+
+}
+
+function hoverActiveBar(corPoint) {
+
 }
 
 function hoverTile(corPoint) {

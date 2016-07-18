@@ -37,7 +37,6 @@ function gameLoop() {
 // Executes on loop when game is in 'edit' state
 let lastHex = null;
 function edit() {
-
 	// Click event handling
 	if (pointer.isDown === true) {
 		if ((pointer.x) < (renderer.width-200)) {
@@ -82,9 +81,20 @@ function plrMonSetup() {
 function active() {
 	// Click event handling
 	if (pointer.isDown === true) {
-		activeClick([pointer.x, pointer.y]);
+		if ((pointer.x) < (renderer.width-200)) {
+			activeClick([pointer.x, pointer.y]);
+		}
 	}
-	hoverTile([pointer.x, pointer.y])
+	pointer.tap = () => {
+		if ((pointer.x) > (renderer.width-200)) {
+			activeBarClick([pointer.x, pointer.y]);
+		}
+	}
+
+	if (pointer.x < (renderer.width - 200)) {
+		hoverTile([pointer.x, pointer.y]);
+	}
+	else { hoverActiveBar([pointer.x, pointer.y]); }
 }
 
 // Choosing a target for a development's effect

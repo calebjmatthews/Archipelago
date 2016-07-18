@@ -74,17 +74,9 @@ class Player {
 		this.deck = newDeck;
 	}
 
-	displayActives() {
-		let sprMed = loader.resources["static/img/images.json"].textures;
-
-		let numActives = 0;
-		if (this.hand.length = 3) {
-			numActives = 3;
-		}
-		else { numActives = this.hand.length; }
-
-		for (let activeSpot = 0; activeSpot < numActives; activeSpot++) {
-			let xPos = 0;
+	// Returns the x,y position of the active hexagon button
+	getActivePos(activeSpot) {
+		let xPos = 0;
 			let yPos = 0;
 			if ((activeSpot % 3) === 0) {
 				xPos = 100 - (glbHWidth / 2);
@@ -108,12 +100,30 @@ class Player {
 			// Corect for position of sidebar
 			xPos = renderer.width - 200 + xPos;
 
+			return [xPos, yPos];
+	}
+
+	displayActives() {
+		let sprMed = loader.resources["static/img/images.json"].textures;
+
+		let numActives = 0;
+		if (this.hand.length = 3) {
+			numActives = 3;
+		}
+		else { numActives = this.hand.length; }
+
+		for (let activeSpot = 0; activeSpot < numActives; activeSpot++) {
 			
 			let tSprite = new Sprite(sprMed["whitehex.png"]);
 			tSprite.scale.set(0.2, 0.2);
-			tSprite.position.set(xPos, yPos);
+			let sprPos = currPlayer.getActivePos(activeSpot);
+			tSprite.position.set(sprPos[0], sprPos[1]);
 			stage.addChild(tSprite);
 			this.activeSprArray[activeSpot] = tSprite;
 		}
+	}
+
+	inActiveHex(activePos, corPoint) {
+		
 	}
 }
