@@ -15,6 +15,7 @@ function describeDevel(descPoint, descTile) {
 	else { console.log("Unexpected describing point value."); }
 	dPosition[1] = 20;
 
+	// Card background
 	let tDevel = develArray[descTile.development];
 	let sprName = "tallblank.png";
 	if (tDevel.color === eDCLR.Black) { sprName="blackcard.png"; }
@@ -25,6 +26,16 @@ function describeDevel(descPoint, descTile) {
 	else if (tDevel.color === eDCLR.Violet) { sprName="violetcard.png"; }
 	else { console.log("Error, unexpected dev color value."); }
 	descDevArray[0] = new Sprite(sprMed[sprName]);
+	descDevArray[0].position.set(dPosition[0], dPosition[1]);
+
+	// Development name
+	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "white"});
+	descDevArray[1].position.set(dPosition[0], (dPosition[1]+64));
+
+	// Applying description sprites to stage
+	for (let tSpr=0; tSpr < descDevArray.length; tSpr++) {
+		stage.addChild(tSpr);
+	}
 
 	console.log("At" + dPosition + ":");
 	console.log("Header: " + tDevel.name + ", " + tDevel.color);
