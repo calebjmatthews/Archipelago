@@ -4,6 +4,7 @@ let descDevArray = [];
 function describeDevel(descPoint, descTile) {
 	let sprMed = loader.resources["static/img/images.json"].textures;
 	let dPosition = [];
+	let tDevel = develArray[descTile.development];
 	// Make display card on right
 	if (descPoint[0] < 0) {
 		dPosition[0] = 20;
@@ -16,7 +17,6 @@ function describeDevel(descPoint, descTile) {
 	dPosition[1] = 20;
 
 	// Card background
-	let tDevel = develArray[descTile.development];
 	let sprName = "tallblank.png";
 	if (tDevel.color === eDCLR.Black) { sprName="blackcard.png"; }
 	else if (tDevel.color === eDCLR.Blue) { sprName="bluecard.png"; }
@@ -30,7 +30,34 @@ function describeDevel(descPoint, descTile) {
 
 	// Development name
 	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "white"});
-	descDevArray[1].position.set(dPosition[0], (dPosition[1]+64));
+	descDevArray[1].position.set((dPosition[0] + ((descDevArray[0].width/2) - 
+		descDevArray[1].width)), (dPosition[1]+64));
+
+	// Background tile 
+	descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0].sprID]]);
+	descDevArray[2].scale.set(0.5, 0.5);
+	descDevArray[2].position.set((dPosition[0] + 108), (dPosition[1] + 221));
+
+	// Development sprite
+	descDevArray[3] = new Sprite(sprMed[tDevel.sprID[0]]);
+	descDevArray[3].scale.set(0.5, 0.5);
+	descDevArray[3].position.set((dPosition[0] + 108), (dPosition[1] + 71));
+
+	// Development description
+	descDevArray[4] = new Text(tDevel.description, 
+		{font: "16px sans-serif", fill: "white"});
+	descDevArray[4].position.set((dPosition[0] + 48), (dPosition[1] + 268));
+
+	// Development cost
+	// 12, 770
+	descDevArray[5] = new Text(tDevel.cost, {font: "16px sans-serif", fill: "white"});
+	descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 770));
+
+	// Development required tiles
+	// 435, 770
+	descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
+	descDevArray[6].scale.set = (0.02);
+	descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 770));
 
 	// Applying description sprites to stage
 	for (let tSpr=0; tSpr < descDevArray.length; tSpr++) {
@@ -38,7 +65,6 @@ function describeDevel(descPoint, descTile) {
 	}
 
 	console.log("At" + dPosition + ":");
-	console.log("Header: " + tDevel.name + ", " + tDevel.color);
 	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
 	console.log("Description: " + tDevel.description);
 	console.log("Cost: " + tDevel.cost);
