@@ -30,7 +30,8 @@ function describeDevel(descPoint, descTile) {
 
 	// Development name
 	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "white"});
-	descDevArray[1].position.set(dPosition[0], (dPosition[1]+64));
+	descDevArray[1].position.set(dPosition[0] + ((descDevArray[0].width/2) - 
+		(descDevArray[1].width/2)), (dPosition[1]+64));
 
 	// Applying description sprites to stage
 	for (let tSpr=0; tSpr < descDevArray.length; tSpr++) {
