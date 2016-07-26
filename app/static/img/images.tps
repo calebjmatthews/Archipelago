@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>json</string>
         <key>textureFileName</key>
-        <filename>images.png</filename>
+        <filename>images-{n}.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>pvrCompressionQuality</key>
@@ -141,11 +141,11 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>images.json</filename>
+                <filename>images-{n}.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
-        <false/>
+        <true/>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
@@ -191,6 +191,9 @@
             <key type="filename">abundantvessel.png</key>
             <key type="filename">auctionhouse.png</key>
             <key type="filename">basecamp.png</key>
+            <key type="filename">blackcard.png</key>
+            <key type="filename">bluecard.png</key>
+            <key type="filename">bluecard.psd</key>
             <key type="filename">boarranch.png</key>
             <key type="filename">cave1.png</key>
             <key type="filename">charcoalfurnace.png</key>
@@ -202,13 +205,16 @@
             <key type="filename">forested.png</key>
             <key type="filename">freshwater1.png</key>
             <key type="filename">grassy.png</key>
+            <key type="filename">greencard.png</key>
             <key type="filename">hex.png</key>
             <key type="filename">huntingcamp.png</key>
             <key type="filename">jungle1.png</key>
             <key type="filename">laborport.png</key>
             <key type="filename">merchantship.png</key>
             <key type="filename">opulentvessel.png</key>
+            <key type="filename">orangecard.png</key>
             <key type="filename">peachorchard.png</key>
+            <key type="filename">redcard.png</key>
             <key type="filename">ricepaddy.png</key>
             <key type="filename">rocky.png</key>
             <key type="filename">sea.png</key>
@@ -225,7 +231,10 @@
             <key type="filename">town.png</key>
             <key type="filename">tradeharbor.png</key>
             <key type="filename">ventureship.png</key>
+            <key type="filename">violetcard.png</key>
             <key type="filename">whitehex.png</key>
+            <key type="filename">whitehex2.png</key>
+            <key type="filename">whitehex3.png</key>
             <key type="filename">woodcutters.png</key>
             <key type="filename">workervillage.png</key>
             <key type="filename">workmanship.png</key>
@@ -277,6 +286,15 @@
             <filename>woodcutters.png</filename>
             <filename>workervillage.png</filename>
             <filename>workmanship.png</filename>
+            <filename>violetcard.png</filename>
+            <filename>redcard.png</filename>
+            <filename>orangecard.png</filename>
+            <filename>greencard.png</filename>
+            <filename>blackcard.png</filename>
+            <filename>bluecard.png</filename>
+            <filename>bluecard.psd</filename>
+            <filename>whitehex3.png</filename>
+            <filename>whitehex2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -6,6 +6,7 @@ var glbBoundary = 18;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
 var glbHWidth = 60;
+var glbBrdWidth = 14;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;

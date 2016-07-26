@@ -78,7 +78,6 @@ class Tile extends Hex {
 	selected: boolean = false;
 
 	reDrawTile() {
-		let sprMed = loader.resources["static/img/images.json"].textures;
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
 		let tDevSpr = currLand.sprDevArray[arraySpot];

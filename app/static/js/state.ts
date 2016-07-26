@@ -1,6 +1,12 @@
 /// <reference path="references.ts" />
 
 function onImageLoad() {
+	// Fill sprite reference with texture info
+	sprMed = loader.resources["static/img/images-0.json"].textures;
+	let spr2 = loader.resources["static/img/images-1.json"].textures;
+	for (var key in spr2) {
+		sprMed[key] = spr2[key];
+	}
 
 	// Create the Tink instance
 	tb = new Tink(PIXI, renderer.view);

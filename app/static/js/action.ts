@@ -2,19 +2,20 @@
 
 let descDevArray = [];
 function describeDevel(descPoint, descTile) {
-	let sprMed = loader.resources["static/img/images.json"].textures;
 	let dPosition = [];
 	let tDevel = develArray[descTile.development];
 	// Make display card on right
-	if (descPoint[0] < 0) {
+	if (descPoint[0] > 0) {
 		dPosition[0] = 20;
 	}
 	// Make display card on left
-	else if (descPoint[0] >= 0) {
+	else if (descPoint[0] <= 0) {
 		dPosition[0] = renderer.width - 200 - 200 - 40;
 	}
 	else { console.log("Unexpected describing point value."); }
-	dPosition[1] = 20;
+	dPosition[1] = 40;
+
+	console.log("At" + dPosition + ":");
 
 	// Card background
 	let sprName = "tallblank.png";
@@ -27,47 +28,48 @@ function describeDevel(descPoint, descTile) {
 	else { console.log("Error, unexpected dev color value."); }
 	descDevArray[0] = new Sprite(sprMed[sprName]);
 	descDevArray[0].position.set(dPosition[0], dPosition[1]);
+	descDevArray[0].scale.set(0.65, 0.65);
+
+	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
 
 	// Development name
-	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "white"});
-	descDevArray[1].position.set((dPosition[0] + ((descDevArray[0].width/2) - 
-		descDevArray[1].width)), (dPosition[1]+64));
+	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "black"});
+	descDevArray[1].position.set(dPosition[0] + 28), (dPosition[1] + 38));
 
 	// Background tile 
-	descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0].sprID]]);
+	descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]);
 	descDevArray[2].scale.set(0.5, 0.5);
-	descDevArray[2].position.set((dPosition[0] + 108), (dPosition[1] + 221));
+	descDevArray[2].position.set((dPosition[0] + 93), (dPosition[1] + 181));
 
 	// Development sprite
 	descDevArray[3] = new Sprite(sprMed[tDevel.sprID[0]]);
 	descDevArray[3].scale.set(0.5, 0.5);
-	descDevArray[3].position.set((dPosition[0] + 108), (dPosition[1] + 71));
+	descDevArray[3].position.set((dPosition[0] + 93), (dPosition[1] + 101));
 
 	// Development description
 	descDevArray[4] = new Text(tDevel.description, 
-		{font: "16px sans-serif", fill: "white"});
-	descDevArray[4].position.set((dPosition[0] + 48), (dPosition[1] + 268));
+		{font: "16px sans-serif", fill: "black"});
+	descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
+
+	console.log("Description: " + tDevel.description);
 
 	// Development cost
 	// 12, 770
-	descDevArray[5] = new Text(tDevel.cost, {font: "16px sans-serif", fill: "white"});
-	descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 770));
+	descDevArray[5] = new Text(tDevel.cost, {font: "16px sans-serif", fill: "black"});
+	descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
+
+	console.log("Cost: " + tDevel.cost);
 
 	// Development required tiles
 	// 435, 770
 	descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
 	descDevArray[6].scale.set = (0.02);
-	descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 770));
+	descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
 
 	// Applying description sprites to stage
 	for (let tSpr=0; tSpr < descDevArray.length; tSpr++) {
-		stage.addChild(tSpr);
+		stage.addChild(descDevArray[tSpr]);
 	}
-
-	console.log("At" + dPosition + ":");
-	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
-	console.log("Description: " + tDevel.description);
-	console.log("Cost: " + tDevel.cost);
 }
 
 function removeDevDescription() {
