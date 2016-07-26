@@ -124,6 +124,28 @@ class Player {
 	}
 
 	inActiveHex(activePos, corPoint) {
-		
+		// 1. Is the point within the possible range of any active hex?
+		// 2. Is the point in this hex's bounding box?
+		// 3. Which quadrant?  If not in upper left, translate point to upper left
+		// 4. Is it outside the rectangular portion?
+		// 5. Is it in the triangular point segment?
+		// A "no" to any step (other than 3) ends the function and returns false
+
+		let origX = 0;
+		let origY = 0;
+		if ((activePos % 3) === 0) {
+				origX = 100 - (glbHWidth / 2);
+				origY = (glbHWidth / 2) + (((activePos*1.3)/3) * glbHHeight);
+			}
+			else if (((activePos-1) % 3) === 0) {
+				origX = 100 - glbHWidth - (glbHWidth/2);
+				origY = 110 - glbHHeight - (glbHWidth / 2) + 
+					((((activePos-1)*1.3)/3) * glbHHeight);
+			}
+			else if (((activePos-2) % 3) === 0) {
+				xPorigXos = 100 + (glbHWidth/2);
+				origY = 110 - glbHHeight - (glbHWidth / 2) + 
+					((((activePos-2)*1.3)/3) * glbHHeight);
+		}
 	}
 }

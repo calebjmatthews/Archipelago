@@ -1335,6 +1335,9 @@ function paintLscp(clkTile) {
 /// <reference path="references.ts" />
 var descDevArray = [];
 function describeDevel(descPoint, descTile) {
+    if (descDevArray.length > 0) {
+        removeDevDescription();
+    }
     var dPosition = [];
     var tDevel = develArray[descTile.development];
     // Make display card on right
@@ -1378,8 +1381,7 @@ function describeDevel(descPoint, descTile) {
     console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
     // Development name
     descDevArray[1] = new Text(tDevel.name, { font: "24px sans-serif", fill: "black" });
-    descDevArray[1].position.set(dPosition[0] + 28), (dPosition[1] + 38);
-    ;
+    descDevArray[1].position.set((dPosition[0] + 28), (dPosition[1] + 38));
     // Background tile 
     descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]);
     descDevArray[2].scale.set(0.5, 0.5);
@@ -1413,18 +1415,18 @@ function removeDevDescription() {
     }
     descDevArray = [];
 }
-function editClick(corPoint) {
+function editHold(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         if (clkTile != undefined) {
-            if ((clkTile.landscape != glbPainting) &&
-                (glbPainting != null)) {
+            if ((clkTile.landscape != glbPainting) && (glbPainting != null)) {
                 if (glbPainting < glbNumLscps) {
                     clkTile.landscape = glbPainting;
                 }
-                else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
+                else if ((glbPainting < (glbNumLscps + glbNumBlkDevels)) &&
+                    (inArr(develArray[glbPainting - glbNumLscps].lscpRequired, clkTile.landscape))) {
                     clkTile.development = glbPainting - glbNumLscps;
                 }
                 else {
@@ -1438,7 +1440,23 @@ function editClick(corPoint) {
         }
     }
 }
+function editClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+    var clkAxial = pointToHex(clkPoint);
+    var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+    if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+        if (clkTile != undefined) {
+            if ((glbPainting === null) && (clkTile.development != null)) {
+                describeDevel(clkPoint, clkTile);
+            }
+            else if (descDevArray.length > 0) {
+                removeDevDescription();
+            }
+        }
+    }
+}
 function editBarClick(clkPoint) {
+    removeDevDescription();
     var actionTaken = false;
     for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
         if (cOption < glbNumLscps) {
@@ -1714,12 +1732,15 @@ function edit() {
     // Click event handling
     if (pointer.isDown === true) {
         if ((pointer.x) < (renderer.width - 200)) {
-            editClick([pointer.x, pointer.y]);
+            editHold([pointer.x, pointer.y]);
         }
     }
     pointer.tap = function () {
         if ((pointer.x) > (renderer.width - 200)) {
             editBarClick([pointer.x, pointer.y]);
+        }
+        else {
+            editClick([pointer.x, pointer.y]);
         }
     };
     if (pointer.x < (renderer.width - 200)) {
@@ -1750,13 +1771,11 @@ function plrMonSetup() {
 // Player chooses which of their active developments to use
 function active() {
     // Click event handling
-    if (pointer.isDown === true) {
+    pointer.tap = function () {
         if ((pointer.x) < (renderer.width - 200)) {
             activeClick([pointer.x, pointer.y]);
         }
-    }
-    pointer.tap = function () {
-        if ((pointer.x) > (renderer.width - 200)) {
+        else {
             activeBarClick([pointer.x, pointer.y]);
         }
     };

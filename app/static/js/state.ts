@@ -46,12 +46,15 @@ function edit() {
 	// Click event handling
 	if (pointer.isDown === true) {
 		if ((pointer.x) < (renderer.width-200)) {
-			editClick([pointer.x, pointer.y]);
+			editHold([pointer.x, pointer.y]);
 		}
 	}
 	pointer.tap = () => {
 		if ((pointer.x) > (renderer.width-200)) {
 			editBarClick([pointer.x, pointer.y]);
+		}
+		else {
+			editClick([pointer.x, pointer.y]);
 		}
 	}
 
@@ -86,13 +89,11 @@ function plrMonSetup() {
 // Player chooses which of their active developments to use
 function active() {
 	// Click event handling
-	if (pointer.isDown === true) {
+	pointer.tap = () => {
 		if ((pointer.x) < (renderer.width-200)) {
 			activeClick([pointer.x, pointer.y]);
 		}
-	}
-	pointer.tap = () => {
-		if ((pointer.x) > (renderer.width-200)) {
+		else {
 			activeBarClick([pointer.x, pointer.y]);
 		}
 	}
