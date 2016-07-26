@@ -33,9 +33,8 @@ class Land {
 	// Returns an array of applicable tileIDs when given a player's territory and
 	//  an array of landscape types
 	getSel(sTerr: number[], sLscp: number[]) {
-		let landWidth = (this.lSize+2)*2;
 		let selResult = [];
-		for (let ringWidth = 0; ringWidth < (landWidth+12); ringWidth++) {
+		for (let ringWidth = 0; ringWidth < glbBrdWidth; ringWidth++) {
 			let thisRing = [];
 			if (ringWidth === 0) { thisRing[0] = [0, 0]; }
 			else { thisRing = this.tileArray[0].getRing(ringWidth); }
@@ -165,8 +164,8 @@ class Land {
 		}
 	}
 
-	genShore(landWidth: number) {
-		for (var stepWidth = 0; stepWidth < (landWidth+12); stepWidth++) {
+	genShore() {
+		for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
 			var thisRing = [];
 			if (stepWidth === 0) { thisRing[0] = [0, 0]; }
 			else { thisRing = this.tileArray[0].getRing(stepWidth); }
@@ -194,9 +193,9 @@ class Land {
 	}
 
 	// Modification to each tile in a series of rings, performed multiple times
-	genLandStep(landWidth: number) {
+	genLandStep() {
 		var tileSnapShot = this.tileArray;
-		for (var stepWidth = 0; stepWidth < (landWidth+12); stepWidth++) {
+		for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
 			var thisRing = [];
 			if (stepWidth === 0) { thisRing[0] = [0, 0]; }
 			else { thisRing = this.tileArray[0].getRing(stepWidth); }
@@ -209,9 +208,9 @@ class Land {
 		}
 	}
 
-	genDevStep(landWidth: number) {
+	genDevStep() {
 		var tileSnapShot = this.tileArray;
-		for (var stepWidth = 0; stepWidth < (landWidth+12); stepWidth++) {
+		for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
 			var thisRing = [];
 			if (stepWidth === 0) { thisRing[0] = [0, 0]; }
 			else { thisRing = this.tileArray[0].getRing(stepWidth); }
@@ -231,7 +230,7 @@ class Land {
 		let tileCounter = 0;
 
 		// Create grass/sea template
-		for (var currWidth = 0; currWidth < (landWidth+12); currWidth++) {
+		for (var currWidth = 0; currWidth < glbBrdWidth; currWidth++) {
 			// Make grassy center
 			if (currWidth === 0) {
 				landTiles[0] = new Tile(0, [0, 0]);
@@ -257,10 +256,10 @@ class Land {
 
 		// Step through templated tiles, modifying landscape and black development
 		for (var tStep = 0; tStep < 5; tStep++) {
-			this.genLandStep(landWidth);
+			this.genLandStep();
 		}
-		this.genShore(landWidth);
-		this.genDevStep(landWidth);
+		this.genShore();
+		this.genDevStep();
 	}
 
 	genTestLand() {
@@ -268,7 +267,7 @@ class Land {
 		let landWidth = 3;
 		let landTiles = [];
 		let tileCounter = 0;
-		for (var currWidth = 0; currWidth < (landWidth+12); currWidth ++) {
+		for (var currWidth = 0; currWidth < glbBrdWidth; currWidth ++) {
 			// Make grassy center
 			if (currWidth === 0) {
 				landTiles[0] = new Tile(0, [0, 0]);
@@ -297,8 +296,6 @@ class Land {
 	}
 
 	displayLand() {
-		// Create an intermediate sprite ID alias
-		let sprMed = loader.resources["static/img/images.json"].textures;
 		let lTiles = this.tileArray;
 		let landSprites = [];
 		let landDevSprs = [];
@@ -351,7 +348,7 @@ class Land {
 	}
 
 	refreshLandSpr() {
-		for (let cTileID = 0; cTileID < this.tileArray.length-12; cTileID++) {
+		for (let cTileID = 0; cTileID < this.tileArray.length-1; cTileID++) {
 			let cTile = this.tileArray[cTileID];
 			cTile.reDrawTile();
 		}

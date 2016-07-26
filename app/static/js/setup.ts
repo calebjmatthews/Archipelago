@@ -28,8 +28,12 @@
 	glbOrigin[1] = (renderer.height / 2);
 
 	loader
-		.add("static/img/images.json")
+		.add("static/img/images-0.json")
+		.add("static/img/images-1.json")
 		.load(onImageLoad);
+
+	// Single reference variable to be filled later
+	var sprMed = null;
 
 // Create global Pixi and Tink variables
 var tb = null;
@@ -99,7 +103,6 @@ function formEditBar() {
 	stage.addChild(designBG);
 
 	for (var cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
-		let sprMed = loader.resources["static/img/images.json"].textures;
 		var chosenPng = null;
 		var chosenText = null;
 		let bScale = 0.2;

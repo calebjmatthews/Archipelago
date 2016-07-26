@@ -10,6 +10,7 @@ var glbBoundary = 18;
 var glbOrigin = [508, 288]; // Approximation of origin until renderer is available
 var glbHHeight = 30;
 var glbHWidth = 60;
+var glbBrdWidth = 14;
 var glbPainting = null;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
@@ -334,7 +335,6 @@ var Tile = (function (_super) {
         this.selected = false;
     }
     Tile.prototype.reDrawTile = function () {
-        var sprMed = loader.resources["static/img/images.json"].textures;
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
         var tDevSpr = currLand.sprDevArray[arraySpot];
@@ -411,6 +411,33 @@ var Player = (function () {
         }
         this.deck = newDeck;
     };
+    // Returns the x,y position of the active hexagon button
+    Player.prototype.getActivePos = function (activeSpot) {
+        var xPos = 0;
+        var yPos = 0;
+        if ((activeSpot % 3) === 0) {
+            xPos = 100 - (glbHWidth / 2);
+            // Y positioning uses hex width in order to create an even margin on  both 
+            //  top and sides
+            yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
+        }
+        else if (((activeSpot - 1) % 3) === 0) {
+            xPos = 100 - glbHWidth - (glbHWidth / 2);
+            yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
+        }
+        else if (((activeSpot - 2) % 3) === 0) {
+            xPos = 100 + (glbHWidth / 2);
+            yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                ((((activeSpot - 2) * 1.3) / 3) * glbHHeight);
+        }
+        else {
+            console.log("Error, unexpected development hand value.");
+        }
+        // Corect for position of sidebar
+        xPos = renderer.width - 200 + xPos;
+        return [xPos, yPos];
+    };
     Player.prototype.displayActives = function () {
         var sprMed = loader.resources["static/img/images.json"].textures;
         var numActives = 0;
@@ -421,35 +448,15 @@ var Player = (function () {
             numActives = this.hand.length;
         }
         for (var activeSpot = 0; activeSpot < numActives; activeSpot++) {
-            var xPos = 0;
-            var yPos = 0;
-            if ((activeSpot % 3) === 0) {
-                xPos = 100 - (glbHWidth / 2);
-                // Y positioning uses hex width in order to create an even margin on  both 
-                //  top and sides
-                yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
-            }
-            else if (((activeSpot - 1) % 3) === 0) {
-                xPos = 100 - glbHWidth - (glbHWidth / 2);
-                yPos = 110 - glbHHeight - (glbHWidth / 2) +
-                    ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
-            }
-            else if (((activeSpot - 2) % 3) === 0) {
-                xPos = 100 + (glbHWidth / 2);
-                yPos = 110 - glbHHeight - (glbHWidth / 2) +
-                    ((((activeSpot - 2) * 1.3) / 3) * glbHHeight);
-            }
-            else {
-                console.log("Error, unexpected development hand value.");
-            }
-            // Corect for position of sidebar
-            xPos = renderer.width - 200 + xPos;
             var tSprite = new Sprite(sprMed["whitehex.png"]);
             tSprite.scale.set(0.2, 0.2);
-            tSprite.position.set(xPos, yPos);
+            var sprPos = currPlayer.getActivePos(activeSpot);
+            tSprite.position.set(sprPos[0], sprPos[1]);
             stage.addChild(tSprite);
             this.activeSprArray[activeSpot] = tSprite;
         }
+    };
+    Player.prototype.inActiveHex = function (activePos, corPoint) {
     };
     return Player;
 }());
@@ -477,9 +484,8 @@ var Land = (function () {
     // Returns an array of applicable tileIDs when given a player's territory and
     //  an array of landscape types
     Land.prototype.getSel = function (sTerr, sLscp) {
-        var landWidth = (this.lSize + 2) * 2;
         var selResult = [];
-        for (var ringWidth = 0; ringWidth < (landWidth + 12); ringWidth++) {
+        for (var ringWidth = 0; ringWidth < glbBrdWidth; ringWidth++) {
             var thisRing = [];
             if (ringWidth === 0) {
                 thisRing[0] = [0, 0];
@@ -599,8 +605,8 @@ var Land = (function () {
             return null;
         }
     };
-    Land.prototype.genShore = function (landWidth) {
-        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+    Land.prototype.genShore = function () {
+        for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
             var thisRing = [];
             if (stepWidth === 0) {
                 thisRing[0] = [0, 0];
@@ -629,9 +635,9 @@ var Land = (function () {
         }
     };
     // Modification to each tile in a series of rings, performed multiple times
-    Land.prototype.genLandStep = function (landWidth) {
+    Land.prototype.genLandStep = function () {
         var tileSnapShot = this.tileArray;
-        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+        for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
             var thisRing = [];
             if (stepWidth === 0) {
                 thisRing[0] = [0, 0];
@@ -645,9 +651,9 @@ var Land = (function () {
             }
         }
     };
-    Land.prototype.genDevStep = function (landWidth) {
+    Land.prototype.genDevStep = function () {
         var tileSnapShot = this.tileArray;
-        for (var stepWidth = 0; stepWidth < (landWidth + 12); stepWidth++) {
+        for (var stepWidth = 0; stepWidth < glbBrdWidth; stepWidth++) {
             var thisRing = [];
             if (stepWidth === 0) {
                 thisRing[0] = [0, 0];
@@ -667,7 +673,7 @@ var Land = (function () {
         var landTiles = [];
         var tileCounter = 0;
         // Create grass/sea template
-        for (var currWidth = 0; currWidth < (landWidth + 12); currWidth++) {
+        for (var currWidth = 0; currWidth < glbBrdWidth; currWidth++) {
             // Make grassy center
             if (currWidth === 0) {
                 landTiles[0] = new Tile(0, [0, 0]);
@@ -691,17 +697,17 @@ var Land = (function () {
         this.tileArray = landTiles;
         // Step through templated tiles, modifying landscape and black development
         for (var tStep = 0; tStep < 5; tStep++) {
-            this.genLandStep(landWidth);
+            this.genLandStep();
         }
-        this.genShore(landWidth);
-        this.genDevStep(landWidth);
+        this.genShore();
+        this.genDevStep();
     };
     Land.prototype.genTestLand = function () {
         // Generate a small debug land
         var landWidth = 3;
         var landTiles = [];
         var tileCounter = 0;
-        for (var currWidth = 0; currWidth < (landWidth + 12); currWidth++) {
+        for (var currWidth = 0; currWidth < glbBrdWidth; currWidth++) {
             // Make grassy center
             if (currWidth === 0) {
                 landTiles[0] = new Tile(0, [0, 0]);
@@ -728,8 +734,6 @@ var Land = (function () {
         this.tileArray = landTiles;
     };
     Land.prototype.displayLand = function () {
-        // Create an intermediate sprite ID alias
-        var sprMed = loader.resources["static/img/images.json"].textures;
         var lTiles = this.tileArray;
         var landSprites = [];
         var landDevSprs = [];
@@ -776,7 +780,7 @@ var Land = (function () {
         renderer.render(stage);
     };
     Land.prototype.refreshLandSpr = function () {
-        for (var cTileID = 0; cTileID < this.tileArray.length - 12; cTileID++) {
+        for (var cTileID = 0; cTileID < this.tileArray.length - 1; cTileID++) {
             var cTile = this.tileArray[cTileID];
             cTile.reDrawTile();
         }
@@ -1148,8 +1152,11 @@ var stage = new Container();
 glbOrigin[0] = ((renderer.width - 200) / 2);
 glbOrigin[1] = (renderer.height / 2);
 loader
-    .add("static/img/images.json")
+    .add("static/img/images-0.json")
+    .add("static/img/images-1.json")
     .load(onImageLoad);
+// Single reference variable to be filled later
+var sprMed = null;
 // Create global Pixi and Tink variables
 var tb = null;
 // Set the default game state to 'edit'
@@ -1211,7 +1218,6 @@ function formEditBar() {
     designBG.y = 0;
     stage.addChild(designBG);
     for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
-        var sprMed = loader.resources["static/img/images.json"].textures;
         var chosenPng = null;
         var chosenText = null;
         var bScale = 0.2;
@@ -1327,25 +1333,85 @@ function paintLscp(clkTile) {
     }
 }
 /// <reference path="references.ts" />
+var descDevArray = [];
 function describeDevel(descPoint, descTile) {
     var dPosition = [];
+    var tDevel = develArray[descTile.development];
     // Make display card on right
-    if (descPoint[0] < 0) {
+    if (descPoint[0] > 0) {
         dPosition[0] = 20;
     }
-    else if (descPoint[0] >= 0) {
+    else if (descPoint[0] <= 0) {
         dPosition[0] = renderer.width - 200 - 200 - 40;
     }
     else {
         console.log("Unexpected describing point value.");
     }
-    dPosition[1] = 20;
-    var tDevel = develArray[descTile.development];
+    dPosition[1] = 40;
     console.log("At" + dPosition + ":");
-    console.log("Header: " + tDevel.name + ", " + tDevel.color);
+    // Card background
+    var sprName = "tallblank.png";
+    if (tDevel.color === eDCLR.Black) {
+        sprName = "blackcard.png";
+    }
+    else if (tDevel.color === eDCLR.Blue) {
+        sprName = "bluecard.png";
+    }
+    else if (tDevel.color === eDCLR.Green) {
+        sprName = "greencard.png";
+    }
+    else if (tDevel.color === eDCLR.Orange) {
+        sprName = "orangecard.png";
+    }
+    else if (tDevel.color === eDCLR.Red) {
+        sprName = "redcard.png";
+    }
+    else if (tDevel.color === eDCLR.Violet) {
+        sprName = "violetcard.png";
+    }
+    else {
+        console.log("Error, unexpected dev color value.");
+    }
+    descDevArray[0] = new Sprite(sprMed[sprName]);
+    descDevArray[0].position.set(dPosition[0], dPosition[1]);
+    descDevArray[0].scale.set(0.65, 0.65);
     console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
+    // Development name
+    descDevArray[1] = new Text(tDevel.name, { font: "24px sans-serif", fill: "black" });
+    descDevArray[1].position.set(dPosition[0] + 28), (dPosition[1] + 38);
+    ;
+    // Background tile 
+    descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]);
+    descDevArray[2].scale.set(0.5, 0.5);
+    descDevArray[2].position.set((dPosition[0] + 93), (dPosition[1] + 181));
+    // Development sprite
+    descDevArray[3] = new Sprite(sprMed[tDevel.sprID[0]]);
+    descDevArray[3].scale.set(0.5, 0.5);
+    descDevArray[3].position.set((dPosition[0] + 93), (dPosition[1] + 101));
+    // Development description
+    descDevArray[4] = new Text(tDevel.description, { font: "16px sans-serif", fill: "black" });
+    descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
     console.log("Description: " + tDevel.description);
+    // Development cost
+    // 12, 770
+    descDevArray[5] = new Text(tDevel.cost, { font: "16px sans-serif", fill: "black" });
+    descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
     console.log("Cost: " + tDevel.cost);
+    // Development required tiles
+    // 435, 770
+    descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
+    descDevArray[6].scale.set = (0.02);
+    descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
+    // Applying description sprites to stage
+    for (var tSpr = 0; tSpr < descDevArray.length; tSpr++) {
+        stage.addChild(descDevArray[tSpr]);
+    }
+}
+function removeDevDescription() {
+    for (var tDescSpr = 0; tDescSpr < descDevArray.length; tDescSpr++) {
+        stage.removeChild(descDevArray[tDescSpr]);
+    }
+    descDevArray = [];
 }
 function editClick(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
@@ -1461,6 +1527,28 @@ function buildClick(corPoint) {
     }
 }
 function activeClick(corPoint) {
+    var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+    var clkAxial = pointToHex(clkPoint);
+    var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+    if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
+        if (clkTile != undefined) {
+            if (clkTile.development != null) {
+                describeDevel(clkPoint, clkTile);
+            }
+        }
+    }
+}
+function activeBarClick(corPoint) {
+    for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+        var activePos = currPlayer.getActivePos(activeSpot);
+        if (currPlayer.inActiveHex(activePos, corPoint)) {
+            activeChoiceClick(activePos);
+        }
+    }
+}
+function activeChoiceClick(activePos) {
+}
+function hoverActiveBar(corPoint) {
 }
 function hoverTile(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
@@ -1592,6 +1680,12 @@ function veAllEffects() {
 /// <reference path="state.ts" /> 
 /// <reference path="references.ts" />
 function onImageLoad() {
+    // Fill sprite reference with texture info
+    sprMed = loader.resources["static/img/images-0.json"].textures;
+    var spr2 = loader.resources["static/img/images-1.json"].textures;
+    for (var key in spr2) {
+        sprMed[key] = spr2[key];
+    }
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
@@ -1657,9 +1751,21 @@ function plrMonSetup() {
 function active() {
     // Click event handling
     if (pointer.isDown === true) {
-        activeClick([pointer.x, pointer.y]);
+        if ((pointer.x) < (renderer.width - 200)) {
+            activeClick([pointer.x, pointer.y]);
+        }
     }
-    hoverTile([pointer.x, pointer.y]);
+    pointer.tap = function () {
+        if ((pointer.x) > (renderer.width - 200)) {
+            activeBarClick([pointer.x, pointer.y]);
+        }
+    };
+    if (pointer.x < (renderer.width - 200)) {
+        hoverTile([pointer.x, pointer.y]);
+    }
+    else {
+        hoverActiveBar([pointer.x, pointer.y]);
+    }
 }
 // Choosing a target for a development's effect
 function selDevel() {
