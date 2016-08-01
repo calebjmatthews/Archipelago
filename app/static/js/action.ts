@@ -18,8 +18,6 @@ function describeDevel(descPoint, descTile) {
 	else { console.log("Unexpected describing point value."); }
 	dPosition[1] = 40;
 
-	console.log("At" + dPosition + ":");
-
 	// Card background
 	let sprName = "tallblank.png";
 	if (tDevel.color === eDCLR.Black) { sprName="blackcard.png"; }
@@ -32,8 +30,6 @@ function describeDevel(descPoint, descTile) {
 	descDevArray[0] = new Sprite(sprMed[sprName]);
 	descDevArray[0].position.set(dPosition[0], dPosition[1]);
 	descDevArray[0].scale.set(0.65, 0.65);
-
-	console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
 
 	// Development name
 	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "black"});
@@ -54,17 +50,11 @@ function describeDevel(descPoint, descTile) {
 		{font: "16px sans-serif", fill: "black"});
 	descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
 
-	console.log("Description: " + tDevel.description);
-
 	// Development cost
-	// 12, 770
 	descDevArray[5] = new Text(tDevel.cost, {font: "16px sans-serif", fill: "black"});
 	descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
 
-	console.log("Cost: " + tDevel.cost);
-
 	// Development required tiles
-	// 435, 770
 	descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
 	descDevArray[6].scale.set = (0.02);
 	descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
@@ -238,11 +228,23 @@ function activeClick(corPoint) {
 }
 
 function activeBarClick(corPoint) {
-	for (let activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+	// If the clicked point is within the range of all the hexagons
+	let numActives = 0;
+	if (currPlayer.hand.length = 3) { numActives = 3; }
+	else { numActives = this.hand.length; }
+	let activeRow = numActives - (numActives % 3);
+	if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth/2))) && 
+			(corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth/2))) && 
+			(corPoint[1] > (glbHWidth / 2)) && 
+			(corPoint[1] < ((glbHWidth / 2) + 
+				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight))) {
+		for (let activeSpot=0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+		
 			let activePos = currPlayer.getActivePos(activeSpot);
   		if (currPlayer.inActiveHex(activePos, corPoint)) {
-  			activeChoiceClick(activePos); 
+  			activeChoiceClick(activeSpot); 
   		}
+  	}
 	}
 }
 
@@ -251,7 +253,27 @@ function activeChoiceClick(activePos) {
 }
 
 function hoverActiveBar(corPoint) {
-
+	// If the hovered point is within the range of all the hexagons
+	let numActives = 0;
+	if (currPlayer.hand.length = 3) { numActives = 3; }
+	else { numActives = this.hand.length; }
+	let activeRow = numActives - (numActives % 3);
+	if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth/2))) && 
+			(corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth/2))) && 
+			(corPoint[1] > (glbHWidth / 2)) && 
+			(corPoint[1] < ((glbHWidth / 2) + 
+				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight))) {
+		for (let activeSpot=0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+		
+			let activePos = currPlayer.getActivePos(activeSpot);
+  		if (currPlayer.inActiveHex(activePos, corPoint)) {
+  			currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 0, 0]);
+  		}
+  		else {
+  			currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 255, 255]);
+  		}
+  	}
+	}
 }
 
 function hoverTile(corPoint) {

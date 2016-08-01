@@ -439,7 +439,6 @@ var Player = (function () {
         return [xPos, yPos];
     };
     Player.prototype.displayActives = function () {
-        var sprMed = loader.resources["static/img/images.json"].textures;
         var numActives = 0;
         if (this.hand.length = 3) {
             numActives = 3;
@@ -457,6 +456,43 @@ var Player = (function () {
         }
     };
     Player.prototype.inActiveHex = function (activePos, corPoint) {
+        // 1. Is the point within the possible range of any active hex?
+        // 2. Is the point in this hex's bounding box?
+        // 3. Which quadrant?  If not in upper right, translate point to upper right
+        // 4. Is it outside the rectangular portion?
+        // 5. Is it in the triangular point segment?
+        // A "no" to any step (other than 3) ends the function and returns false
+        // Is the cursor point within the hex's bounding box?
+        if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) &&
+            (corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
+            return currPlayer.inActiveRect(activePos, corPoint);
+        }
+        else {
+            return false;
+        }
+    };
+    Player.prototype.inActiveRect = function (activePos, corPoint) {
+        // Which quadrant?  If not in upper right, translate point to upper right
+        var diffX = Math.abs((activePos[0] + (glbHWidth / 2)) - corPoint[0]);
+        var diffY = Math.abs((activePos[1] + (glbHHeight / 2)) - corPoint[1]);
+        // Is the point within the rectangular segment?
+        if (diffX < ((glbHWidth / 2) - (glbHHeight / 2))) {
+            return true;
+        }
+        else {
+            return currPlayer.inActiveTri(diffX, diffY);
+        }
+    };
+    Player.prototype.inActiveTri = function (diffX, diffY) {
+        // Is the point within the triangular segment?
+        // Begin by mirroring the x point horizontally
+        var mirrX = (glbHHeight / 2) - diffY;
+        if (mirrX > diffY) {
+            return true;
+        }
+        else {
+            return false;
+        }
     };
     return Player;
 }());
@@ -1351,7 +1387,6 @@ function describeDevel(descPoint, descTile) {
         console.log("Unexpected describing point value.");
     }
     dPosition[1] = 40;
-    console.log("At" + dPosition + ":");
     // Card background
     var sprName = "tallblank.png";
     if (tDevel.color === eDCLR.Black) {
@@ -1378,7 +1413,6 @@ function describeDevel(descPoint, descTile) {
     descDevArray[0] = new Sprite(sprMed[sprName]);
     descDevArray[0].position.set(dPosition[0], dPosition[1]);
     descDevArray[0].scale.set(0.65, 0.65);
-    console.log("Image: " + tDevel.sprID + ", " + tDevel.lscpRequired);
     // Development name
     descDevArray[1] = new Text(tDevel.name, { font: "24px sans-serif", fill: "black" });
     descDevArray[1].position.set((dPosition[0] + 28), (dPosition[1] + 38));
@@ -1393,14 +1427,10 @@ function describeDevel(descPoint, descTile) {
     // Development description
     descDevArray[4] = new Text(tDevel.description, { font: "16px sans-serif", fill: "black" });
     descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
-    console.log("Description: " + tDevel.description);
     // Development cost
-    // 12, 770
     descDevArray[5] = new Text(tDevel.cost, { font: "16px sans-serif", fill: "black" });
     descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
-    console.log("Cost: " + tDevel.cost);
     // Development required tiles
-    // 435, 770
     descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
     descDevArray[6].scale.set = (0.02);
     descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
@@ -1557,16 +1587,55 @@ function activeClick(corPoint) {
     }
 }
 function activeBarClick(corPoint) {
-    for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
-        var activePos = currPlayer.getActivePos(activeSpot);
-        if (currPlayer.inActiveHex(activePos, corPoint)) {
-            activeChoiceClick(activePos);
+    // If the clicked point is within the range of all the hexagons
+    var numActives = 0;
+    if (currPlayer.hand.length = 3) {
+        numActives = 3;
+    }
+    else {
+        numActives = this.hand.length;
+    }
+    var activeRow = numActives - (numActives % 3);
+    if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth / 2))) &&
+        (corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth / 2))) &&
+        (corPoint[1] > (glbHWidth / 2)) &&
+        (corPoint[1] < ((glbHWidth / 2) +
+            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight))) {
+        for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+            var activePos = currPlayer.getActivePos(activeSpot);
+            if (currPlayer.inActiveHex(activePos, corPoint)) {
+                activeChoiceClick(activeSpot);
+            }
         }
     }
 }
 function activeChoiceClick(activePos) {
 }
 function hoverActiveBar(corPoint) {
+    // If the hovered point is within the range of all the hexagons
+    var numActives = 0;
+    if (currPlayer.hand.length = 3) {
+        numActives = 3;
+    }
+    else {
+        numActives = this.hand.length;
+    }
+    var activeRow = numActives - (numActives % 3);
+    if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth / 2))) &&
+        (corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth / 2))) &&
+        (corPoint[1] > (glbHWidth / 2)) &&
+        (corPoint[1] < ((glbHWidth / 2) +
+            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight))) {
+        for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
+            var activePos = currPlayer.getActivePos(activeSpot);
+            if (currPlayer.inActiveHex(activePos, corPoint)) {
+                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 0, 0]);
+            }
+            else {
+                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 255, 255]);
+            }
+        }
+    }
 }
 function hoverTile(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
