@@ -117,7 +117,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	if (glbMonth === 0) {
-		glbBuildSel = eDEVEL.BaseCamp;
+		glbBuildSel = eDEVEL.TeaHouse;
 	}
 	let tDevel = develArray[glbBuildSel];
 	glbTileSelArray = [];

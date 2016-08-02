@@ -1,13 +1,5 @@
 /// <reference path="references.ts" />
 
-function describeDevel(descPoint, descTile) {
-	currDescCard = new DescCard(descPoint, descTile);
-}
-
-function removeDevDescription() {
-	
-}
-
 function editHold(corPoint) {
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
@@ -28,9 +20,6 @@ function editHold(corPoint) {
 				}
 				clkTile.reDrawTile();
 			}
-			else if ((glbPainting === null) && (clkTile.development != null)) {
-				currDescCard = new DescCard(descPoint, descTile);
-			}
 		}
 	}
 }
@@ -44,17 +33,16 @@ function editClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if ((glbPainting === null) && (clkTile.development != null)) {
-				currDescCard = new DescCard(descPoint, descTile);
+				if (currDescCard != null) { currDescCard.selfDestruct(); }
+				currDescCard = new DescCard(corPoint, clkTile);
 			}
-			else if (descDevArray.length > 0) {
-				currDescCard.selfDestruct();
-			}
+			else if (currDescCard != null) { currDescCard.selfDestruct(); }
 		}
 	}
 }
 
 function editBarClick(clkPoint) {
-	currDescCard.selfDestruct();
+	if (currDescCard != null) { currDescCard.selfDestruct(); }
 
 	let actionTaken = false;
 	for (let cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
@@ -99,7 +87,6 @@ function editBarClick(clkPoint) {
 				(clkPoint[0]) < (renderer.width - 20) && 
 				(clkPoint[1]) > (renderer.height - 50) && 
 				(clkPoint[1]) < (renderer.height - 20)) {
-				glbBuildSel = eDEVEL.BaseCamp;
 				glbState = buildSetup;
 			}
 		}
@@ -157,7 +144,7 @@ function activeClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if (clkTile.development != null) {
-				currDescCard = new DescCard(descPoint, descTile);
+				currDescCard = new DescCard(corPoint, clkTile);
 			}
 		}
 	}
