@@ -1,75 +1,11 @@
 /// <reference path="references.ts" />
 
-let descDevArray = [];
 function describeDevel(descPoint, descTile) {
-	if (descDevArray.length > 0) {
-		removeDevDescription();
-	}
-	let dPosition = [];
-	let tDevel = develArray[descTile.development];
-	// Make display card on right
-	if (descPoint[0] > 0) {
-		dPosition[0] = 20;
-	}
-	// Make display card on left
-	else if (descPoint[0] <= 0) {
-		dPosition[0] = renderer.width - 200 - 200 - 40;
-	}
-	else { console.log("Unexpected describing point value."); }
-	dPosition[1] = 40;
-
-	// Card background
-	let sprName = "tallblank.png";
-	if (tDevel.color === eDCLR.Black) { sprName="blackcard.png"; }
-	else if (tDevel.color === eDCLR.Blue) { sprName="bluecard.png"; }
-	else if (tDevel.color === eDCLR.Green) { sprName="greencard.png"; }
-	else if (tDevel.color === eDCLR.Orange) { sprName="orangecard.png"; }
-	else if (tDevel.color === eDCLR.Red) { sprName="redcard.png"; }
-	else if (tDevel.color === eDCLR.Violet) { sprName="violetcard.png"; }
-	else { console.log("Error, unexpected dev color value."); }
-	descDevArray[0] = new Sprite(sprMed[sprName]);
-	descDevArray[0].position.set(dPosition[0], dPosition[1]);
-	descDevArray[0].scale.set(0.65, 0.65);
-
-	// Development name
-	descDevArray[1] = new Text(tDevel.name, {font: "24px sans-serif", fill: "black"});
-	descDevArray[1].position.set((dPosition[0] + 28), (dPosition[1] + 38));
-
-	// Background tile 
-	descDevArray[2] = new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]);
-	descDevArray[2].scale.set(0.5, 0.5);
-	descDevArray[2].position.set((dPosition[0] + 93), (dPosition[1] + 181));
-
-	// Development sprite
-	descDevArray[3] = new Sprite(sprMed[tDevel.sprID[0]]);
-	descDevArray[3].scale.set(0.5, 0.5);
-	descDevArray[3].position.set((dPosition[0] + 93), (dPosition[1] + 101));
-
-	// Development description
-	descDevArray[4] = new Text(tDevel.description, 
-		{font: "16px sans-serif", fill: "black"});
-	descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
-
-	// Development cost
-	descDevArray[5] = new Text(tDevel.cost, {font: "16px sans-serif", fill: "black"});
-	descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
-
-	// Development required tiles
-	descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
-	descDevArray[6].scale.set = (0.02);
-	descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
-
-	// Applying description sprites to stage
-	for (let tSpr=0; tSpr < descDevArray.length; tSpr++) {
-		stage.addChild(descDevArray[tSpr]);
-	}
+	currDescCard = new DescCard(descPoint, descTile);
 }
 
 function removeDevDescription() {
-	for (let tDescSpr = 0; tDescSpr < descDevArray.length; tDescSpr++) {
-		stage.removeChild(descDevArray[tDescSpr]);
-	}
-	descDevArray = [];
+	
 }
 
 function editHold(corPoint) {
@@ -93,7 +29,7 @@ function editHold(corPoint) {
 				clkTile.reDrawTile();
 			}
 			else if ((glbPainting === null) && (clkTile.development != null)) {
-				describeDevel(clkPoint, clkTile);
+				currDescCard = new DescCard(descPoint, descTile);
 			}
 		}
 	}
@@ -108,17 +44,17 @@ function editClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if ((glbPainting === null) && (clkTile.development != null)) {
-				describeDevel(clkPoint, clkTile);
+				currDescCard = new DescCard(descPoint, descTile);
 			}
 			else if (descDevArray.length > 0) {
-				removeDevDescription();
+				currDescCard.selfDestruct();
 			}
 		}
 	}
 }
 
 function editBarClick(clkPoint) {
-	removeDevDescription();
+	currDescCard.selfDestruct();
 
 	let actionTaken = false;
 	for (let cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
@@ -221,7 +157,7 @@ function activeClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if (clkTile.development != null) {
-				describeDevel(clkPoint, clkTile);
+				currDescCard = new DescCard(descPoint, descTile);
 			}
 		}
 	}

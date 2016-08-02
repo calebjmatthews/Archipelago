@@ -1376,12 +1376,12 @@ function describeDevel(descPoint, descTile) {
     }
     var dPosition = [];
     var tDevel = develArray[descTile.development];
-    // Make display card on right
+    // Make display card on left
     if (descPoint[0] > 0) {
         dPosition[0] = 20;
     }
     else if (descPoint[0] <= 0) {
-        dPosition[0] = renderer.width - 200 - 200 - 40;
+        dPosition[0] = renderer.width - 200 - 310 - 40;
     }
     else {
         console.log("Unexpected describing point value.");
@@ -1429,11 +1429,11 @@ function describeDevel(descPoint, descTile) {
     descDevArray[4].position.set((dPosition[0] + 28), (dPosition[1] + 298));
     // Development cost
     descDevArray[5] = new Text(tDevel.cost, { font: "16px sans-serif", fill: "black" });
-    descDevArray[5].position.set((dPosition[0] + 12), (dPosition[1] + 470));
+    descDevArray[5].position.set((dPosition[0] + 28), (dPosition[1] + 370));
     // Development required tiles
     descDevArray[6] = new Sprite(sprMed[tDevel.lscpRequired[0]]);
-    descDevArray[6].scale.set = (0.02);
-    descDevArray[6].position.set((dPosition[0] + 435), (dPosition[1] + 470));
+    descDevArray[6].scale.set = (0.05);
+    descDevArray[6].position.set((dPosition[0] + 235), (dPosition[1] + 370));
     // Applying description sprites to stage
     for (var tSpr = 0; tSpr < descDevArray.length; tSpr++) {
         stage.addChild(descDevArray[tSpr]);

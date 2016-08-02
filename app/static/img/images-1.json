@@ -2,34 +2,25 @@
 
 "blackcard.png":
 {
-	"frame": {"x":2,"y":2,"w":500,"h":810},
+	"frame": {"x":2,"y":2,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "bluecard.png":
 {
-	"frame": {"x":504,"y":2,"w":500,"h":810},
+	"frame": {"x":554,"y":2,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"bluecard.psd":
-{
-	"frame": {"x":1006,"y":2,"w":500,"h":810},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "freshwater1.png":
 {
-	"frame": {"x":1508,"y":2,"w":300,"h":300},
+	"frame": {"x":1106,"y":2,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -38,38 +29,38 @@
 },
 "greencard.png":
 {
-	"frame": {"x":2,"y":814,"w":500,"h":810},
+	"frame": {"x":1408,"y":2,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "orangecard.png":
 {
-	"frame": {"x":504,"y":814,"w":500,"h":810},
+	"frame": {"x":2,"y":864,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "redcard.png":
 {
-	"frame": {"x":1006,"y":814,"w":500,"h":810},
+	"frame": {"x":554,"y":864,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "violetcard.png":
 {
-	"frame": {"x":1508,"y":814,"w":500,"h":810},
+	"frame": {"x":1106,"y":864,"w":550,"h":860},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":810},
-	"sourceSize": {"w":500,"h":810},
+	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
+	"sourceSize": {"w":550,"h":860},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -77,8 +68,8 @@
 	"version": "1.0",
 	"image": "images-1.png",
 	"format": "RGBA8888",
-	"size": {"w":2010,"h":1626},
+	"size": {"w":1960,"h":1726},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f80dd9d1c4ec797032fcf8bc33431f8d:50739f9eba0d09ee5d13f5291f9dbcf1:4b437caca69fd16d5f6bf05828e98a30$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b2b26d280dd5c152bb6e001d42900883:1fb2a74b106a749798cc638c87a7851f:a04cb746003f0aaad052c3ec2c1956fe$"
 }
 }
