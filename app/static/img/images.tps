@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>4</int>
         <key>texturePackerVersion</key>
-        <string>4.2.1</string>
+        <string>4.2.2</string>
         <key>fileName</key>
         <string>/Users/calebmatthews/Archipelago/app/static/img/images.tps</string>
         <key>autoSDSettings</key>
@@ -100,7 +100,7 @@
         <key>algorithmSettings</key>
         <struct type="AlgorithmSettings">
             <key>algorithm</key>
-            <enum type="AlgorithmSettings::AlgorithmId">Basic</enum>
+            <enum type="AlgorithmSettings::AlgorithmId">MaxRects</enum>
             <key>freeSizeMode</key>
             <enum type="AlgorithmSettings::AlgorithmFreeSizeMode">Best</enum>
             <key>sizeConstraints</key>
@@ -228,6 +228,12 @@
             <key type="filename">tall hex.png</key>
             <key type="filename">tallblank.png</key>
             <key type="filename">teahouse.png</key>
+            <key type="filename">tinydesert.png</key>
+            <key type="filename">tinyforested.png</key>
+            <key type="filename">tinygrassy.png</key>
+            <key type="filename">tinyrocky.png</key>
+            <key type="filename">tinysea.png</key>
+            <key type="filename">tinyshore.png</key>
             <key type="filename">town.png</key>
             <key type="filename">tradeharbor.png</key>
             <key type="filename">ventureship.png</key>
@@ -295,6 +301,12 @@
             <filename>bluecard.psd</filename>
             <filename>whitehex3.png</filename>
             <filename>whitehex2.png</filename>
+            <filename>tinydesert.png</filename>
+            <filename>tinyforested.png</filename>
+            <filename>tinygrassy.png</filename>
+            <filename>tinyrocky.png</filename>
+            <filename>tinysea.png</filename>
+            <filename>tinyshore.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

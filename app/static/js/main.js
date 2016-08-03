@@ -919,21 +919,22 @@ climateArray[eCLIMATE.Wet].prob[eLSCP.Grassy] = 0.4;
 climateArray[eCLIMATE.Wet].prob[eLSCP.Rocky] = 0.1;
 /// <reference path="references.ts" />
 var Landcape = (function () {
-    function Landcape(setID, setSprID, setName, setBlack) {
+    function Landcape(setID, setSprID, setTinyID, setName, setBlack) {
         this.id = setID;
         this.sprID = setSprID;
+        this.tinyID = setTinyID;
         this.name = setName;
         this.black = setBlack;
     }
     return Landcape;
 }());
 var lscpArray = [];
-lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "Desert", null);
-lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Desert, "forested.png", "Forested", eDEVEL.Jungle);
-lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "Grassy", eDEVEL.Freshwater);
-lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "Rocky", eDEVEL.Cave);
-lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "Sea", null);
-lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "Shore", null);
+lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "tinydesert.png", "Desert", null);
+lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Forested, "forested.png", "tinyforested.png", "Forested", eDEVEL.Jungle);
+lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "tinygrassy.png", "Grassy", eDEVEL.Freshwater);
+lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "tinyrocky.png", "Rocky", eDEVEL.Cave);
+lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "tinysea.png", "Sea", null);
+lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "tinyshore.png", "Shore", null);
 /// <reference path="references.ts" />
 var Development = (function () {
     function Development(setID, setSprID, setName, setColor, setLscpRequired, setDescription) {
@@ -1651,9 +1652,6 @@ var DescCard = (function () {
         this.tArray = [];
         this.clkPoint = givenPoint;
         this.tile = givenTile;
-        if (this.tArray.length > 0) {
-            currDescCard.selfDestruct();
-        }
         var dPosition = [];
         var tDevel = develArray[this.tile.development];
         // Make display card on left
@@ -1707,15 +1705,21 @@ var DescCard = (function () {
         // Development description
         var expDesc = [];
         expDesc = this.expandDescription(tDevel);
-        this.tArray.push(new Text(expDesc, { font: "16px sans-serif", fill: "black" }));
-        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 28), (dPosition[1] + 298));
+        for (var tExpD = 0; tExpD < expDesc.length; tExpD++) {
+            this.tArray.push(new Text(expDesc[tExpD], { font: "16px sans-serif", fill: "black" }));
+            this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 28), (dPosition[1] + 298 + (tExpD * 20)));
+        }
         // Development cost
-        this.tArray.push(new Text(tDevel.cost, { font: "16px sans-serif", fill: "black" }));
-        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 28), (dPosition[1] + 370));
+        var expCost = this.expandCost(tDevel);
+        this.tArray.push(new Text(expCost, { font: "16px sans-serif", fill: "black" }));
+        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 28), (dPosition[1] + 475));
         // Development required tiles
-        this.tArray.push(new Sprite(sprMed[tDevel.lscpRequired[0]]));
-        this.tArray[this.tArray.length - 1].scale.set = (0.05);
-        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 235), (dPosition[1] + 370));
+        var tLscpReq = tDevel.lscpRequired;
+        for (var tLReq = 0; tLReq < tLscpReq.length; tLReq++) {
+            this.tArray.push(new Sprite(sprMed[lscpArray[tLscpReq[tLReq]].tinyID]));
+            this.tArray[this.tArray.length - 1].position.set(((dPosition[0] + 255) -
+                (tLReq * 33)), (dPosition[1] + 475));
+        }
         // Applying description sprites to stage
         for (var tSpr = 0; tSpr < this.tArray.length; tSpr++) {
             stage.addChild(this.tArray[tSpr]);
@@ -1723,16 +1727,19 @@ var DescCard = (function () {
     }
     DescCard.prototype.expandDescription = function (tDevel) {
         var pieces = tDevel.description.split(";");
+        var result = [];
+        var anyOver30 = false;
         for (var tPiece = 0; tPiece < pieces.length; tPiece++) {
             // If any individual pieces is too long to fit on a line
-            if (pieces[tPiece].length > 30) {
+            if (pieces[tPiece].length > 34) {
+                anyOver30 = true;
                 // Split the pieces array into 'before' and 'after'
                 var beforeT = [];
                 for (var iii = 0; iii < tPiece; iii++) {
                     beforeT[iii] = pieces[iii];
                 }
                 var afterT = [];
-                for (var iii = tPiece; iii < pieces.length; iii++) {
+                for (var iii = tPiece + 1; iii < pieces.length; iii++) {
                     afterT[iii] = pieces[iii];
                 }
                 // Break the >30 character piece along a space
@@ -1740,26 +1747,53 @@ var DescCard = (function () {
                 var metaPieces = [];
                 // Use pseudo-while loop to break an indeterminate number of times
                 for (var iii = 0; iii < 80; iii++) {
-                    if (tooLong.length > 30) {
-                        for (var jjj = 31; jjj > 0; jjj--) {
+                    if (tooLong.length > 34) {
+                        for (var jjj = 35; jjj > 0; jjj--) {
                             if (tooLong[jjj] === " ") {
-                                metaPieces.push(tooLong.slice(0, jjj));
+                                metaPieces.push(tooLong.slice(1, jjj));
                                 tooLong = tooLong.slice(jjj);
+                                break;
                             }
                         }
                     }
                     else {
+                        metaPieces.push(tooLong.slice(1, tooLong.length));
                         break;
                     }
                 }
                 // Re-assemble the pieces array
-                pieces = [];
-                pieces.concat(beforeT, metaPieces, afterT);
+                result = [];
+                result = beforeT.concat(metaPieces, afterT);
             }
         }
-        return pieces;
+        if (anyOver30 === false) {
+            result = pieces;
+        }
+        return result;
     };
     DescCard.prototype.expandCost = function (tDevel) {
+        if (tDevel.cost.length > 0) {
+            var result = "";
+            if (tDevel.cost[0] != null) {
+                result = Math.abs(tDevel.cost[0]) + "F";
+                if ((tDevel.cost[1] != null) || (tDevel.cost[2] != null)) {
+                    result += ", ";
+                }
+            }
+            if (tDevel.cost[1] != null) {
+                result += Math.abs(tDevel.cost[1]) + "M";
+                if (tDevel.cost[2] != null) {
+                    result += ", ";
+                }
+            }
+            if (tDevel.cost[2] != null) {
+                result += Math.abs(tDevel.cost[2]) + "T";
+            }
+            return result;
+        }
+        else {
+            return "";
+        }
     };
     DescCard.prototype.selfDestruct = function () {
         for (var tSpr = 0; tSpr < this.tArray.length; tSpr++) {
