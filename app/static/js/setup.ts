@@ -142,14 +142,14 @@ function formEditBar() {
 			editBgArray[cButton].alpha = 0;
 			stage.addChild(editBgArray[cButton]);
 
-			// Set up the development's background as the button
+			// Create the required landscape's sprite
 			let bgLscp = develArray[cButton-glbNumLscps].lscpRequired[0];
 			editBtnArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
 			editBtnArray[cButton].position.set((renderer.width-180), (50 + 40*cButton));
 			editBtnArray[cButton].scale.set(bScale, bScale);
 			stage.addChild(editBtnArray[cButton]);
 
-			// Create the development as the text and as a facade
+			// Create the development sprite
 			chosenText = develArray[cButton-glbNumLscps].name;
 			let devSprID = develArray[cButton-glbNumLscps].sprID[0];
 			let tDevSpr = new Sprite(sprMed[devSprID]);

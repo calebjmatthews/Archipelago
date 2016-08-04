@@ -17,8 +17,10 @@ class Player {
 	discard: number[] = [];
 	trash: number[] = [];
 	activeEffects: string;
-	canClick: boolean = false;
 	activeSprArray: Sprite[] = [];
+	handBGArray: Sprite[] = [];
+	handSprArray: Sprite[] = [];
+	handTextArray: Text[] = [];
 
 	constructor() {
 		this.playerID = playerIncrement;
@@ -29,20 +31,24 @@ class Player {
 		let tTile = currLand.tileArray[tTileID];
 		tTile.development = glbBuildSel;
 		tTile.ownedBy = currPlayer.playerID;
-		currPlayer.ownedDevs.push(tTile);
-		currPlayer.discard.push(tTile);
+		currPlayer.ownedDevs.push(tTile.development);
+		currPlayer.discard.push(tTileID);
 		if (!(inArr(this.territory, tTileID))) {
 			this.territory.push(tTileID)
 		}
 		let neighbors = tTile.getNeighbors();
 		for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
 			if (!(inArr(this.territory, neighbors[cNeigh]))) {
-				this.territory.push(neighbors[cNeigh]);
-				let tNTile = currLand.tileArray[neighbors[cNeigh]];
+				this.territory.push(currLand.getID(neighbors[cNeigh]));
+				let tNTile = currLand.tileArray[currLand.getID(neighbors[cNeigh])];
+				// If the neighboring tile has an ownerless black development, add it to the
+				//  territory
 				if (tNTile.development != null) {
+					if ((develArray[tNTile.development].color === eDCLR.Black) && 
+						(tNTile.ownedBy === null))
 					tNTile.ownedBy = currPlayer.playerID;
-					currPlayer.ownedDevs.push(tNTile);
-					currPlayer.discard.push(tNTile);
+					currPlayer.ownedDevs.push(tNTile.development);
+					currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
 				}
 			}
 		}
@@ -133,7 +139,31 @@ class Player {
 
 	displayHand() {
 		for (let tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
+			if (this.hand[tHSpot] === undefined) {
+				continue;
+			}
+			let tPos = [(renderer.width - 180), (300 + 10 + (tHSpot * glbHHeight))];
+			let tDevel = develArray[currLand.tileArray[this.hand[tHSpot]].development];
+			let bScale = 0.2;
 
+			// Create the associated landscape background sprite
+			let bgLscp = tDevel.lscpRequired[0];
+			this.handBGArray[tHSpot] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
+			this.handBGArray[tHSpot].position.set(tPos[0], tPos[1]);
+			this.handBGArray[tHSpot].scale.set(bScale, bScale);
+			stage.addChild(this.handBGArray[tHSpot]);
+
+			// Create the development sprite
+			this.handSprArray[tHSpot] = new Sprite(sprMed[tDevel.sprID[0]]);
+			this.handSprArray[tHSpot].scale.set(bScale, bScale);
+			this.handSprArray[tHSpot].position.set(tPos[0], (tPos[1] - glbHHeight));
+			stage.addChild(this.handSprArray[tHSpot]);
+
+			// Accompanying text
+			this.handTextArray[tHSpot] = new Text((tDevel.name), 
+				{font: "16px sans-serif", fill: "white"});
+			this.handTextArray[tHSpot].position.set((tPos[0] + 70), tPos[1]);
+			stage.addChild(this.handTextArray[tHSpot]);
 		}
 	}
 
