@@ -121,6 +121,12 @@ class Player {
 		}
 	}
 
+	displayHand() {
+		for (let tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
+			
+		}
+	}
+
 	inActiveHex(activePos, corPoint) {
 		// 1. Is the point within the possible range of any active hex?
 		// 2. Is the point in this hex's bounding box?

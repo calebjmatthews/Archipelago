@@ -455,6 +455,10 @@ var Player = (function () {
             this.activeSprArray[activeSpot] = tSprite;
         }
     };
+    Player.prototype.displayHand = function () {
+        for (var tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
+        }
+    };
     Player.prototype.inActiveHex = function (activePos, corPoint) {
         // 1. Is the point within the possible range of any active hex?
         // 2. Is the point in this hex's bounding box?
@@ -1517,11 +1521,13 @@ function activeBarClick(corPoint) {
         numActives = this.hand.length;
     }
     var activeRow = numActives - (numActives % 3);
-    if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth / 2))) &&
-        (corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth / 2))) &&
-        (corPoint[1] > (glbHWidth / 2)) &&
-        (corPoint[1] < ((glbHWidth / 2) +
-            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight))) {
+    // Check that the cursor exists in the neighborhood of the active slots.  A buffer of
+    //  10xp is added to allow the hover shading to be removed if the cursor exits the hex
+    if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth / 2))) &&
+        (corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth / 2))) &&
+        (corPoint[1] > (-10 + (glbHWidth / 2))) &&
+        (corPoint[1] < (10 + (glbHWidth / 2) +
+            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight + (glbHHeight / 2)))) {
         for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
             var activePos = currPlayer.getActivePos(activeSpot);
             if (currPlayer.inActiveHex(activePos, corPoint)) {
@@ -1542,15 +1548,18 @@ function hoverActiveBar(corPoint) {
         numActives = this.hand.length;
     }
     var activeRow = numActives - (numActives % 3);
-    if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth / 2))) &&
-        (corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth / 2))) &&
-        (corPoint[1] > (glbHWidth / 2)) &&
-        (corPoint[1] < ((glbHWidth / 2) +
-            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight))) {
+    // Check that the cursor exists in the neighborhood of the active slots.  A buffer of
+    //  10xp is added to allow the hover shading to be removed if the cursor exits the hex
+    if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth / 2))) &&
+        (corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth / 2))) &&
+        (corPoint[1] > (-10 + (glbHWidth / 2))) &&
+        (corPoint[1] < (10 + (glbHWidth / 2) +
+            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight + (glbHHeight / 2)))) {
         for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
             var activePos = currPlayer.getActivePos(activeSpot);
+            activePos[1] += 30;
             if (currPlayer.inActiveHex(activePos, corPoint)) {
-                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 0, 0]);
+                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([160, 160, 160]);
             }
             else {
                 currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 255, 255]);
@@ -1718,7 +1727,7 @@ var DescCard = (function () {
         for (var tLReq = 0; tLReq < tLscpReq.length; tLReq++) {
             this.tArray.push(new Sprite(sprMed[lscpArray[tLscpReq[tLReq]].tinyID]));
             this.tArray[this.tArray.length - 1].position.set(((dPosition[0] + 255) -
-                (tLReq * 33)), (dPosition[1] + 475));
+                (tLReq * 32)), (dPosition[1] + 475));
         }
         // Applying description sprites to stage
         for (var tSpr = 0; tSpr < this.tArray.length; tSpr++) {
@@ -1916,6 +1925,7 @@ function plrMonSetup() {
         }
     }
     currPlayer.displayActives();
+    currPlayer.displayHand();
     glbState = active;
 }
 // Player chooses which of their active developments to use
@@ -1945,7 +1955,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
     if (glbMonth === 0) {
-        glbBuildSel = eDEVEL.TeaHouse;
+        glbBuildSel = eDEVEL.BaseCamp;
     }
     var tDevel = develArray[glbBuildSel];
     glbTileSelArray = [];
@@ -1962,9 +1972,9 @@ function buildSetup() {
 // Player chooses where to build a newly bought development
 function build() {
     // Click event handling
-    if (pointer.isDown === true) {
+    pointer.tap = function () {
         buildClick([pointer.x, pointer.y]);
-    }
+    };
     hoverTile([pointer.x, pointer.y]);
 }
 // Applies after a player has finished their turn

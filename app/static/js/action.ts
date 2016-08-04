@@ -156,11 +156,13 @@ function activeBarClick(corPoint) {
 	if (currPlayer.hand.length = 3) { numActives = 3; }
 	else { numActives = this.hand.length; }
 	let activeRow = numActives - (numActives % 3);
-	if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth/2))) && 
-			(corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth/2))) && 
-			(corPoint[1] > (glbHWidth / 2)) && 
-			(corPoint[1] < ((glbHWidth / 2) + 
-				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight))) {
+	// Check that the cursor exists in the neighborhood of the active slots.  A buffer of
+	//  10xp is added to allow the hover shading to be removed if the cursor exits the hex
+	if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth/2))) && 
+			(corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth/2))) && 
+			(corPoint[1] > (-10 + (glbHWidth / 2))) && 
+			(corPoint[1] < (10 + (glbHWidth / 2) + 
+				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight + (glbHHeight/2)))) {
 		for (let activeSpot=0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
 		
 			let activePos = currPlayer.getActivePos(activeSpot);
@@ -172,7 +174,7 @@ function activeBarClick(corPoint) {
 }
 
 function activeChoiceClick(activePos) {
-
+	
 }
 
 function hoverActiveBar(corPoint) {
@@ -181,16 +183,19 @@ function hoverActiveBar(corPoint) {
 	if (currPlayer.hand.length = 3) { numActives = 3; }
 	else { numActives = this.hand.length; }
 	let activeRow = numActives - (numActives % 3);
-	if ((corPoint[0] > (renderer.width - 100 - glbHWidth - (glbHWidth/2))) && 
-			(corPoint[0] < (renderer.width - 100 + glbHWidth + (glbHWidth/2))) && 
-			(corPoint[1] > (glbHWidth / 2)) && 
-			(corPoint[1] < ((glbHWidth / 2) + 
-				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight))) {
+	// Check that the cursor exists in the neighborhood of the active slots.  A buffer of
+	//  10xp is added to allow the hover shading to be removed if the cursor exits the hex
+	if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth/2))) && 
+			(corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth/2))) && 
+			(corPoint[1] > (-10 + (glbHWidth / 2))) && 
+			(corPoint[1] < (10 + (glbHWidth / 2) + 
+				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight + (glbHHeight/2)))) {
 		for (let activeSpot=0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
 		
 			let activePos = currPlayer.getActivePos(activeSpot);
+			activePos[1] += 30;
   		if (currPlayer.inActiveHex(activePos, corPoint)) {
-  			currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 0, 0]);
+  			currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([160, 160, 160]);
   		}
   		else {
   			currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 255, 255]);

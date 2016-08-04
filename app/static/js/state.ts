@@ -83,6 +83,7 @@ function plrMonSetup() {
 	}
 
 	currPlayer.displayActives();
+	currPlayer.displayHand();
 	glbState = active;
 }
 
@@ -117,7 +118,7 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	if (glbMonth === 0) {
-		glbBuildSel = eDEVEL.TeaHouse;
+		glbBuildSel = eDEVEL.BaseCamp;
 	}
 	let tDevel = develArray[glbBuildSel];
 	glbTileSelArray = [];
@@ -136,7 +137,7 @@ function buildSetup() {
 // Player chooses where to build a newly bought development
 function build() {
 	// Click event handling
-	if (pointer.isDown === true) {
+	pointer.tap = () => {
 		buildClick([pointer.x, pointer.y]);
 	}
 	hoverTile([pointer.x, pointer.y])
