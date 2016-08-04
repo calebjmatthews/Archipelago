@@ -27,6 +27,10 @@ class Player {
 
 	addTerritory(tTileID) {
 		let tTile = currLand.tileArray[tTileID];
+		tTile.development = glbBuildSel;
+		tTile.ownedBy = currPlayer.playerID;
+		currPlayer.ownedDevs.push(tTile);
+		currPlayer.discard.push(tTile);
 		if (!(inArr(this.territory, tTileID))) {
 			this.territory.push(tTileID)
 		}
@@ -34,6 +38,12 @@ class Player {
 		for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
 			if (!(inArr(this.territory, neighbors[cNeigh]))) {
 				this.territory.push(neighbors[cNeigh]);
+				let tNTile = currLand.tileArray[neighbors[cNeigh]];
+				if (tNTile.development != null) {
+					tNTile.ownedBy = currPlayer.playerID;
+					currPlayer.ownedDevs.push(tNTile);
+					currPlayer.discard.push(tNTile);
+				}
 			}
 		}
 	}
@@ -123,7 +133,7 @@ class Player {
 
 	displayHand() {
 		for (let tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
-			
+
 		}
 	}
 

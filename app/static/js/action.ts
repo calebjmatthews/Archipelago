@@ -109,11 +109,7 @@ function buildClick(corPoint) {
 		if (clkTile != undefined) {
 			if (inArr(glbTileSelArray, clkTileID)) {
 
-				// Build the selected development and set the current player as its owner
-				clkTile.development = glbBuildSel;
-				clkTile.ownedBy = currPlayer.playerID;
-				currPlayer.ownedDevs.push(clkTileID);
-				currPlayer.discard.push(clkTileID);
+				// Build the selected development and it to player's territory
 				currPlayer.addTerritory(clkTileID);
 				clkTile.reDrawTile();
 
@@ -174,7 +170,7 @@ function activeBarClick(corPoint) {
 }
 
 function activeChoiceClick(activePos) {
-	
+
 }
 
 function hoverActiveBar(corPoint) {
