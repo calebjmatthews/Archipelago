@@ -138,11 +138,13 @@ class Player {
 	}
 
 	displayHand() {
+		let trueHand = 0;
 		for (let tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
 			if (this.hand[tHSpot] === undefined) {
 				continue;
 			}
-			let tPos = [(renderer.width - 180), (300 + 10 + (tHSpot * glbHHeight))];
+			trueHand++;
+			let tPos = [(renderer.width - 190), (200 + 10 + (tHSpot * 40))];
 			let tDevel = develArray[currLand.tileArray[this.hand[tHSpot]].development];
 			let bScale = 0.2;
 
@@ -162,8 +164,18 @@ class Player {
 			// Accompanying text
 			this.handTextArray[tHSpot] = new Text((tDevel.name), 
 				{font: "16px sans-serif", fill: "white"});
-			this.handTextArray[tHSpot].position.set((tPos[0] + 70), tPos[1]);
+			this.handTextArray[tHSpot].position.set((tPos[0] + 70), (tPos[1] + 6));
 			stage.addChild(this.handTextArray[tHSpot]);
+		}
+
+		
+	}
+
+	hideHand() {
+		for (let tHSpot = 0; tHSpot < this.handBGArray.length; tHSpot++) {
+			stage.removeChild(this.handBGArray[tHSpot]);
+			stage.removeChild(this.handSprArray[tHSpot]);
+			stage.removeChild(this.handTextArray[tHSpot]);
 		}
 	}
 

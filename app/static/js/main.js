@@ -476,7 +476,7 @@ var Player = (function () {
             if (this.hand[tHSpot] === undefined) {
                 continue;
             }
-            var tPos = [(renderer.width - 180), (300 + 10 + (tHSpot * glbHHeight))];
+            var tPos = [(renderer.width - 190), (300 + 10 + (tHSpot * 40))];
             var tDevel = develArray[currLand.tileArray[this.hand[tHSpot]].development];
             var bScale = 0.2;
             // Create the associated landscape background sprite
@@ -492,8 +492,15 @@ var Player = (function () {
             stage.addChild(this.handSprArray[tHSpot]);
             // Accompanying text
             this.handTextArray[tHSpot] = new Text((tDevel.name), { font: "16px sans-serif", fill: "white" });
-            this.handTextArray[tHSpot].position.set((tPos[0] + 70), tPos[1]);
+            this.handTextArray[tHSpot].position.set((tPos[0] + 70), (tPos[1] + 7));
             stage.addChild(this.handTextArray[tHSpot]);
+        }
+    };
+    Player.prototype.hideHand = function () {
+        for (var tHSpot = 0; tHSpot < this.handBGArray.length; tHSpot++) {
+            stage.removeChild(this.handBGArray[tHSpot]);
+            stage.removeChild(this.handSprArray[tHSpot]);
+            stage.removeChild(this.handTextArray[tHSpot]);
         }
     };
     Player.prototype.inActiveHex = function (activePos, corPoint) {
