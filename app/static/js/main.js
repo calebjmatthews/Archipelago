@@ -472,13 +472,13 @@ var Player = (function () {
         }
     };
     Player.prototype.displayHand = function () {
+        var bScale = 0.2;
         for (var tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
             if (this.hand[tHSpot] === undefined) {
                 continue;
             }
-            var tPos = [(renderer.width - 190), (300 + 10 + (tHSpot * 40))];
+            var tPos = [(renderer.width - 190), (200 + 10 + (tHSpot * 40))];
             var tDevel = develArray[currLand.tileArray[this.hand[tHSpot]].development];
-            var bScale = 0.2;
             // Create the associated landscape background sprite
             var bgLscp = tDevel.lscpRequired[0];
             this.handBGArray[tHSpot] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
@@ -492,9 +492,35 @@ var Player = (function () {
             stage.addChild(this.handSprArray[tHSpot]);
             // Accompanying text
             this.handTextArray[tHSpot] = new Text((tDevel.name), { font: "16px sans-serif", fill: "white" });
-            this.handTextArray[tHSpot].position.set((tPos[0] + 70), (tPos[1] + 7));
+            this.handTextArray[tHSpot].position.set((tPos[0] + 70), (tPos[1] + 6));
             stage.addChild(this.handTextArray[tHSpot]);
         }
+        // Menu option for building
+        this.handBGArray[this.handBGArray.length] = new Sprite(sprMed["whitehex.png"]);
+        var tBPos = [(renderer.width - 190), (200 + 10 + ((this.handBGArray.length - 1) * 40))];
+        this.handBGArray[this.handBGArray.length - 1].position.set(tBPos[0], (tBPos[1] - 30));
+        this.handBGArray[this.handBGArray.length - 1].scale.set(bScale, bScale);
+        stage.addChild(this.handBGArray[this.handBGArray.length - 1]);
+        this.handSprArray[this.handSprArray.length] = new Sprite(sprMed["tallblank.png"]);
+        this.handSprArray[this.handSprArray.length - 1].position.set(tBPos[0], (tBPos[1] - glbHHeight));
+        this.handSprArray[this.handSprArray.length - 1].scale.set(bScale, bScale);
+        stage.addChild(this.handSprArray[this.handSprArray.length - 1]);
+        this.handTextArray[this.handTextArray.length] = new Text("Build", { font: "16px sans-serif", fill: "white" });
+        this.handTextArray[this.handTextArray.length - 1].position.set((tBPos[0] + 70), (tBPos[1] + 6));
+        stage.addChild(this.handTextArray[this.handTextArray.length - 1]);
+        // Menu option for passing
+        this.handBGArray[this.handBGArray.length] = new Sprite(sprMed["whitehex.png"]);
+        var tPPos = [(renderer.width - 190), (200 + 10 + ((this.handBGArray.length - 1) * 40))];
+        this.handBGArray[this.handBGArray.length - 1].position.set(tPPos[0], (tPPos[1] - 30));
+        this.handBGArray[this.handBGArray.length - 1].scale.set(bScale, bScale);
+        stage.addChild(this.handBGArray[this.handBGArray.length - 1]);
+        this.handSprArray[this.handSprArray.length] = new Sprite(sprMed["tallblank.png"]);
+        this.handSprArray[this.handSprArray.length - 1].position.set(tPPos[0], (tPPos[1] - glbHHeight));
+        this.handSprArray[this.handSprArray.length - 1].scale.set(bScale, bScale);
+        stage.addChild(this.handSprArray[this.handSprArray.length - 1]);
+        this.handTextArray[this.handTextArray.length] = new Text("Pass", { font: "16px sans-serif", fill: "white" });
+        this.handTextArray[this.handTextArray.length - 1].position.set((tPPos[0] + 70), (tPPos[1] + 6));
+        stage.addChild(this.handTextArray[this.handTextArray.length - 1]);
     };
     Player.prototype.hideHand = function () {
         for (var tHSpot = 0; tHSpot < this.handBGArray.length; tHSpot++) {
