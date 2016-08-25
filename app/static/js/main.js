@@ -1240,7 +1240,7 @@ develArray[eDEVEL.SteadyVessel].requirement = [];
 develArray[eDEVEL.SteadyVessel].result = [];
 develArray[eDEVEL.SteadyVessel].result[eRES.Ship] = 1;
 /// <reference path="references.ts" />
-// ~~~~ Set up pixi.js ~~~~
+// Set up pixi.js
 // PIXI Aliases
 var Container = PIXI.Container, autoDetectRenderer = PIXI.autoDetectRenderer, loader = PIXI.loader, resources = PIXI.loader.resources, Sprite = PIXI.Sprite, TextureCache = PIXI.utils.TextureCache, Graphics = PIXI.Graphics, Text = PIXI.Text;
 // Create renderer
@@ -1256,11 +1256,12 @@ var stage = new Container();
 // Edit origin to be renderer specific
 glbOrigin[0] = ((renderer.width - 200) / 2);
 glbOrigin[1] = (renderer.height / 2);
+// Load sprite atlases
 loader
     .add("static/img/images-0.json")
     .add("static/img/images-1.json")
     .load(onImageLoad);
-// Single reference variable to be filled later
+// Single reference sprite  to be filled later
 var sprMed = null;
 // Create global Pixi and Tink variables
 var tb = null;
@@ -1307,6 +1308,32 @@ function updatePlayerBar() {
     plrMsg.position.set(3, 1);
     stage.addChild(plrMsg);
 }
+function paintLscp(clkTile) {
+    // Simple landscape alteration
+    if (glbPainting < glbNumLscps) {
+        clkTile.landscape = glbPainting;
+    }
+    else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
+        if (clkTile.landscape === develArray[glbPainting - glbNumLscps].lscpRequired) {
+            clkTile.landscape = glbPainting - glbNumLscps;
+            clkTile.development = glbPainting;
+        }
+    }
+    else {
+        console.log("Error, unexpected glbPainting value.");
+    }
+}
+/// <reference path="references.ts" />
+var SideBar = (function () {
+    function SideBar(setStyle) {
+        this.style = null;
+        this.bgArray = [];
+        this.sprArray = [];
+        this.msgArray = [];
+        this.style = setStyle;
+    }
+    return SideBar;
+}());
 var editBgArray = [];
 var editBtnArray = [];
 var devEditArray = [];
@@ -1421,21 +1448,6 @@ function removeEditBar() {
     }
     for (var cButton = 0; cButton < devEditArray.length; cButton++) {
         stage.removeChild(devEditArray[cButton]);
-    }
-}
-function paintLscp(clkTile) {
-    // Simple landscape alteration
-    if (glbPainting < glbNumLscps) {
-        clkTile.landscape = glbPainting;
-    }
-    else if (glbPainting < (glbNumLscps + glbNumBlkDevels)) {
-        if (clkTile.landscape === develArray[glbPainting - glbNumLscps].lscpRequired) {
-            clkTile.landscape = glbPainting - glbNumLscps;
-            clkTile.development = glbPainting;
-        }
-    }
-    else {
-        console.log("Error, unexpected glbPainting value.");
     }
 }
 /// <reference path="references.ts" />
@@ -1917,6 +1929,7 @@ function veAllEffects() {
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
+/// <reference path="sidebar.ts" />
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
