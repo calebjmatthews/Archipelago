@@ -1,20 +1,7 @@
 /// <reference path="references.ts" />
 
-/*
-Things the sidebar should accomplish:
-1.  Create the black backing as soon as the board is created
-2.  Figure out what the members need to be.  This will depend of the sidebar type.
-2a. For edit bars there will be the following:
-  - Button bg, tile bg, and text for each landscape type
-  - Button bg, tile bg, development sprite, and text for each development type
-  - "Randomize" and "finish" buttons on the bottom
-*/
-
 class SideBar {
 	style: string = null;
-	bgArray: Sprite[] = [];
-	sprArray: Sprite[] = [];
-	msgArray: Text[] = [];
 	buttonArray: ArcButton[] = [];
 
 	constructor(setStyle: string) {
@@ -33,11 +20,71 @@ class SideBar {
 	}
 
 	formBar() {
-		this.buttonArray = this.formButtons();
+		if (this.style === "edit") { this.formEditButtons(); }
 	}
 
-	formButtons() {
-		
+	formEditButtons() {
+		// The edit bar's origin for button placement
+		let oriB = [renderer.width - 180, 20]; 
+		// Edit bar has the buttons for each landscape, each black development, and the
+		//  "Randomize" and "Finish" buttons
+		for (let cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
+			if (cButton < glbNumLscps) {
+				this.buttonArray[cButton] = new ArcButton("landscape", cButton, null, 
+					[oriB[0], (oriB[1] + (cButton * 40))]);
+			}
+			else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+				this.buttonArray[cButton] = new ArcButton("development", (cButton - glbNumLscps), 
+					null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+			}
+			else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+				this.buttonArray[cButton] = new ArcButton("other", null, "Randomize", 
+					[oriB[0], (renderer.height - 90)]);
+			}
+			else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+				this.buttonArray[cButton] = new ArcButton("other", null, "Finish", 
+					[oriB[0], (renderer.height - 50)]);
+			}
+			else {
+				console.log("Error, unexpected menu button value.");
+			}
+			this.buttonArray[cButton].displayButton();
+		}
+	}
+
+	removeEditBar() {
+		for (let cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
+			if (cButton < glbNumLscps) {
+				stage.removeChild(this.buttonArray[cButton].sprBg);
+				stage.removeChild(this.buttonArray[cButton].sprFirst);
+				stage.removeChild(this.buttonArray[cButton].txtLabel);
+			}
+			if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+				stage.removeChild(this.buttonArray[cButton].sprFirst);
+			}
+			else if (cButton < (glbNumLscps + glbNumBlkDevels + 2)) {
+				stage.removeChild(this.buttonArray[cButton].txtLabel);
+			}
+			else {
+				console.log("Error, unexpected menu button value.");
+				break;
+			}
+		}
+		this.buttonArray = [];
+	}
+
+	hoverOverBar() {
+		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
+			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+				this.buttonArray[cButton].sprBg.alpha = 0.6;
+			}
+			else if (glbEditBarSel === cButton) {
+				this.buttonArray[cButton].sprBg.alpha = 0.4;
+			}
+			else {
+				this.buttonArray[cButton].sprBg.alpha = 0;
+			}
+		}
 	}
 }
 

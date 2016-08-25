@@ -8,6 +8,7 @@ var glbHHeight = 30;
 var glbHWidth = 60;
 var glbBrdWidth = 14;
 var glbPainting = null;
+var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbLscpCeil = 0.225;
@@ -15,6 +16,7 @@ var glbMonth = 0;
 var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
+var glbSideBar = null;
 
 // Initiate visual effect variables
 var glbPulseArray = [];

@@ -18,7 +18,9 @@ function onImageLoad() {
 	currLand.genDevSelection();
 
 	formPlayerBar();
-	formEditBar();
+	glbSideBar = new SideBar("edit");
+	glbSideBar.formBacking();
+	glbSideBar.formBar();
 	
 	// Start the game loop
 	gameLoop();
@@ -44,24 +46,42 @@ function gameLoop() {
 let lastHex = null;
 function edit() {
 	// Click event handling
-	if (pointer.isDown === true) {
+	if (glbPointerDown === true) {
 		if ((pointer.x) < (renderer.width-200)) {
 			editHold([pointer.x, pointer.y]);
 		}
 	}
+
+	pointer.press = () => {
+		if ((pointer.x) > (renderer.width-200)) {
+			editBarClick([pointer.x, pointer.y]);
+		}
+		else {
+			editClick([pointer.x, pointer.y]);
+			editHold([pointer.x, pointer.y]);
+		}
+		glbPointerDown = true;
+	}
+
 	pointer.tap = () => {
 		if ((pointer.x) > (renderer.width-200)) {
 			editBarClick([pointer.x, pointer.y]);
 		}
 		else {
 			editClick([pointer.x, pointer.y]);
+			editHold([pointer.x, pointer.y]);
 		}
+		glbPointerDown = true;
+	}
+
+	pointer.release = () => {
+		glbPointerDown = false;
 	}
 
 	if (pointer.x < (renderer.width - 200)) {
 		hoverTile([pointer.x, pointer.y]);
 	}
-	else { hoverEditBar([pointer.x, pointer.y]); }
+	else { glbSideBar.hoverOverBar(); }
 }
 
 // Applies prior to every game round

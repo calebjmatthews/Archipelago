@@ -12,6 +12,7 @@ var glbHHeight = 30;
 var glbHWidth = 60;
 var glbBrdWidth = 14;
 var glbPainting = null;
+var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
 var glbLscpCeil = 0.225;
@@ -19,6 +20,7 @@ var glbMonth = 0;
 var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
+var glbSideBar = null;
 // Initiate visual effect variables
 var glbPulseArray = [];
 // Enumerates the convention of how hex direction is ordered within this program
@@ -1327,11 +1329,81 @@ function paintLscp(clkTile) {
 var SideBar = (function () {
     function SideBar(setStyle) {
         this.style = null;
-        this.bgArray = [];
-        this.sprArray = [];
-        this.msgArray = [];
+        this.buttonArray = [];
         this.style = setStyle;
     }
+    // Create the black background that exists for all sidebars
+    SideBar.prototype.formBacking = function () {
+        var designBG = new Graphics();
+        designBG.beginFill(0x000000);
+        designBG.drawRect(0, 0, 200, (renderer.height));
+        designBG.endFill();
+        designBG.x = renderer.width - 200;
+        designBG.y = 0;
+        stage.addChild(designBG);
+    };
+    SideBar.prototype.formBar = function () {
+        if (this.style === "edit") {
+            this.formEditButtons();
+        }
+    };
+    SideBar.prototype.formEditButtons = function () {
+        // The edit bar's origin for button placement
+        var oriB = [renderer.width - 180, 20];
+        // Edit bar has the buttons for each landscape, each black development, and the
+        //  "Randomize" and "Finish" buttons
+        for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+            if (cButton < glbNumLscps) {
+                this.buttonArray[cButton] = new ArcButton("landscape", cButton, null, [oriB[0], (oriB[1] + (cButton * 40))]);
+            }
+            else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+                this.buttonArray[cButton] = new ArcButton("development", (cButton - glbNumLscps), null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+            }
+            else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+                this.buttonArray[cButton] = new ArcButton("other", null, "Randomize", [oriB[0], (renderer.height - 90)]);
+            }
+            else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+                this.buttonArray[cButton] = new ArcButton("other", null, "Finish", [oriB[0], (renderer.height - 50)]);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+            }
+            this.buttonArray[cButton].displayButton();
+        }
+    };
+    SideBar.prototype.removeEditBar = function () {
+        for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+            if (cButton < glbNumLscps) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
+            }
+            else if (cButton < (glbNumLscps + glbNumBlkDevels + 2)) {
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+                break;
+            }
+        }
+        this.buttonArray = [];
+    };
+    SideBar.prototype.hoverOverBar = function () {
+        for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                this.buttonArray[cButton].sprBg.alpha = 0.6;
+            }
+            else if (glbEditBarSel === cButton) {
+                this.buttonArray[cButton].sprBg.alpha = 0.4;
+            }
+            else {
+                this.buttonArray[cButton].sprBg.alpha = 0;
+            }
+        }
+    };
     return SideBar;
 }());
 var editBgArray = [];
@@ -1450,6 +1522,105 @@ function removeEditBar() {
         stage.removeChild(devEditArray[cButton]);
     }
 }
+// Set global button constants
+var glbBPadding = 3;
+var glbBWidth = 160;
+var glbBHeight = 30;
+var ArcButton = (function () {
+    function ArcButton(setType, setId, setOtherName, setOrigin) {
+        // What the button represents, e.g. landscape, development, or other
+        this.type = null;
+        // This id links the button to another element, e.g. for a development-type button
+        //  this would be the related development's id
+        this.id = null;
+        // If this is an other-type button the id will be null and this name will signify the
+        //  button's name and function
+        this.otherName = null;
+        // An array of four numbers that defines the bounds of the button, from the upper left
+        //  point and continuing clockwise
+        this.bounds = [];
+        this.type = setType;
+        this.id = setId;
+        this.otherName = setOtherName;
+        // Set bounds based on what type of button is being created
+        if ((this.type === "landscape") || (this.type === "development") ||
+            (this.type === "other")) {
+            this.formStandardBounds(setOrigin);
+        }
+    }
+    ArcButton.prototype.formStandardBounds = function (setOrigin) {
+        // Initialize the four empty points that describe the button's boundaries
+        this.bounds[0] = [];
+        this.bounds[1] = [];
+        this.bounds[2] = [];
+        this.bounds[3] = [];
+        this.bounds[0] = [(setOrigin[0] - glbBPadding),
+            (setOrigin[1] - glbBPadding)];
+        this.bounds[1] = [(setOrigin[0] + glbBWidth + glbBPadding),
+            (setOrigin[1] - glbBPadding)];
+        this.bounds[2] = [(setOrigin[0] + glbBWidth + glbBPadding),
+            (setOrigin[1] + glbBHeight + glbBPadding)];
+        this.bounds[3] = [(setOrigin[0] - glbBPadding),
+            (setOrigin[1] + glbBHeight + glbBPadding)];
+    };
+    ArcButton.prototype.displayButton = function () {
+        // Initially invisible background for hovering/selecting effects
+        this.sprBg = new Graphics();
+        this.sprBg.beginFill(0xFFFFFF);
+        this.sprBg.drawRect(0, 0, (glbBWidth + (glbBPadding * 2)), (glbBHeight + (glbBPadding * 2)));
+        this.sprBg.endFill();
+        this.sprBg.x = this.bounds[0][0];
+        this.sprBg.y = this.bounds[0][1];
+        this.sprBg.alpha = 0;
+        stage.addChild(this.sprBg);
+        if (this.type === "landscape") {
+            this.displayLscpButton();
+        }
+        else if (this.type === "development") {
+            this.displayDevButton();
+        }
+        else if (this.type === "other") {
+            this.displayTextLayer(this.otherName, [(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
+        }
+    };
+    ArcButton.prototype.displayLscpLayer = function (lscpId) {
+        // Display the landscape tile in question
+        this.sprFirst = new Sprite(sprMed[lscpArray[lscpId].sprID]);
+        this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding));
+        this.sprFirst.scale.set(0.2, 0.2);
+        stage.addChild(this.sprFirst);
+    };
+    ArcButton.prototype.displayTextLayer = function (setText, location) {
+        this.txtLabel = new Text(setText, { font: "16px sans-serif", fill: "white" });
+        this.txtLabel.position.set(location[0], location[1]);
+        stage.addChild(this.txtLabel);
+    };
+    ArcButton.prototype.displayLscpButton = function () {
+        this.displayLscpLayer(this.id);
+        this.displayTextLayer(lscpArray[this.id].name, [(this.bounds[0][0] + 70 + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
+    };
+    ArcButton.prototype.displayDevButton = function () {
+        // Display a sprite of the landscape required by this development
+        this.displayLscpLayer(develArray[this.id].lscpRequired[0]);
+        this.displayTextLayer(develArray[this.id].name, [(this.bounds[0][0] + 70 + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
+        // Display the first development in the array above the landscape tile, 30 pixels
+        //  higher to account for the extra height of development sprites
+        this.sprSecond = new Sprite(sprMed[develArray[this.id].sprID[0]]);
+        this.sprSecond.scale.set(0.2, 0.2);
+        this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding - 30));
+        stage.addChild(this.sprSecond);
+    };
+    ArcButton.prototype.withinButton = function (givenPoint) {
+        if ((givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) &&
+            (givenPoint[1] > this.bounds[0][1]) && (givenPoint[1] < this.bounds[2][1])) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    return ArcButton;
+}());
 /// <reference path="references.ts" />
 function editHold(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
@@ -1930,6 +2101,7 @@ function veAllEffects() {
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
 /// <reference path="sidebar.ts" />
+/// <reference path="arc-button.ts" />
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
@@ -1950,7 +2122,9 @@ function onImageLoad() {
     currLand.displayLand();
     currLand.genDevSelection();
     formPlayerBar();
-    formEditBar();
+    glbSideBar = new SideBar("edit");
+    glbSideBar.formBacking();
+    glbSideBar.formBar();
     // Start the game loop
     gameLoop();
 }
@@ -1968,24 +2142,39 @@ function gameLoop() {
 var lastHex = null;
 function edit() {
     // Click event handling
-    if (pointer.isDown === true) {
+    if (glbPointerDown === true) {
         if ((pointer.x) < (renderer.width - 200)) {
             editHold([pointer.x, pointer.y]);
         }
     }
+    pointer.press = function () {
+        if ((pointer.x) > (renderer.width - 200)) {
+            editBarClick([pointer.x, pointer.y]);
+        }
+        else {
+            editClick([pointer.x, pointer.y]);
+            editHold([pointer.x, pointer.y]);
+        }
+        glbPointerDown = true;
+    };
     pointer.tap = function () {
         if ((pointer.x) > (renderer.width - 200)) {
             editBarClick([pointer.x, pointer.y]);
         }
         else {
             editClick([pointer.x, pointer.y]);
+            editHold([pointer.x, pointer.y]);
         }
+        glbPointerDown = true;
+    };
+    pointer.release = function () {
+        glbPointerDown = false;
     };
     if (pointer.x < (renderer.width - 200)) {
         hoverTile([pointer.x, pointer.y]);
     }
     else {
-        hoverEditBar([pointer.x, pointer.y]);
+        glbSideBar.hoverOverBar();
     }
 }
 // Applies prior to every game round
