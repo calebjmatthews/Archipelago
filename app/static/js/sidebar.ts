@@ -73,6 +73,44 @@ class SideBar {
 		this.buttonArray = [];
 	}
 
+	clickBar() {
+		if (this.style === "edit") { this.editClick(); }
+	}
+
+	editClick() {
+		if (currDescCard != null) { currDescCard.selfDestruct(); }
+
+		let actionTaken = false;
+		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+
+				// Landscape / Development buttons
+				if (cButton < (glbNumLscps + glbNumBlkDevels) {
+					glbPainting = cButton;
+					glbEditBarSel = cButton;
+					actionTaken = true;
+				}
+
+				// Randomize button
+				else if (cButton === (glbNumLscps+glbNumBlkDevels)) {
+					currLand.generateLand();
+					currLand.genDevSelection();
+					currLand.refreshLandSpr();
+				}
+				
+				// Finish button
+				else if (cButton === (glbNumLscps+glbNumBlkDevels+1)) {
+					glbState = buildSetup;
+				}
+				else { console.log("Unexpected edit bar value."); }
+			}			
+		}
+		if (!actionTaken) {
+			glbPainting = null;
+			glbEditBarSel = null;
+		}
+	}
+
 	hoverOverBar() {
 		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
