@@ -41,63 +41,6 @@ function editClick(corPoint) {
 	}
 }
 
-function editBarClick(clkPoint) {
-	if (currDescCard != null) { currDescCard.selfDestruct(); }
-
-	let actionTaken = false;
-	for (let cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
-		if (cOption < glbNumLscps) {
-			if ((clkPoint[0] > (renderer.width - 180)) && 
-				(clkPoint[0]) < (renderer.width - 20) && 
-				(clkPoint[1]) > (20 + (40*cOption)) && 
-				(clkPoint[1]) < (10 + 40 * (1+cOption))) {
-				glbPainting = cOption;
-				glbEditBarSel = cOption;
-				editBgArray[cOption].alpha = 0.4;
-				actionTaken = true;
-			}
-		}
-		else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps+glbNumBlkDevels))) {
-			if ((clkPoint[0] > (renderer.width - 180)) && 
-				(clkPoint[0]) < (renderer.width - 20) && 
-				(clkPoint[1]) > (50 + (40*cOption)) && 
-				(clkPoint[1]) < (40 + 40 * (1+cOption))) {
-				glbPainting = cOption;
-				glbEditBarSel = cOption;
-				editBgArray[cOption].alpha = 0.4;
-				actionTaken = true
-			}
-		}
-		// Randomize button
-		else if (cOption === (glbNumLscps+glbNumBlkDevels)) {
-			if ((clkPoint[0] > (renderer.width - 180)) && 
-				(clkPoint[0]) < (renderer.width - 20) && 
-				(clkPoint[1]) > (renderer.height - 90) && 
-				(clkPoint[1]) < (renderer.height - 60)) {
-				currLand.lClimate = Math.floor(Math.random() * 7);
-				currLand.lSize = Math.floor(Math.random() * 3);
-				currLand.generateLand();
-				currLand.genDevSelection();
-				currLand.refreshLandSpr();
-			}
-		}
-		// Finish button
-		else if (cOption === (glbNumLscps+glbNumBlkDevels+1)) {
-			if ((clkPoint[0] > (renderer.width - 180)) && 
-				(clkPoint[0]) < (renderer.width - 20) && 
-				(clkPoint[1]) > (renderer.height - 50) && 
-				(clkPoint[1]) < (renderer.height - 20)) {
-				glbState = buildSetup;
-			}
-		}
-		else { console.log("Unexpected edit bar value."); }
-	}
-	if (actionTaken === false) {
-		glbPainting = null;
-		glbEditBarSel = null;
-	}
-}
-
 function buildClick(corPoint) {
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 

@@ -85,7 +85,7 @@ class SideBar {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
 				// Landscape / Development buttons
-				if (cButton < (glbNumLscps + glbNumBlkDevels) {
+				if (cButton < (glbNumLscps + glbNumBlkDevels)) {
 					glbPainting = cButton;
 					glbEditBarSel = cButton;
 					actionTaken = true;
@@ -97,7 +97,7 @@ class SideBar {
 					currLand.genDevSelection();
 					currLand.refreshLandSpr();
 				}
-				
+
 				// Finish button
 				else if (cButton === (glbNumLscps+glbNumBlkDevels+1)) {
 					glbState = buildSetup;

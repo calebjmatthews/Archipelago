@@ -43,45 +43,33 @@ function gameLoop() {
 }
 
 // Executes on loop when game is in 'edit' state
-let lastHex = null;
 function edit() {
 	// Click event handling
+	pointer.press = () =>   { editStateClick(); }
+	pointer.tap = () =>     { editStateClick(); }
+	pointer.release = () => { glbPointerDown = false; }
+
+	// Click and drag event handling
 	if (glbPointerDown === true) {
 		if ((pointer.x) < (renderer.width-200)) {
 			editHold([pointer.x, pointer.y]);
 		}
 	}
 
-	pointer.press = () => {
-		if ((pointer.x) > (renderer.width-200)) {
-			editBarClick([pointer.x, pointer.y]);
-		}
-		else {
-			editClick([pointer.x, pointer.y]);
-			editHold([pointer.x, pointer.y]);
-		}
-		glbPointerDown = true;
-	}
-
-	pointer.tap = () => {
-		if ((pointer.x) > (renderer.width-200)) {
-			editBarClick([pointer.x, pointer.y]);
-		}
-		else {
-			editClick([pointer.x, pointer.y]);
-			editHold([pointer.x, pointer.y]);
-		}
-		glbPointerDown = true;
-	}
-
-	pointer.release = () => {
-		glbPointerDown = false;
-	}
-
-	if (pointer.x < (renderer.width - 200)) {
-		hoverTile([pointer.x, pointer.y]);
-	}
+	// Hover event handling
+	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
 	else { glbSideBar.hoverOverBar(); }
+}
+
+function editStateClick() {
+	if ((pointer.x) > (renderer.width-200)) {
+		glbSideBar.clickBar();
+	}
+	else {
+		editClick([pointer.x, pointer.y]);
+		editHold([pointer.x, pointer.y]);
+	}
+	glbPointerDown = true;
 }
 
 // Applies prior to every game round

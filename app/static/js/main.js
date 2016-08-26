@@ -1391,6 +1391,42 @@ var SideBar = (function () {
         }
         this.buttonArray = [];
     };
+    SideBar.prototype.clickBar = function () {
+        if (this.style === "edit") {
+            this.editClick();
+        }
+    };
+    SideBar.prototype.editClick = function () {
+        if (currDescCard != null) {
+            currDescCard.selfDestruct();
+        }
+        var actionTaken = false;
+        for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                // Landscape / Development buttons
+                if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+                    glbPainting = cButton;
+                    glbEditBarSel = cButton;
+                    actionTaken = true;
+                }
+                else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+                    currLand.generateLand();
+                    currLand.genDevSelection();
+                    currLand.refreshLandSpr();
+                }
+                else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+                    glbState = buildSetup;
+                }
+                else {
+                    console.log("Unexpected edit bar value.");
+                }
+            }
+        }
+        if (!actionTaken) {
+            glbPainting = null;
+            glbEditBarSel = null;
+        }
+    };
     SideBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
@@ -1839,69 +1875,6 @@ function hoverTile(corPoint) {
         }
     }
 }
-function hoverEditBar(corPoint) {
-    for (var cOption = 0; cOption < (glbNumLscps + glbNumBlkDevels + 2); cOption++) {
-        if (cOption < glbNumLscps) {
-            if ((corPoint[0] > (renderer.width - 180)) &&
-                (corPoint[0]) < (renderer.width - 20) &&
-                (corPoint[1]) > (20 + (40 * cOption)) &&
-                (corPoint[1]) < (10 + 40 * (1 + cOption))) {
-                editBgArray[cOption].alpha = 0.6;
-            }
-            else if (glbEditBarSel != cOption) {
-                editBgArray[cOption].alpha = 0;
-            }
-            else {
-                editBgArray[cOption].alpha = 0.4;
-            }
-        }
-        else if ((cOption >= glbNumLscps) && (cOption < (glbNumLscps + glbNumBlkDevels))) {
-            if ((corPoint[0] > (renderer.width - 180)) &&
-                (corPoint[0]) < (renderer.width - 20) &&
-                (corPoint[1]) > (50 + (40 * cOption)) &&
-                (corPoint[1]) < (40 + 40 * (1 + cOption))) {
-                editBgArray[cOption].alpha = 0.6;
-            }
-            else if (glbEditBarSel != cOption) {
-                editBgArray[cOption].alpha = 0;
-            }
-            else {
-                editBgArray[cOption].alpha = 0.4;
-            }
-        }
-        else if (cOption === (glbNumLscps + glbNumBlkDevels)) {
-            if ((corPoint[0] > (renderer.width - 180)) &&
-                (corPoint[0]) < (renderer.width - 20) &&
-                (corPoint[1]) > (renderer.height - 90) &&
-                (corPoint[1]) < (renderer.height - 60)) {
-                editBgArray[cOption].alpha = 0.6;
-            }
-            else if (glbEditBarSel != cOption) {
-                editBgArray[cOption].alpha = 0;
-            }
-            else {
-                editBgArray[cOption].alpha = 0.4;
-            }
-        }
-        else if (cOption === (glbNumLscps + glbNumBlkDevels + 1)) {
-            if ((corPoint[0] > (renderer.width - 180)) &&
-                (corPoint[0]) < (renderer.width - 20) &&
-                (corPoint[1]) > (renderer.height - 50) &&
-                (corPoint[1]) < (renderer.height - 20)) {
-                editBgArray[cOption].alpha = 0.6;
-            }
-            else if (glbEditBarSel != cOption) {
-                editBgArray[cOption].alpha = 0;
-            }
-            else {
-                editBgArray[cOption].alpha = 0.4;
-            }
-        }
-        else {
-            console.log("Unexpected edit bar value.");
-        }
-    }
-}
 /// <reference path="references.ts" />
 var DescCard = (function () {
     function DescCard(givenPoint, givenTile) {
@@ -2139,43 +2112,34 @@ function gameLoop() {
     renderer.render(stage);
 }
 // Executes on loop when game is in 'edit' state
-var lastHex = null;
 function edit() {
     // Click event handling
+    pointer.press = function () { editStateClick(); };
+    pointer.tap = function () { editStateClick(); };
+    pointer.release = function () { glbPointerDown = false; };
+    // Click and drag event handling
     if (glbPointerDown === true) {
         if ((pointer.x) < (renderer.width - 200)) {
             editHold([pointer.x, pointer.y]);
         }
     }
-    pointer.press = function () {
-        if ((pointer.x) > (renderer.width - 200)) {
-            editBarClick([pointer.x, pointer.y]);
-        }
-        else {
-            editClick([pointer.x, pointer.y]);
-            editHold([pointer.x, pointer.y]);
-        }
-        glbPointerDown = true;
-    };
-    pointer.tap = function () {
-        if ((pointer.x) > (renderer.width - 200)) {
-            editBarClick([pointer.x, pointer.y]);
-        }
-        else {
-            editClick([pointer.x, pointer.y]);
-            editHold([pointer.x, pointer.y]);
-        }
-        glbPointerDown = true;
-    };
-    pointer.release = function () {
-        glbPointerDown = false;
-    };
+    // Hover event handling
     if (pointer.x < (renderer.width - 200)) {
         hoverTile([pointer.x, pointer.y]);
     }
     else {
         glbSideBar.hoverOverBar();
     }
+}
+function editStateClick() {
+    if ((pointer.x) > (renderer.width - 200)) {
+        glbSideBar.clickBar();
+    }
+    else {
+        editClick([pointer.x, pointer.y]);
+        editHold([pointer.x, pointer.y]);
+    }
+    glbPointerDown = true;
 }
 // Applies prior to every game round
 function monthSetup() {
