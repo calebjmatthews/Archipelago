@@ -7,6 +7,7 @@
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
 /// <reference path="sidebar.ts" />
+/// <reference path="editbar.ts" />
 /// <reference path="arc-button.ts" />
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />

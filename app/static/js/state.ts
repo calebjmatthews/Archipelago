@@ -18,7 +18,7 @@ function onImageLoad() {
 	currLand.genDevSelection();
 
 	formPlayerBar();
-	glbSideBar = new SideBar("edit");
+	glbSideBar = new EditBar("edit");
 	glbSideBar.formBacking();
 	glbSideBar.formBar();
 	
