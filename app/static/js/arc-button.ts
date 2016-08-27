@@ -1,5 +1,6 @@
-// Set global button constants
+/// <reference path="references.ts" />
 
+// Set global button constants
 let glbBPadding = 3;
 let glbBWidth = 160;
 let glbBHeight = 30;

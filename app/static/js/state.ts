@@ -18,7 +18,7 @@ function onImageLoad() {
 	currLand.genDevSelection();
 
 	formPlayerBar();
-	glbSideBar = new EditBar("edit");
+	glbSideBar = new EditBar();
 	glbSideBar.formBacking();
 	glbSideBar.formBar();
 	
@@ -99,18 +99,13 @@ function plrMonSetup() {
 function active() {
 	// Click event handling
 	pointer.tap = () => {
-		if ((pointer.x) < (renderer.width-200)) {
-			activeClick([pointer.x, pointer.y]);
-		}
-		else {
-			activeBarClick([pointer.x, pointer.y]);
-		}
+		if ((pointer.x) < (renderer.width-200)) { activeClick([pointer.x, pointer.y]); }
+		else { activeBarClick([pointer.x, pointer.y]); }
 	}
 
-	if (pointer.x < (renderer.width - 200)) {
-		hoverTile([pointer.x, pointer.y]);
-	}
-	else { hoverActiveBar([pointer.x, pointer.y]); }
+	// Hover event handling
+	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
+	else { glbSideBar.hoverOverBar(); }
 }
 
 // Choosing a target for a development's effect

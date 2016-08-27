@@ -365,10 +365,6 @@ var Player = (function () {
         this.hand = [];
         this.discard = [];
         this.trash = [];
-        this.activeSprArray = [];
-        this.handBGArray = [];
-        this.handSprArray = [];
-        this.handTextArray = [];
         this.playerID = playerIncrement;
         playerIncrement++;
     }
@@ -428,147 +424,6 @@ var Player = (function () {
             newDeck[deckSpot] = this.deck[deckSpot];
         }
         this.deck = newDeck;
-    };
-    // Returns the x,y position of the active hexagon button
-    Player.prototype.getActivePos = function (activeSpot) {
-        var xPos = 0;
-        var yPos = 0;
-        if ((activeSpot % 3) === 0) {
-            xPos = 100 - (glbHWidth / 2);
-            // Y positioning uses hex width in order to create an even margin on  both 
-            //  top and sides
-            yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
-        }
-        else if (((activeSpot - 1) % 3) === 0) {
-            xPos = 100 - glbHWidth - (glbHWidth / 2);
-            yPos = 110 - glbHHeight - (glbHWidth / 2) +
-                ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
-        }
-        else if (((activeSpot - 2) % 3) === 0) {
-            xPos = 100 + (glbHWidth / 2);
-            yPos = 110 - glbHHeight - (glbHWidth / 2) +
-                ((((activeSpot - 2) * 1.3) / 3) * glbHHeight);
-        }
-        else {
-            console.log("Error, unexpected development hand value.");
-        }
-        // Corect for position of sidebar
-        xPos = renderer.width - 200 + xPos;
-        return [xPos, yPos];
-    };
-    Player.prototype.displayActives = function () {
-        var numActives = 0;
-        if (this.hand.length = 3) {
-            numActives = 3;
-        }
-        else {
-            numActives = this.hand.length;
-        }
-        for (var activeSpot = 0; activeSpot < numActives; activeSpot++) {
-            var tSprite = new Sprite(sprMed["whitehex.png"]);
-            tSprite.scale.set(0.2, 0.2);
-            var sprPos = currPlayer.getActivePos(activeSpot);
-            tSprite.position.set(sprPos[0], sprPos[1]);
-            stage.addChild(tSprite);
-            this.activeSprArray[activeSpot] = tSprite;
-        }
-    };
-    Player.prototype.displayHand = function () {
-        var bScale = 0.2;
-        for (var tHSpot = 0; tHSpot < this.hand.length; tHSpot++) {
-            if (this.hand[tHSpot] === undefined) {
-                continue;
-            }
-            var tPos = [(renderer.width - 190), (200 + 10 + (tHSpot * 40))];
-            var tDevel = develArray[currLand.tileArray[this.hand[tHSpot]].development];
-            // Create the associated landscape background sprite
-            var bgLscp = tDevel.lscpRequired[0];
-            this.handBGArray[tHSpot] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-            this.handBGArray[tHSpot].position.set(tPos[0], tPos[1]);
-            this.handBGArray[tHSpot].scale.set(bScale, bScale);
-            stage.addChild(this.handBGArray[tHSpot]);
-            // Create the development sprite
-            this.handSprArray[tHSpot] = new Sprite(sprMed[tDevel.sprID[0]]);
-            this.handSprArray[tHSpot].scale.set(bScale, bScale);
-            this.handSprArray[tHSpot].position.set(tPos[0], (tPos[1] - glbHHeight));
-            stage.addChild(this.handSprArray[tHSpot]);
-            // Accompanying text
-            this.handTextArray[tHSpot] = new Text((tDevel.name), { font: "16px sans-serif", fill: "white" });
-            this.handTextArray[tHSpot].position.set((tPos[0] + 70), (tPos[1] + 6));
-            stage.addChild(this.handTextArray[tHSpot]);
-        }
-        // Menu option for building
-        this.handBGArray[this.handBGArray.length] = new Sprite(sprMed["whitehex.png"]);
-        var tBPos = [(renderer.width - 190), (200 + 10 + ((this.handBGArray.length - 1) * 40))];
-        this.handBGArray[this.handBGArray.length - 1].position.set(tBPos[0], (tBPos[1] - 30));
-        this.handBGArray[this.handBGArray.length - 1].scale.set(bScale, bScale);
-        stage.addChild(this.handBGArray[this.handBGArray.length - 1]);
-        this.handSprArray[this.handSprArray.length] = new Sprite(sprMed["tallblank.png"]);
-        this.handSprArray[this.handSprArray.length - 1].position.set(tBPos[0], (tBPos[1] - glbHHeight));
-        this.handSprArray[this.handSprArray.length - 1].scale.set(bScale, bScale);
-        stage.addChild(this.handSprArray[this.handSprArray.length - 1]);
-        this.handTextArray[this.handTextArray.length] = new Text("Build", { font: "16px sans-serif", fill: "white" });
-        this.handTextArray[this.handTextArray.length - 1].position.set((tBPos[0] + 70), (tBPos[1] + 6));
-        stage.addChild(this.handTextArray[this.handTextArray.length - 1]);
-        // Menu option for passing
-        this.handBGArray[this.handBGArray.length] = new Sprite(sprMed["whitehex.png"]);
-        var tPPos = [(renderer.width - 190), (200 + 10 + ((this.handBGArray.length - 1) * 40))];
-        this.handBGArray[this.handBGArray.length - 1].position.set(tPPos[0], (tPPos[1] - 30));
-        this.handBGArray[this.handBGArray.length - 1].scale.set(bScale, bScale);
-        stage.addChild(this.handBGArray[this.handBGArray.length - 1]);
-        this.handSprArray[this.handSprArray.length] = new Sprite(sprMed["tallblank.png"]);
-        this.handSprArray[this.handSprArray.length - 1].position.set(tPPos[0], (tPPos[1] - glbHHeight));
-        this.handSprArray[this.handSprArray.length - 1].scale.set(bScale, bScale);
-        stage.addChild(this.handSprArray[this.handSprArray.length - 1]);
-        this.handTextArray[this.handTextArray.length] = new Text("Pass", { font: "16px sans-serif", fill: "white" });
-        this.handTextArray[this.handTextArray.length - 1].position.set((tPPos[0] + 70), (tPPos[1] + 6));
-        stage.addChild(this.handTextArray[this.handTextArray.length - 1]);
-    };
-    Player.prototype.hideHand = function () {
-        for (var tHSpot = 0; tHSpot < this.handBGArray.length; tHSpot++) {
-            stage.removeChild(this.handBGArray[tHSpot]);
-            stage.removeChild(this.handSprArray[tHSpot]);
-            stage.removeChild(this.handTextArray[tHSpot]);
-        }
-    };
-    Player.prototype.inActiveHex = function (activePos, corPoint) {
-        // 1. Is the point within the possible range of any active hex?
-        // 2. Is the point in this hex's bounding box?
-        // 3. Which quadrant?  If not in upper right, translate point to upper right
-        // 4. Is it outside the rectangular portion?
-        // 5. Is it in the triangular point segment?
-        // A "no" to any step (other than 3) ends the function and returns false
-        // Is the cursor point within the hex's bounding box?
-        if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) &&
-            (corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
-            return currPlayer.inActiveRect(activePos, corPoint);
-        }
-        else {
-            return false;
-        }
-    };
-    Player.prototype.inActiveRect = function (activePos, corPoint) {
-        // Which quadrant?  If not in upper right, translate point to upper right
-        var diffX = Math.abs((activePos[0] + (glbHWidth / 2)) - corPoint[0]);
-        var diffY = Math.abs((activePos[1] + (glbHHeight / 2)) - corPoint[1]);
-        // Is the point within the rectangular segment?
-        if (diffX < ((glbHWidth / 2) - (glbHHeight / 2))) {
-            return true;
-        }
-        else {
-            return currPlayer.inActiveTri(diffX, diffY);
-        }
-    };
-    Player.prototype.inActiveTri = function (diffX, diffY) {
-        // Is the point within the triangular segment?
-        // Begin by mirroring the x point horizontally
-        var mirrX = (glbHHeight / 2) - diffY;
-        if (mirrX > diffY) {
-            return true;
-        }
-        else {
-            return false;
-        }
     };
     return Player;
 }());
@@ -1327,10 +1182,8 @@ function paintLscp(clkTile) {
 }
 /// <reference path="references.ts" />
 var SideBar = (function () {
-    function SideBar(setStyle) {
-        this.style = null;
+    function SideBar() {
         this.buttonArray = [];
-        this.style = setStyle;
     }
     // Create the black background that exists for all sidebars
     SideBar.prototype.formBacking = function () {
@@ -1342,12 +1195,28 @@ var SideBar = (function () {
         designBG.y = 0;
         stage.addChild(designBG);
     };
-    SideBar.prototype.formBar = function () {
-        if (this.style === "edit") {
-            this.formEditButtons();
+    SideBar.prototype.hoverOverBar = function () {
+        for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                this.buttonArray[cButton].sprBg.alpha = 0.6;
+            }
+            else if (glbEditBarSel === cButton) {
+                this.buttonArray[cButton].sprBg.alpha = 0.4;
+            }
+            else {
+                this.buttonArray[cButton].sprBg.alpha = 0;
+            }
         }
     };
-    SideBar.prototype.formEditButtons = function () {
+    return SideBar;
+}());
+/// <reference path="references.ts" />
+var EditBar = (function (_super) {
+    __extends(EditBar, _super);
+    function EditBar() {
+        _super.apply(this, arguments);
+    }
+    EditBar.prototype.formBar = function () {
         // The edit bar's origin for button placement
         var oriB = [renderer.width - 180, 20];
         // Edit bar has the buttons for each landscape, each black development, and the
@@ -1371,7 +1240,7 @@ var SideBar = (function () {
             this.buttonArray[cButton].displayButton();
         }
     };
-    SideBar.prototype.removeEditBar = function () {
+    EditBar.prototype.removeBar = function () {
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (cButton < glbNumLscps) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
@@ -1379,9 +1248,10 @@ var SideBar = (function () {
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
             if (cButton < (glbNumLscps + glbNumBlkDevels)) {
-                stage.removeChild(this.buttonArray[cButton].sprFirst);
+                stage.removeChild(this.buttonArray[cButton].sprSecond);
             }
             else if (cButton < (glbNumLscps + glbNumBlkDevels + 2)) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
             else {
@@ -1391,12 +1261,7 @@ var SideBar = (function () {
         }
         this.buttonArray = [];
     };
-    SideBar.prototype.clickBar = function () {
-        if (this.style === "edit") {
-            this.editClick();
-        }
-    };
-    SideBar.prototype.editClick = function () {
+    EditBar.prototype.clickBar = function () {
         if (currDescCard != null) {
             currDescCard.selfDestruct();
         }
@@ -1427,9 +1292,107 @@ var SideBar = (function () {
             glbEditBarSel = null;
         }
     };
-    SideBar.prototype.hoverOverBar = function () {
+    return EditBar;
+}(SideBar));
+/// <reference path="references.ts" />
+var ActionBar = (function (_super) {
+    __extends(ActionBar, _super);
+    function ActionBar() {
+        // Blank super call, as SideBar doesn't have a constructor
+        _super.call(this);
+        this.buttonArray = [];
+        this.numActives = 0;
+        if (currPlayer.hand.length < 3) {
+            this.numActives = 3;
+        }
+        else {
+            this.numActives = currPlayer.hand.length;
+        }
+    }
+    // Returns the x,y position of an active slot
+    ActionBar.prototype.getActivePos = function (activeSpot) {
+        var xPos = 0;
+        var yPos = 0;
+        if ((activeSpot % 3) === 0) {
+            xPos = 100 - (glbHWidth / 2);
+            // Y positioning uses hex width in order to create an even margin on  both 
+            //  top and sides
+            yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
+        }
+        else if (((activeSpot - 1) % 3) === 0) {
+            xPos = 100 - glbHWidth - (glbHWidth / 2);
+            yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
+        }
+        else if (((activeSpot - 2) % 3) === 0) {
+            xPos = 100 + (glbHWidth / 2);
+            yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                ((((activeSpot - 2) * 1.3) / 3) * glbHHeight);
+        }
+        else {
+            console.log("Error, unexpected development hand value.");
+        }
+        // Corect for position of sidebar
+        xPos = renderer.width - 200 + xPos;
+        // Move the active selection to the bottom of the window
+        yPos = yPos + 300;
+        return [xPos, yPos];
+    };
+    ActionBar.prototype.formBar = function () {
+        // The edit bar's origin for button placement
+        var oriB = [renderer.width - 180, 20];
+        // The action bar has buttons for each development in the player's hand, as well as
+        //  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
+        //  least three) at the bottom.
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
+            if (cButton < currPlayer.hand.length) {
+                this.buttonArray[cButton] = new ActionButton("development", currPlayer.hand[cButton], null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+            }
+            else if (cButton === (currPlayer.hand.length)) {
+                this.buttonArray[cButton] = new ActionButton("other", null, "Build", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+            }
+            else if (cButton === (currPlayer.hand.length)) {
+                this.buttonArray[cButton] = new ActionButton("other", null, "Pass", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+            }
+            else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
+                this.buttonArray[cButton] = new ActionButton("active", null, null, this.getActivePos(cButton - (currPlayer.hand.length + 2)));
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+            }
+            if (this.buttonArray[cButton].type === "active") {
+                this.buttonArray[cButton].displayActiveSlot();
+            }
+            else {
+                this.buttonArray[cButton].displayButton();
+            }
+        }
+    };
+    ActionBar.prototype.removeBar = function () {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
+            if (cButton < currPlayer.hand.length) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
+                stage.removeChild(this.buttonArray[cButton].sprSecond);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else if (cButton < (currPlayer.hand.length + 2)) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+                break;
+            }
+        }
+        this.buttonArray = [];
+    };
+    ActionBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
-            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+            if (this.buttonArray[cButton].withinActiveButton([pointer.x, pointer.y])) {
                 this.buttonArray[cButton].sprBg.alpha = 0.6;
             }
             else if (glbEditBarSel === cButton) {
@@ -1440,124 +1403,9 @@ var SideBar = (function () {
             }
         }
     };
-    return SideBar;
-}());
-var editBgArray = [];
-var editBtnArray = [];
-var devEditArray = [];
-var editMsgArray = [];
-function formEditBar() {
-    // Since the edit bar includes both landscapes and some black developments, the
-    //  for loop needs to be compensate for the total number of options when iterating
-    //  through black developments
-    // Create blank background for edit bar
-    var designBG = new Graphics();
-    designBG.beginFill(0x000000);
-    designBG.drawRect(0, 0, 200, (renderer.height));
-    designBG.endFill();
-    designBG.x = renderer.width - 200;
-    designBG.y = 0;
-    stage.addChild(designBG);
-    for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
-        var chosenPng = null;
-        var chosenText = null;
-        var bScale = 0.2;
-        if (cButton < glbNumLscps) {
-            // Initially invisible background for hovering/selecting effects
-            editBgArray[cButton] = new Graphics();
-            editBgArray[cButton].beginFill(0xFFFFFF);
-            editBgArray[cButton].drawRect(0, 0, 160, 30);
-            editBgArray[cButton].endFill();
-            editBgArray[cButton].x = (renderer.width - 180);
-            editBgArray[cButton].y = (20 + (40 * cButton));
-            editBgArray[cButton].alpha = 0;
-            stage.addChild(editBgArray[cButton]);
-            // An example of the landscape tile in question
-            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[cButton].sprID]);
-            editBtnArray[cButton].position.set((renderer.width - 180), (20 + 40 * cButton));
-            editBtnArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(editBtnArray[cButton]);
-            // Accompanying text
-            editMsgArray[cButton] = new Text((lscpArray[cButton].name), { font: "16px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 110), (25 + 40 * cButton));
-            stage.addChild(editMsgArray[cButton]);
-        }
-        else if ((cButton >= glbNumLscps) && (cButton < (glbNumLscps + glbNumBlkDevels))) {
-            // Initially invisible background for hovering/selecting effects
-            editBgArray[cButton] = new Graphics();
-            editBgArray[cButton].beginFill(0xFFFFFF);
-            editBgArray[cButton].drawRect(0, 0, 160, 30);
-            editBgArray[cButton].endFill();
-            editBgArray[cButton].x = (renderer.width - 180);
-            editBgArray[cButton].y = (50 + (40 * cButton));
-            editBgArray[cButton].alpha = 0;
-            stage.addChild(editBgArray[cButton]);
-            // Create the required landscape's sprite
-            var bgLscp = develArray[cButton - glbNumLscps].lscpRequired[0];
-            editBtnArray[cButton] = new Sprite(sprMed[lscpArray[bgLscp].sprID]);
-            editBtnArray[cButton].position.set((renderer.width - 180), (50 + 40 * cButton));
-            editBtnArray[cButton].scale.set(bScale, bScale);
-            stage.addChild(editBtnArray[cButton]);
-            // Create the development sprite
-            chosenText = develArray[cButton - glbNumLscps].name;
-            var devSprID = develArray[cButton - glbNumLscps].sprID[0];
-            var tDevSpr = new Sprite(sprMed[devSprID]);
-            tDevSpr.scale.set(bScale, bScale);
-            tDevSpr.position.set((renderer.width - 180), (20 + 40 * cButton));
-            stage.addChild(tDevSpr);
-            devEditArray[cButton - glbNumLscps] = tDevSpr;
-            // Accompanying text
-            editMsgArray[cButton] = new Text((chosenText), { font: "16px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 110), (55 + 40 * cButton));
-            stage.addChild(editMsgArray[cButton]);
-        }
-        else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
-            // Initially invisible background for hovering/selecting effects
-            editBgArray[cButton] = new Graphics();
-            editBgArray[cButton].beginFill(0xFFFFFF);
-            editBgArray[cButton].drawRect(0, 0, 160, 30);
-            editBgArray[cButton].endFill();
-            editBgArray[cButton].x = (renderer.width - 180);
-            editBgArray[cButton].y = (renderer.height - 90);
-            editBgArray[cButton].alpha = 0;
-            stage.addChild(editBgArray[cButton]);
-            // Accompanying text
-            editMsgArray[cButton] = new Text(("Randomize"), { font: "18px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 85));
-            stage.addChild(editMsgArray[cButton]);
-        }
-        else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
-            // Initially invisible background for hovering/selecting effects
-            editBgArray[cButton] = new Graphics();
-            editBgArray[cButton].beginFill(0xFFFFFF);
-            editBgArray[cButton].drawRect(0, 0, 160, 30);
-            editBgArray[cButton].endFill();
-            editBgArray[cButton].x = (renderer.width - 180);
-            editBgArray[cButton].y = (renderer.height - 50);
-            editBgArray[cButton].alpha = 0;
-            stage.addChild(editBgArray[cButton]);
-            // Accompanying text
-            editMsgArray[cButton] = new Text(("Finish"), { font: "18px sans-serif", fill: "white" });
-            editMsgArray[cButton].position.set((renderer.width - 175), (renderer.height - 45));
-            stage.addChild(editMsgArray[cButton]);
-        }
-        else {
-            console.log("Error: unexpected current button incremental variable.");
-        }
-    }
-}
-function removeEditBar() {
-    for (var cButton = 0; cButton < editBtnArray.length; cButton++) {
-        stage.removeChild(editBtnArray[cButton]);
-    }
-    for (var cButton = 0; cButton < editBgArray.length; cButton++) {
-        stage.removeChild(editBgArray[cButton]);
-        stage.removeChild(editMsgArray[cButton]);
-    }
-    for (var cButton = 0; cButton < devEditArray.length; cButton++) {
-        stage.removeChild(devEditArray[cButton]);
-    }
-}
+    return ActionBar;
+}(SideBar));
+/// <reference path="references.ts" />
 // Set global button constants
 var glbBPadding = 3;
 var glbBWidth = 160;
@@ -1657,6 +1505,78 @@ var ArcButton = (function () {
     };
     return ArcButton;
 }());
+/// <reference path="references.ts" />
+var ActionButton = (function (_super) {
+    __extends(ActionButton, _super);
+    function ActionButton(setType, setId, setOtherName, setOrigin) {
+        _super.call(this, setType, setId, setOtherName, setOrigin);
+        this.formHexBounds(setOrigin);
+    }
+    ActionButton.prototype.formHexBounds = function (setOrigin) {
+        this.bounds[0] = [];
+        this.bounds[1] = [];
+        this.bounds[2] = [];
+        this.bounds[3] = [];
+        this.bounds[0] = [setOrigin[0], setOrigin[1]];
+        this.bounds[1] = [(setOrigin[0] + glbHWidth), setOrigin[1]];
+        this.bounds[2] = [(setOrigin[0] + glbHWidth), (setOrigin[1] + glbHHeight)];
+        this.bounds[3] = [setOrigin[0], (setOrigin[1] + glbHHeight)];
+    };
+    ActionButton.prototype.displayActiveSlot = function () {
+        this.sprBg = new Sprite(sprMed["whitehex.png"]);
+        this.sprBg.scale.set(0.2, 0.2);
+        this.sprBg.position.set([this.bounds[0], this.bounds[1]]);
+        stage.addChild(this.sprBg);
+    };
+    ActionButton.prototype.withinActiveButton = function (givenPoint) {
+        if (this.type === "active") {
+            return this.inActiveHex(this.bounds[0], givenPoint);
+        }
+        else {
+            return this.withinButton(givenPoint);
+        }
+    };
+    ActionButton.prototype.inActiveHex = function (activePos, corPoint) {
+        // 1. Is the point within the possible range of any active hex?
+        // 2. Is the point in this hex's bounding box?
+        // 3. Which quadrant?  If not in upper right, translate point to upper right
+        // 4. Is it outside the rectangular portion?
+        // 5. Is it in the triangular point segment?
+        // A "no" to any step (other than 3) ends the function and returns false
+        // Is the cursor point within the hex's bounding box?
+        if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) &&
+            (corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
+            return currPlayer.inActiveRect(activePos, corPoint);
+        }
+        else {
+            return false;
+        }
+    };
+    ActionButton.prototype.inActiveRect = function (activePos, corPoint) {
+        // Which quadrant?  If not in upper right, translate point to upper right
+        var diffX = Math.abs((activePos[0] + (glbHWidth / 2)) - corPoint[0]);
+        var diffY = Math.abs((activePos[1] + (glbHHeight / 2)) - corPoint[1]);
+        // Is the point within the rectangular segment?
+        if (diffX < ((glbHWidth / 2) - (glbHHeight / 2))) {
+            return true;
+        }
+        else {
+            return currPlayer.inActiveTri(diffX, diffY);
+        }
+    };
+    ActionButton.prototype.inActiveTri = function (diffX, diffY) {
+        // Is the point within the triangular segment?
+        // Begin by mirroring the x point horizontally
+        var mirrX = (glbHHeight / 2) - diffY;
+        if (mirrX > diffY) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    return ActionButton;
+}(ArcButton));
 /// <reference path="references.ts" />
 function editHold(corPoint) {
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
@@ -2016,8 +1936,11 @@ function veAllEffects() {
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
-/// <reference path="sidebar.ts" />
+/// <reference path="side-bar.ts" />
+/// <reference path="edit-bar.ts" />
+/// <reference path="action-bar.ts" />
 /// <reference path="arc-button.ts" />
+/// <reference path="action-button.ts" />
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
@@ -2038,7 +1961,7 @@ function onImageLoad() {
     currLand.displayLand();
     currLand.genDevSelection();
     formPlayerBar();
-    glbSideBar = new SideBar("edit");
+    glbSideBar = new EditBar();
     glbSideBar.formBacking();
     glbSideBar.formBar();
     // Start the game loop
@@ -2114,11 +2037,12 @@ function active() {
             activeBarClick([pointer.x, pointer.y]);
         }
     };
+    // Hover event handling
     if (pointer.x < (renderer.width - 200)) {
         hoverTile([pointer.x, pointer.y]);
     }
     else {
-        hoverActiveBar([pointer.x, pointer.y]);
+        glbSideBar.hoverOverBar();
     }
 }
 // Choosing a target for a development's effect
