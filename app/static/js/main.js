@@ -12,6 +12,7 @@ var glbHHeight = 30;
 var glbHWidth = 60;
 var glbBrdWidth = 14;
 var glbPainting = null;
+var glbLastHex = null;
 var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
@@ -406,7 +407,7 @@ var Player = (function () {
             this.discard = [];
         }
         for (var deckSpot = this.deck.length - 1; deckSpot >= 0; deckSpot--) {
-            // randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+            // randDev is a random integer such that 0 ≤ randDev ≤ deckSpot
             var randDev = Math.floor(Math.random() * (deckSpot + 1));
             var dsValue = this.deck[deckSpot];
             var rdValue = this.deck[randDev];
@@ -1247,8 +1248,12 @@ var EditBar = (function (_super) {
                 stage.removeChild(this.buttonArray[cButton].sprFirst);
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
-            if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+            else if ((cButton > (glbNumLscps - 1)) &&
+                (cButton < (glbNumLscps + glbNumBlkDevels))) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
                 stage.removeChild(this.buttonArray[cButton].sprSecond);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
             else if (cButton < (glbNumLscps + glbNumBlkDevels + 2)) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
@@ -1335,7 +1340,7 @@ var ActionBar = (function (_super) {
         // Corect for position of sidebar
         xPos = renderer.width - 200 + xPos;
         // Move the active selection to the bottom of the window
-        yPos = yPos + 300;
+        yPos = yPos;
         return [xPos, yPos];
     };
     ActionBar.prototype.formBar = function () {
@@ -1346,12 +1351,12 @@ var ActionBar = (function (_super) {
         //  least three) at the bottom.
         for (var cButton = 0; cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
             if (cButton < currPlayer.hand.length) {
-                this.buttonArray[cButton] = new ActionButton("development", currPlayer.hand[cButton], null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
             else if (cButton === (currPlayer.hand.length)) {
                 this.buttonArray[cButton] = new ActionButton("other", null, "Build", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
-            else if (cButton === (currPlayer.hand.length)) {
+            else if (cButton === (currPlayer.hand.length + 1)) {
                 this.buttonArray[cButton] = new ActionButton("other", null, "Pass", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
             else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
@@ -1546,7 +1551,7 @@ var ActionButton = (function (_super) {
         // Is the cursor point within the hex's bounding box?
         if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) &&
             (corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
-            return currPlayer.inActiveRect(activePos, corPoint);
+            return this.inActiveRect(activePos, corPoint);
         }
         else {
             return false;
@@ -1561,7 +1566,7 @@ var ActionButton = (function (_super) {
             return true;
         }
         else {
-            return currPlayer.inActiveTri(diffX, diffY);
+            return this.inActiveTri(diffX, diffY);
         }
     };
     ActionButton.prototype.inActiveTri = function (diffX, diffY) {
@@ -1662,7 +1667,7 @@ function activeClick(corPoint) {
 function activeBarClick(corPoint) {
     // If the clicked point is within the range of all the hexagons
     var numActives = 0;
-    if (currPlayer.hand.length = 3) {
+    if (currPlayer.hand.length < 3) {
         numActives = 3;
     }
     else {
@@ -1689,7 +1694,7 @@ function activeChoiceClick(activePos) {
 function hoverActiveBar(corPoint) {
     // If the hovered point is within the range of all the hexagons
     var numActives = 0;
-    if (currPlayer.hand.length = 3) {
+    if (currPlayer.hand.length < 3) {
         numActives = 3;
     }
     else {
@@ -1721,18 +1726,18 @@ function hoverTile(corPoint) {
     if (hovAxial != undefined) {
         var hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
         if (currLand.spriteArray[hovArraySpot] != undefined) {
-            if (lastHex != null) {
-                var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+            if (glbLastHex != null) {
+                var lastArraySpot = currLand.getID([glbLastHex[0], glbLastHex[1]]);
                 if (currLand.spriteArray[lastArraySpot] != undefined) {
                     currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
                 }
             }
             currLand.spriteArray[hovArraySpot].tint = rgbToHclr([160, 160, 160]);
-            lastHex = hovAxial;
+            glbLastHex = hovAxial;
         }
         else {
-            if (lastHex != null) {
-                var lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+            if (glbLastHex != null) {
+                var lastArraySpot = currLand.getID([glbLastHex[0], glbLastHex[1]]);
                 currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
             }
         }
@@ -2014,7 +2019,10 @@ function monthSetup() {
 function plrMonSetup() {
     // Draw the hand of three developments
     for (var tCard = 0; tCard < 3; tCard++) {
-        if (currPlayer.deck.length === 0) {
+        if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
+            break;
+        }
+        else if (currPlayer.deck.length === 0) {
             currPlayer.shuffleDeck();
             currPlayer.drawDev();
         }
@@ -2022,8 +2030,8 @@ function plrMonSetup() {
             currPlayer.drawDev();
         }
     }
-    currPlayer.displayActives();
-    currPlayer.displayHand();
+    glbSideBar = new ActionBar();
+    glbSideBar.formBar();
     glbState = active;
 }
 // Player chooses which of their active developments to use
@@ -2061,7 +2069,9 @@ function buildSetup() {
     glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
     if (glbTileSelArray != []) {
         glbPulseArray = glbTileSelArray;
-        removeEditBar();
+        if (glbSideBar.buttonArray.length != 0) {
+            glbSideBar.removeBar();
+        }
         glbState = build;
     }
     else {

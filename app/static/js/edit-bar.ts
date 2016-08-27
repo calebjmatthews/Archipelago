@@ -38,8 +38,12 @@ class EditBar extends SideBar {
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
-			if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+			else if ((cButton > (glbNumLscps - 1)) && 
+				  (cButton < (glbNumLscps + glbNumBlkDevels))) {
+				stage.removeChild(this.buttonArray[cButton].sprBg);
+				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
+				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
 			else if (cButton < (glbNumLscps + glbNumBlkDevels + 2)) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);

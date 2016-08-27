@@ -81,7 +81,10 @@ function monthSetup() {
 function plrMonSetup() {
 	// Draw the hand of three developments
 	for (let tCard=0; tCard < 3; tCard++) {
-		if (currPlayer.deck.length === 0) {
+		if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
+			break;
+		}
+		else if (currPlayer.deck.length === 0) {
 			currPlayer.shuffleDeck();
 			currPlayer.drawDev();
 		}
@@ -90,8 +93,8 @@ function plrMonSetup() {
 		}
 	}
 
-	currPlayer.displayActives();
-	currPlayer.displayHand();
+	glbSideBar = new ActionBar();
+	glbSideBar.formBar();
 	glbState = active;
 }
 
@@ -129,7 +132,7 @@ function buildSetup() {
 
 	if (glbTileSelArray != []) {
 		glbPulseArray = glbTileSelArray;
-		removeEditBar();
+		if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 		glbState = build;
 	}
 	else {

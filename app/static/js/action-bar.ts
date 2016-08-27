@@ -39,7 +39,7 @@ class ActionBar extends SideBar {
 		// Corect for position of sidebar
 		xPos = renderer.width - 200 + xPos;
 		// Move the active selection to the bottom of the window
-		yPos = yPos + 300;
+		yPos = yPos;
 
 		return [xPos, yPos];
 	}
@@ -54,13 +54,14 @@ class ActionBar extends SideBar {
 				cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
 			if (cButton < currPlayer.hand.length) {
 				this.buttonArray[cButton] = new ActionButton("development", 
-					currPlayer.hand[cButton], null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+					(currLand.tileArray[currPlayer.hand[cButton]].development), null, 
+					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}
 			else if (cButton === (currPlayer.hand.length)) {
 				this.buttonArray[cButton] = new ActionButton("other", null, "Build", 
 					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}
-			else if (cButton === (currPlayer.hand.length)) {
+			else if (cButton === (currPlayer.hand.length + 1)) {
 				this.buttonArray[cButton] = new ActionButton("other", null, "Pass", 
 					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}

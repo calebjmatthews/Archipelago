@@ -46,7 +46,7 @@ class ActionButton extends ArcButton {
 		// Is the cursor point within the hex's bounding box?
 		if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) && 
 				(corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
-			return currPlayer.inActiveRect(activePos, corPoint);
+			return this.inActiveRect(activePos, corPoint);
 		}
 		else { return false; }
 	}
@@ -60,7 +60,7 @@ class ActionButton extends ArcButton {
 			return true;
 		}
 		else {
-			return currPlayer.inActiveTri(diffX, diffY);
+			return this.inActiveTri(diffX, diffY);
 		}
 	}
 

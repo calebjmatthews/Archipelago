@@ -92,7 +92,7 @@ function activeClick(corPoint) {
 function activeBarClick(corPoint) {
 	// If the clicked point is within the range of all the hexagons
 	let numActives = 0;
-	if (currPlayer.hand.length = 3) { numActives = 3; }
+	if (currPlayer.hand.length < 3) { numActives = 3; }
 	else { numActives = this.hand.length; }
 	let activeRow = numActives - (numActives % 3);
 	// Check that the cursor exists in the neighborhood of the active slots.  A buffer of
@@ -119,7 +119,7 @@ function activeChoiceClick(activePos) {
 function hoverActiveBar(corPoint) {
 	// If the hovered point is within the range of all the hexagons
 	let numActives = 0;
-	if (currPlayer.hand.length = 3) { numActives = 3; }
+	if (currPlayer.hand.length < 3) { numActives = 3; }
 	else { numActives = this.hand.length; }
 	let activeRow = numActives - (numActives % 3);
 	// Check that the cursor exists in the neighborhood of the active slots.  A buffer of
@@ -150,18 +150,18 @@ function hoverTile(corPoint) {
 	if (hovAxial != undefined) {
 		let hovArraySpot = currLand.getID([hovAxial[0], hovAxial[1]]);
 		if (currLand.spriteArray[hovArraySpot] != undefined) {
-			if (lastHex != null) {
-				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+			if (glbLastHex != null) {
+				let lastArraySpot = currLand.getID([glbLastHex[0], glbLastHex[1]]);
 				if (currLand.spriteArray[lastArraySpot] != undefined) {
 					currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
 				}
 			}
 			currLand.spriteArray[hovArraySpot].tint = rgbToHclr([160, 160, 160]);
-			lastHex = hovAxial;
+			glbLastHex = hovAxial;
 		}
 		else {
-			if (lastHex != null) {
-				let lastArraySpot = currLand.getID([lastHex[0], lastHex[1]]);
+			if (glbLastHex != null) {
+				let lastArraySpot = currLand.getID([glbLastHex[0], glbLastHex[1]]);
 				currLand.spriteArray[lastArraySpot].tint = rgbToHclr([255, 255, 255]);
 			}
 		}

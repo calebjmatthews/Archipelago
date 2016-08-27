@@ -64,7 +64,7 @@ class Player {
 		}
 
 		for (let deckSpot = this.deck.length-1; deckSpot >= 0; deckSpot --) {
-			// randDev ← random integer such that 0 ≤ randDev ≤ deckSpot
+			// randDev is a random integer such that 0 ≤ randDev ≤ deckSpot
 			let randDev = Math.floor(Math.random() * (deckSpot+1));
 			let dsValue = this.deck[deckSpot];
 			let rdValue = this.deck[randDev];

@@ -8,6 +8,7 @@ var glbHHeight = 30;
 var glbHWidth = 60;
 var glbBrdWidth = 14;
 var glbPainting = null;
+var glbLastHex = null;
 var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
