@@ -195,6 +195,7 @@
             <key type="filename">bluecard.png</key>
             <key type="filename">bluecard.psd</key>
             <key type="filename">boarranch.png</key>
+            <key type="filename">build.png</key>
             <key type="filename">cave1.png</key>
             <key type="filename">charcoalfurnace.png</key>
             <key type="filename">cobaltmine.png</key>
@@ -213,6 +214,7 @@
             <key type="filename">merchantship.png</key>
             <key type="filename">opulentvessel.png</key>
             <key type="filename">orangecard.png</key>
+            <key type="filename">pass.png</key>
             <key type="filename">peachorchard.png</key>
             <key type="filename">redcard.png</key>
             <key type="filename">ricepaddy.png</key>
@@ -307,6 +309,8 @@
             <filename>tinyrocky.png</filename>
             <filename>tinysea.png</filename>
             <filename>tinyshore.png</filename>
+            <filename>build.png</filename>
+            <filename>pass.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

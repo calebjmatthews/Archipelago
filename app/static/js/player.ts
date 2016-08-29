@@ -14,9 +14,12 @@ class Player {
 	ownedDevs: number[]= [];
 	deck: number[] = [];
 	hand: number[] = [];
+	inPlay: number[] = [];
 	discard: number[] = [];
 	trash: number[] = [];
-	activeEffects: string;
+	activeEffects: number[] = [];
+	actions: number = 3;
+	actionHistory: any[] = [];
 
 	constructor() {
 		this.playerID = playerIncrement;
@@ -41,10 +44,11 @@ class Player {
 				//  territory
 				if (tNTile.development != null) {
 					if ((develArray[tNTile.development].color === eDCLR.Black) && 
-						(tNTile.ownedBy === null))
-					tNTile.ownedBy = currPlayer.playerID;
-					currPlayer.ownedDevs.push(tNTile.development);
-					currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+						(tNTile.ownedBy === null)) {
+						tNTile.ownedBy = currPlayer.playerID;
+						currPlayer.ownedDevs.push(tNTile.development);
+						currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+					}
 				}
 			}
 		}
@@ -74,6 +78,19 @@ class Player {
 		}
 	}
 
+	drawContainer() {
+		if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
+			return;
+		}
+		else if (currPlayer.deck.length === 0) {
+			currPlayer.shuffleDeck();
+			currPlayer.drawDev();
+		}
+		else {
+			currPlayer.drawDev();
+		}
+	}
+
 	drawDev() {
 		let removedDev = this.deck[this.deck.length-1];
 		this.hand.push(removedDev);
@@ -84,5 +101,19 @@ class Player {
 			newDeck[deckSpot] = this.deck[deckSpot];
 		}
 		this.deck = newDeck;
+	}
+
+	removeCard(tileID: number) {
+		let handSpot: number = null;
+		for (let tCard = 0; tCard < this.hand.length; tCard++) {
+			if (this.hand[tCard] === tileID) { handSpot = tCard; }
+		}
+		if (handSpot === null) { console.log("Error: Tile not found in hand."); }
+
+		let newHand: number[] = this.hand.slice(0, handSpot);
+		for (let tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
+			newHand.push(this.hand[tCard]);
+		}
+		this.hand = newHand;
 	}
 }

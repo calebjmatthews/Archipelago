@@ -46,7 +46,7 @@ var pointer = null;
 let littleLand = new Land([Math.floor(Math.random() * 3), eSHAPE.Round, 
 	(Math.floor(Math.random() * 7))]);
 let currLand = littleLand;
-let cPlayerArray = [];
+let cPlayerArray: Player[] = [];
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
 cPlayerArray[1] = new Player(); cPlayerArray[1].playerOrder = 1;
 let currPlayer = cPlayerArray[0];

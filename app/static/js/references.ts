@@ -14,4 +14,5 @@
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
+/// <reference path="action-effect.ts" />
 /// <reference path="state.ts" />

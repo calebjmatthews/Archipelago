@@ -21,11 +21,11 @@ var lscpArray = [];
 lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "tinydesert.png", 
 	"Desert", null);
 lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Forested, "forested.png", 
-	"tinyforested.png", "Forested", eDEVEL.Jungle);
+	"tinyforested.png", "Forest", eDEVEL.Jungle);
 lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "tinygrassy.png",  
-	"Grassy", eDEVEL.Freshwater);
+	"Plain", eDEVEL.Freshwater);
 lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "tinyrocky.png",  
-	"Rocky", eDEVEL.Cave);
+	"Highlands", eDEVEL.Cave);
 lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "tinysea.png", "Sea", null);
 lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "tinyshore.png", 
 	"Shore", null);

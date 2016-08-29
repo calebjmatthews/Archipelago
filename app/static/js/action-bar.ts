@@ -39,7 +39,7 @@ class ActionBar extends SideBar {
 		// Corect for position of sidebar
 		xPos = renderer.width - 200 + xPos;
 		// Move the active selection to the bottom of the window
-		yPos = yPos;
+		yPos = yPos + 450;
 
 		return [xPos, yPos];
 	}
@@ -51,23 +51,28 @@ class ActionBar extends SideBar {
 		//  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
 		//  least three) at the bottom.
 		for (let cButton=0; 
-				cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
+				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
 			if (cButton < currPlayer.hand.length) {
 				this.buttonArray[cButton] = new ActionButton("development", 
 					(currLand.tileArray[currPlayer.hand[cButton]].development), null, 
 					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}
 			else if (cButton === (currPlayer.hand.length)) {
-				this.buttonArray[cButton] = new ActionButton("other", null, "Build", 
+				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build", 
 					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}
 			else if (cButton === (currPlayer.hand.length + 1)) {
-				this.buttonArray[cButton] = new ActionButton("other", null, "Pass", 
+				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass", 
 					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
 			}
-			else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
-				this.buttonArray[cButton] = new ActionButton("active", null, null, 
-					this.getActivePos(cButton - (currPlayer.hand.length + 2)));
+			else if (cButton === (currPlayer.hand.length + 2)) {
+				this.buttonArray[cButton] = new ActionButton("counter", null, "Actions", 
+					[oriB[0], (oriB[1] + 425)]);
+			}
+			else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
+				this.buttonArray[cButton] = new ActionButton("active", 
+					(cButton - (currPlayer.hand.length + 3)), null, 
+					this.getActivePos(cButton - (currPlayer.hand.length + 3)));
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
@@ -75,24 +80,29 @@ class ActionBar extends SideBar {
 			if (this.buttonArray[cButton].type === "active") {
 				this.buttonArray[cButton].displayActiveSlot();
 			}
+			else if (this.buttonArray[cButton].type === "otherAction") {
+				this.buttonArray[cButton].displayOtherAction();
+			}
+			else if (this.buttonArray[cButton].type === "counter") {
+				this.buttonArray[cButton].displayCounter();
+			}
 			else { this.buttonArray[cButton].displayButton(); }
 		}
 	}
 
 	removeBar() {
 		for (let cButton=0; 
-				cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
-			if (cButton < currPlayer.hand.length) {
+				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+			if (cButton < currPlayer.hand.length + 2) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
-			else if (cButton < (currPlayer.hand.length + 2)) {
-				stage.removeChild(this.buttonArray[cButton].sprBg);
+			else if (cButton === (currPlayer.hand.length + 2)) {
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
-			else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
+			else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 			}
 			else {
@@ -105,15 +115,52 @@ class ActionBar extends SideBar {
 
 	hoverOverBar() {
 		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
-			if (this.buttonArray[cButton].withinActiveButton([pointer.x, pointer.y])) {
-				this.buttonArray[cButton].sprBg.alpha = 0.6;
+			if (this.buttonArray[cButton].type === "active") {
+				if (this.buttonArray[cButton].inActiveHex([pointer.x, pointer.y])) {
+					this.buttonArray[cButton].sprBg.tint = rgbToHclr([150, 150, 150]);
+				}
+				else {
+					this.buttonArray[cButton].sprBg.tint = rgbToHclr([255, 255, 255]);
+				}
 			}
-			else if (glbEditBarSel === cButton) {
-				this.buttonArray[cButton].sprBg.alpha = 0.4;
-			}
+			else if (this.buttonArray[cButton].type === "counter") { continue; }
 			else {
-				this.buttonArray[cButton].sprBg.alpha = 0;
+				if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+					this.buttonArray[cButton].sprBg.alpha = 0.6;
+				}
+				else if (glbEditBarSel === cButton) {
+					this.buttonArray[cButton].sprBg.alpha = 0.4;
+				}
+				else {
+					this.buttonArray[cButton].sprBg.alpha = 0;
+				}
 			}
+		}
+	}
+
+	clickBar() {
+		if (currDescCard != null) { currDescCard.selfDestruct(); }
+
+		for (let cButton = 0; 
+				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+
+				// Development buttons
+				if (cButton < currPlayer.hand.length) {
+					applyDevEffect(currPlayer.hand[cButton]);
+				}
+
+				// Build button
+				else if (cButton === currPlayer.hand.length) {
+					
+				}
+
+				// Pass button
+				else if (cButton === (currPlayer.hand.length+1)) {
+					
+				}
+				else { console.log("Unexpected edit bar value."); }
+			}			
 		}
 	}
 }

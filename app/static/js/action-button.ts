@@ -5,8 +5,8 @@ class ActionButton extends ArcButton {
 	constructor(setType: string, setId: number, setOtherName: string, 
 			setOrigin: number[]) {
 		super(setType, setId, setOtherName, setOrigin);
-
-		this.formHexBounds(setOrigin);
+		if (this.type === "active") { this.formHexBounds(setOrigin); }
+		else { this.formStandardBounds(setOrigin); }
 	}
 
 	formHexBounds(setOrigin: number[]) {
@@ -21,27 +21,75 @@ class ActionButton extends ArcButton {
 		this.bounds[3] = [setOrigin[0], (setOrigin[1] + glbHHeight)];
 	}
 
+	displayOtherAction() {
+		// Display initially transparent background
+		this.displayButton();
+
+		// Display the black outline
+		this.sprFirst = new Sprite(sprMed["hex.png"]);
+		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
+			                         (this.bounds[0][1] + glbBPadding));
+		this.sprFirst.scale.set(0.2, 0.2);
+		stage.addChild(this.sprFirst);
+
+		// Display the icon
+		let sprOAName = "";
+		if (this.otherName === "Build") { sprOAName = "build.png"; }
+		else if (this.otherName === "Pass") { sprOAName = "pass.png"; }
+		this.sprSecond = new Sprite(sprMed[sprOAName]);
+		this.sprSecond.scale.set(0.2, 0.2);
+		this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), 
+			                          (this.bounds[0][1] + glbBPadding - 30));
+		stage.addChild(this.sprSecond);
+
+		// Display the related text
+		this.displayTextLayer(this.otherName, 
+			[(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
+	}
+
+	displayCounter() {
+		let setText = ("Actions: " + currPlayer.actions + "/" + 
+			(currPlayer.actions + currPlayer.actionHistory.length));
+		this.txtLabel = new Text(setText, 
+			{font: "18px sans-serif", fill: "white"});
+		this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
+		stage.addChild(this.txtLabel);
+	}
+
 	displayActiveSlot() {
-		this.sprBg = new Sprite(sprMed["whitehex.png"]);
+		// Display the white background
+		let randNum = Math.random()*3;
+		let whiteHexNum = "";
+		if (randNum < 1) { whiteHexNum = "whitehex.png"; }
+		else if ((randNum > 1) && (randNum < 2)) { whiteHexNum = "whitehex2.png"; }
+		else { whiteHexNum = "whitehex3.png"; }
+		this.sprBg = new Sprite(sprMed[whiteHexNum]);
 		this.sprBg.scale.set(0.2, 0.2);
-		this.sprBg.position.set([this.bounds[0], this.bounds[1]]);
+		// Subtract hex height from sprite to correct for tallness
+		this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
 		stage.addChild(this.sprBg);
-	}
 
-	withinActiveButton(givenPoint: number[]) {
-		if (this.type === "active") {
-			return this.inActiveHex(this.bounds[0], givenPoint);
+		if (currPlayer.actionHistory[this.id] != undefined) {
+			if (currPlayer.actionHistory[this.id][0] === "development") {
+				let tileId = currPlayer.actionHistory[this.id][1];
+				let tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
+				this.sprSecond = new Sprite(sprMed[tSprName]);
+				this.sprSecond.scale.set(0.2, 0.2);
+				this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+				stage.addChild(this.sprSecond);
+			}
 		}
-		else { return this.withinButton(givenPoint); }
 	}
 
-	inActiveHex(activePos: number[], corPoint: number[]) {
+	inActiveHex(corPoint: number[]) {
 		// 1. Is the point within the possible range of any active hex?
 		// 2. Is the point in this hex's bounding box?
 		// 3. Which quadrant?  If not in upper right, translate point to upper right
 		// 4. Is it outside the rectangular portion?
 		// 5. Is it in the triangular point segment?
 		// A "no" to any step (other than 3) ends the function and returns false
+
+		let activePos = this.bounds[0];
 
 		// Is the cursor point within the hex's bounding box?
 		if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) && 

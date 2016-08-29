@@ -63,7 +63,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"cave1.png":
+"build.png":
 {
 	"frame": {"x":1210,"y":1726,"w":300,"h":300},
 	"rotated": false,
@@ -72,7 +72,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"charcoalfurnace.png":
+"cave1.png":
 {
 	"frame": {"x":1512,"y":1726,"w":300,"h":300},
 	"rotated": false,
@@ -81,7 +81,7 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"cobaltmine.png":
+"charcoalfurnace.png":
 {
 	"frame": {"x":1658,"y":2,"w":300,"h":300},
 	"rotated": false,
@@ -90,9 +90,18 @@
 	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"demolition.png":
+"cobaltmine.png":
 {
 	"frame": {"x":1658,"y":304,"w":300,"h":300},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
+	"sourceSize": {"w":300,"h":300},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"demolition.png":
+{
+	"frame": {"x":1658,"y":606,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -110,7 +119,7 @@
 },
 "envoyharbor.png":
 {
-	"frame": {"x":1658,"y":606,"w":300,"h":300},
+	"frame": {"x":1658,"y":908,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -119,7 +128,7 @@
 },
 "firecrew.png":
 {
-	"frame": {"x":1658,"y":908,"w":300,"h":300},
+	"frame": {"x":1658,"y":1210,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -151,15 +160,6 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
 	"sourceSize": {"w":550,"h":860},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"steadyvessel.png":
-{
-	"frame": {"x":1658,"y":1210,"w":300,"h":300},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
-	"sourceSize": {"w":300,"h":300},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "tinydesert.png":
@@ -223,6 +223,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1960,"h":2028},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:8b7f5bce4a52efd678dad8c4600834d9:fbb130089574d5f3288bba00e5926a5f:4b437caca69fd16d5f6bf05828e98a30$"
+	"smartupdate": "$TexturePacker:SmartUpdate:9aadb8aa2904a21a6a08cc59b0295ffa:5d77062b484f108d26589b4ae1db7522:4b437caca69fd16d5f6bf05828e98a30$"
 }
 }

@@ -12,6 +12,7 @@ var glbLastHex = null;
 var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbNumRes = 8;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbEditBarSel = null;

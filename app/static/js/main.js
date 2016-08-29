@@ -16,6 +16,7 @@ var glbLastHex = null;
 var glbPointerDown = false;
 var glbNumLscps = 6;
 var glbNumBlkDevels = 3;
+var glbNumRes = 8;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbEditBarSel = null;
@@ -364,8 +365,12 @@ var Player = (function () {
         this.ownedDevs = [];
         this.deck = [];
         this.hand = [];
+        this.inPlay = [];
         this.discard = [];
         this.trash = [];
+        this.activeEffects = [];
+        this.actions = 3;
+        this.actionHistory = [];
         this.playerID = playerIncrement;
         playerIncrement++;
     }
@@ -387,10 +392,11 @@ var Player = (function () {
                 //  territory
                 if (tNTile.development != null) {
                     if ((develArray[tNTile.development].color === eDCLR.Black) &&
-                        (tNTile.ownedBy === null))
+                        (tNTile.ownedBy === null)) {
                         tNTile.ownedBy = currPlayer.playerID;
-                    currPlayer.ownedDevs.push(tNTile.development);
-                    currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+                        currPlayer.ownedDevs.push(tNTile.development);
+                        currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+                    }
                 }
             }
         }
@@ -416,6 +422,18 @@ var Player = (function () {
             this.deck[randDev] = dsValue;
         }
     };
+    Player.prototype.drawContainer = function () {
+        if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
+            return;
+        }
+        else if (currPlayer.deck.length === 0) {
+            currPlayer.shuffleDeck();
+            currPlayer.drawDev();
+        }
+        else {
+            currPlayer.drawDev();
+        }
+    };
     Player.prototype.drawDev = function () {
         var removedDev = this.deck[this.deck.length - 1];
         this.hand.push(removedDev);
@@ -425,6 +443,22 @@ var Player = (function () {
             newDeck[deckSpot] = this.deck[deckSpot];
         }
         this.deck = newDeck;
+    };
+    Player.prototype.removeCard = function (tileID) {
+        var handSpot = null;
+        for (var tCard = 0; tCard < this.hand.length; tCard++) {
+            if (this.hand[tCard] === tileID) {
+                handSpot = tCard;
+            }
+        }
+        if (handSpot === null) {
+            console.log("Error: Tile not found in hand.");
+        }
+        var newHand = this.hand.slice(0, handSpot);
+        for (var tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
+            newHand.push(this.hand[tCard]);
+        }
+        this.hand = newHand;
     };
     return Player;
 }());
@@ -862,9 +896,9 @@ var Landcape = (function () {
 }());
 var lscpArray = [];
 lscpArray[eLSCP.Desert] = new Landcape(eLSCP.Desert, "desert.png", "tinydesert.png", "Desert", null);
-lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Forested, "forested.png", "tinyforested.png", "Forested", eDEVEL.Jungle);
-lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "tinygrassy.png", "Grassy", eDEVEL.Freshwater);
-lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "tinyrocky.png", "Rocky", eDEVEL.Cave);
+lscpArray[eLSCP.Forested] = new Landcape(eLSCP.Forested, "forested.png", "tinyforested.png", "Forest", eDEVEL.Jungle);
+lscpArray[eLSCP.Grassy] = new Landcape(eLSCP.Desert, "grassy.png", "tinygrassy.png", "Plain", eDEVEL.Freshwater);
+lscpArray[eLSCP.Rocky] = new Landcape(eLSCP.Rocky, "rocky.png", "tinyrocky.png", "Highlands", eDEVEL.Cave);
 lscpArray[eLSCP.Sea] = new Landcape(eLSCP.Sea, "sea.png", "tinysea.png", "Sea", null);
 lscpArray[eLSCP.Shore] = new Landcape(eLSCP.Shore, "shore.png", "tinyshore.png", "Shore", null);
 /// <reference path="references.ts" />
@@ -1340,7 +1374,7 @@ var ActionBar = (function (_super) {
         // Corect for position of sidebar
         xPos = renderer.width - 200 + xPos;
         // Move the active selection to the bottom of the window
-        yPos = yPos;
+        yPos = yPos + 450;
         return [xPos, yPos];
     };
     ActionBar.prototype.formBar = function () {
@@ -1349,18 +1383,21 @@ var ActionBar = (function (_super) {
         // The action bar has buttons for each development in the player's hand, as well as
         //  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
         //  least three) at the bottom.
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
             if (cButton < currPlayer.hand.length) {
                 this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
             else if (cButton === (currPlayer.hand.length)) {
-                this.buttonArray[cButton] = new ActionButton("other", null, "Build", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
             else if (cButton === (currPlayer.hand.length + 1)) {
-                this.buttonArray[cButton] = new ActionButton("other", null, "Pass", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
             }
-            else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
-                this.buttonArray[cButton] = new ActionButton("active", null, null, this.getActivePos(cButton - (currPlayer.hand.length + 2)));
+            else if (cButton === (currPlayer.hand.length + 2)) {
+                this.buttonArray[cButton] = new ActionButton("counter", null, "Actions", [oriB[0], (oriB[1] + 425)]);
+            }
+            else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
+                this.buttonArray[cButton] = new ActionButton("active", (cButton - (currPlayer.hand.length + 3)), null, this.getActivePos(cButton - (currPlayer.hand.length + 3)));
             }
             else {
                 console.log("Error, unexpected menu button value.");
@@ -1368,24 +1405,29 @@ var ActionBar = (function (_super) {
             if (this.buttonArray[cButton].type === "active") {
                 this.buttonArray[cButton].displayActiveSlot();
             }
+            else if (this.buttonArray[cButton].type === "otherAction") {
+                this.buttonArray[cButton].displayOtherAction();
+            }
+            else if (this.buttonArray[cButton].type === "counter") {
+                this.buttonArray[cButton].displayCounter();
+            }
             else {
                 this.buttonArray[cButton].displayButton();
             }
         }
     };
     ActionBar.prototype.removeBar = function () {
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 2 + this.numActives); cButton++) {
-            if (cButton < currPlayer.hand.length) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+            if (cButton < currPlayer.hand.length + 2) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
                 stage.removeChild(this.buttonArray[cButton].sprFirst);
                 stage.removeChild(this.buttonArray[cButton].sprSecond);
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
-            else if (cButton < (currPlayer.hand.length + 2)) {
-                stage.removeChild(this.buttonArray[cButton].sprBg);
+            else if (cButton === (currPlayer.hand.length + 2)) {
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }
-            else if (cButton < (currPlayer.hand.length + 2 + this.numActives)) {
+            else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
             }
             else {
@@ -1397,14 +1439,47 @@ var ActionBar = (function (_super) {
     };
     ActionBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
-            if (this.buttonArray[cButton].withinActiveButton([pointer.x, pointer.y])) {
-                this.buttonArray[cButton].sprBg.alpha = 0.6;
+            if (this.buttonArray[cButton].type === "active") {
+                if (this.buttonArray[cButton].inActiveHex([pointer.x, pointer.y])) {
+                    this.buttonArray[cButton].sprBg.tint = rgbToHclr([150, 150, 150]);
+                }
+                else {
+                    this.buttonArray[cButton].sprBg.tint = rgbToHclr([255, 255, 255]);
+                }
             }
-            else if (glbEditBarSel === cButton) {
-                this.buttonArray[cButton].sprBg.alpha = 0.4;
+            else if (this.buttonArray[cButton].type === "counter") {
+                continue;
             }
             else {
-                this.buttonArray[cButton].sprBg.alpha = 0;
+                if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                    this.buttonArray[cButton].sprBg.alpha = 0.6;
+                }
+                else if (glbEditBarSel === cButton) {
+                    this.buttonArray[cButton].sprBg.alpha = 0.4;
+                }
+                else {
+                    this.buttonArray[cButton].sprBg.alpha = 0;
+                }
+            }
+        }
+    };
+    ActionBar.prototype.clickBar = function () {
+        if (currDescCard != null) {
+            currDescCard.selfDestruct();
+        }
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                // Development buttons
+                if (cButton < currPlayer.hand.length) {
+                    applyDevEffect(currPlayer.hand[cButton]);
+                }
+                else if (cButton === currPlayer.hand.length) {
+                }
+                else if (cButton === (currPlayer.hand.length + 1)) {
+                }
+                else {
+                    console.log("Unexpected edit bar value.");
+                }
             }
         }
     };
@@ -1515,7 +1590,12 @@ var ActionButton = (function (_super) {
     __extends(ActionButton, _super);
     function ActionButton(setType, setId, setOtherName, setOrigin) {
         _super.call(this, setType, setId, setOtherName, setOrigin);
-        this.formHexBounds(setOrigin);
+        if (this.type === "active") {
+            this.formHexBounds(setOrigin);
+        }
+        else {
+            this.formStandardBounds(setOrigin);
+        }
     }
     ActionButton.prototype.formHexBounds = function (setOrigin) {
         this.bounds[0] = [];
@@ -1527,27 +1607,73 @@ var ActionButton = (function (_super) {
         this.bounds[2] = [(setOrigin[0] + glbHWidth), (setOrigin[1] + glbHHeight)];
         this.bounds[3] = [setOrigin[0], (setOrigin[1] + glbHHeight)];
     };
-    ActionButton.prototype.displayActiveSlot = function () {
-        this.sprBg = new Sprite(sprMed["whitehex.png"]);
-        this.sprBg.scale.set(0.2, 0.2);
-        this.sprBg.position.set([this.bounds[0], this.bounds[1]]);
-        stage.addChild(this.sprBg);
+    ActionButton.prototype.displayOtherAction = function () {
+        // Display initially transparent background
+        this.displayButton();
+        // Display the black outline
+        this.sprFirst = new Sprite(sprMed["hex.png"]);
+        this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding));
+        this.sprFirst.scale.set(0.2, 0.2);
+        stage.addChild(this.sprFirst);
+        // Display the icon
+        var sprOAName = "";
+        if (this.otherName === "Build") {
+            sprOAName = "build.png";
+        }
+        else if (this.otherName === "Pass") {
+            sprOAName = "pass.png";
+        }
+        this.sprSecond = new Sprite(sprMed[sprOAName]);
+        this.sprSecond.scale.set(0.2, 0.2);
+        this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding - 30));
+        stage.addChild(this.sprSecond);
+        // Display the related text
+        this.displayTextLayer(this.otherName, [(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
     };
-    ActionButton.prototype.withinActiveButton = function (givenPoint) {
-        if (this.type === "active") {
-            return this.inActiveHex(this.bounds[0], givenPoint);
+    ActionButton.prototype.displayCounter = function () {
+        var setText = ("Actions: " + currPlayer.actions + "/" +
+            (currPlayer.actions + currPlayer.actionHistory.length));
+        this.txtLabel = new Text(setText, { font: "18px sans-serif", fill: "white" });
+        this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
+        stage.addChild(this.txtLabel);
+    };
+    ActionButton.prototype.displayActiveSlot = function () {
+        // Display the white background
+        var randNum = Math.random() * 3;
+        var whiteHexNum = "";
+        if (randNum < 1) {
+            whiteHexNum = "whitehex.png";
+        }
+        else if ((randNum > 1) && (randNum < 2)) {
+            whiteHexNum = "whitehex2.png";
         }
         else {
-            return this.withinButton(givenPoint);
+            whiteHexNum = "whitehex3.png";
+        }
+        this.sprBg = new Sprite(sprMed[whiteHexNum]);
+        this.sprBg.scale.set(0.2, 0.2);
+        // Subtract hex height from sprite to correct for tallness
+        this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
+        stage.addChild(this.sprBg);
+        if (currPlayer.actionHistory[this.id] != undefined) {
+            if (currPlayer.actionHistory[this.id][0] === "development") {
+                var tileId = currPlayer.actionHistory[this.id][1];
+                var tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
+                this.sprSecond = new Sprite(sprMed[tSprName]);
+                this.sprSecond.scale.set(0.2, 0.2);
+                this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+                stage.addChild(this.sprSecond);
+            }
         }
     };
-    ActionButton.prototype.inActiveHex = function (activePos, corPoint) {
+    ActionButton.prototype.inActiveHex = function (corPoint) {
         // 1. Is the point within the possible range of any active hex?
         // 2. Is the point in this hex's bounding box?
         // 3. Which quadrant?  If not in upper right, translate point to upper right
         // 4. Is it outside the rectangular portion?
         // 5. Is it in the triangular point segment?
         // A "no" to any step (other than 3) ends the function and returns false
+        var activePos = this.bounds[0];
         // Is the cursor point within the hex's bounding box?
         if ((corPoint[0] > activePos[0]) && (corPoint[0] < (activePos[0] + glbHWidth)) &&
             (corPoint[1] > activePos[1]) && (corPoint[1] < (activePos[1] + glbHHeight))) {
@@ -1663,33 +1789,6 @@ function activeClick(corPoint) {
             }
         }
     }
-}
-function activeBarClick(corPoint) {
-    // If the clicked point is within the range of all the hexagons
-    var numActives = 0;
-    if (currPlayer.hand.length < 3) {
-        numActives = 3;
-    }
-    else {
-        numActives = this.hand.length;
-    }
-    var activeRow = numActives - (numActives % 3);
-    // Check that the cursor exists in the neighborhood of the active slots.  A buffer of
-    //  10xp is added to allow the hover shading to be removed if the cursor exits the hex
-    if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth / 2))) &&
-        (corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth / 2))) &&
-        (corPoint[1] > (-10 + (glbHWidth / 2))) &&
-        (corPoint[1] < (10 + (glbHWidth / 2) +
-            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight + (glbHHeight / 2)))) {
-        for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
-            var activePos = currPlayer.getActivePos(activeSpot);
-            if (currPlayer.inActiveHex(activePos, corPoint)) {
-                activeChoiceClick(activeSpot);
-            }
-        }
-    }
-}
-function activeChoiceClick(activePos) {
 }
 function hoverActiveBar(corPoint) {
     // If the hovered point is within the range of all the hexagons
@@ -1933,6 +2032,80 @@ function veAllEffects() {
         vePulse(glbPulseArray);
     }
 }
+/// <reference path="references.ts" />
+function applyDevEffect(tileID) {
+    beforeEffect();
+    var tDev = develArray[currLand.tileArray[tileID].development];
+    var resultArray = considerPlayerEffects(tDev);
+    for (var cResult = 0; cResult < glbNumRes; cResult++) {
+        if (tDev.result[cResult] != undefined) {
+            applySingleEffect(resultArray, cResult);
+        }
+    }
+    afterEffect(tileID);
+}
+function beforeEffect() {
+    glbSideBar.removeBar();
+}
+function considerPlayerEffects(tDev) {
+    var resultArray = tDev.result;
+    if (currPlayer.activeEffects.length === 0) {
+        return resultArray;
+    }
+    // Apply active player effects to the result of the selected development
+    for (var cEffect = 0; cEffect < glbNumRes; cEffect++) {
+        var effectValue = currPlayer.activeEffects[cEffect];
+        if (effectValue != undefined) {
+            if ((cEffect === eRES.BlueTreasure) && (tDev.color === eDCLR.Blue)) {
+                resultArray[eRES.Treasure] += effectValue;
+            }
+            else if ((cEffect === eRES.RedActive) && (tDev.color === eDCLR.Red)) {
+                resultArray[eRES.Active] += effectValue;
+            }
+        }
+    }
+    return resultArray;
+}
+function applySingleEffect(resultArray, cResult) {
+    if (cResult === eRES.Active) {
+        for (var iii = 0; iii < resultArray[eRES.Active]; iii++) {
+            currPlayer.actions++;
+            currPlayer.drawContainer();
+        }
+    }
+    else if (cResult === eRES.BlueTreasure) {
+        currPlayer.activeEffects[eRES.BlueTreasure] = resultArray[eRES.BlueTreasure];
+    }
+    else if (cResult === eRES.Destroy) {
+        currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
+        // Changes game state in order to select a development for destruction
+        glbState = selDevel;
+    }
+    else if (cResult === eRES.Food) {
+        currPlayer.food += resultArray[eRES.Food];
+    }
+    else if (cResult === eRES.Material) {
+        currPlayer.material += resultArray[eRES.Material];
+    }
+    else if (cResult === eRES.RedActive) {
+        currPlayer.activeEffects[eRES.RedActive] = resultArray[eRES.RedActive];
+    }
+    else if (cResult === eRES.Ship) {
+        currPlayer.ships += resultArray[eRES.Ship];
+    }
+    else if (cResult === eRES.Treasure) {
+        currPlayer.treasure += resultArray[eRES.Treasure];
+    }
+}
+function afterEffect(tileID) {
+    // Account for spent card
+    currPlayer.actions--;
+    currPlayer.actionHistory.push(["development", tileID]);
+    // Update display
+    updatePlayerBar();
+    currPlayer.removeCard(tileID);
+    glbSideBar.formBar();
+}
 /// <reference path="global.ts" />
 /// <reference path="tile.ts" />
 /// <reference path="player.ts" />
@@ -1949,6 +2122,7 @@ function veAllEffects() {
 /// <reference path="action.ts" />
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
+/// <reference path="action-effect.ts" />
 /// <reference path="state.ts" /> 
 /// <reference path="references.ts" />
 function onImageLoad() {
@@ -1986,7 +2160,7 @@ function gameLoop() {
 function edit() {
     // Click event handling
     pointer.press = function () { editStateClick(); };
-    pointer.tap = function () { editStateClick(); };
+    // pointer.tap = () =>     { editStateClick(); }
     pointer.release = function () { glbPointerDown = false; };
     // Click and drag event handling
     if (glbPointerDown === true) {
@@ -2019,31 +2193,29 @@ function monthSetup() {
 function plrMonSetup() {
     // Draw the hand of three developments
     for (var tCard = 0; tCard < 3; tCard++) {
-        if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
-            break;
-        }
-        else if (currPlayer.deck.length === 0) {
-            currPlayer.shuffleDeck();
-            currPlayer.drawDev();
-        }
-        else {
-            currPlayer.drawDev();
-        }
+        currPlayer.drawContainer();
     }
     glbSideBar = new ActionBar();
     glbSideBar.formBar();
     glbState = active;
 }
+var dirtyClick = false; // To avoid multiple press events for the same click
 // Player chooses which of their active developments to use
 function active() {
     // Click event handling
-    pointer.tap = function () {
-        if ((pointer.x) < (renderer.width - 200)) {
-            activeClick([pointer.x, pointer.y]);
+    pointer.press = function () {
+        if (!dirtyClick) {
+            if ((pointer.x) < (renderer.width - 200)) {
+                activeClick([pointer.x, pointer.y]);
+            }
+            else {
+                glbSideBar.clickBar([pointer.x, pointer.y]);
+            }
         }
-        else {
-            activeBarClick([pointer.x, pointer.y]);
-        }
+        dirtyClick = true;
+    };
+    pointer.release = function () {
+        dirtyClick = false;
     };
     // Hover event handling
     if (pointer.x < (renderer.width - 200)) {
@@ -2053,7 +2225,7 @@ function active() {
         glbSideBar.hoverOverBar();
     }
 }
-// Choosing a target for a development's effect
+// Choosing a development as a target for a development's effect
 function selDevel() {
 }
 // Player chooses new developments to purchase

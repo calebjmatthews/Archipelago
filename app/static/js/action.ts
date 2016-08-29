@@ -89,33 +89,6 @@ function activeClick(corPoint) {
 	}
 }
 
-function activeBarClick(corPoint) {
-	// If the clicked point is within the range of all the hexagons
-	let numActives = 0;
-	if (currPlayer.hand.length < 3) { numActives = 3; }
-	else { numActives = this.hand.length; }
-	let activeRow = numActives - (numActives % 3);
-	// Check that the cursor exists in the neighborhood of the active slots.  A buffer of
-	//  10xp is added to allow the hover shading to be removed if the cursor exits the hex
-	if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth/2))) && 
-			(corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth/2))) && 
-			(corPoint[1] > (-10 + (glbHWidth / 2))) && 
-			(corPoint[1] < (10 + (glbHWidth / 2) + 
-				(((activeRow*1.3)/3) * glbHHeight) + glbHHeight + (glbHHeight/2)))) {
-		for (let activeSpot=0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
-		
-			let activePos = currPlayer.getActivePos(activeSpot);
-  		if (currPlayer.inActiveHex(activePos, corPoint)) {
-  			activeChoiceClick(activeSpot); 
-  		}
-  	}
-	}
-}
-
-function activeChoiceClick(activePos) {
-
-}
-
 function hoverActiveBar(corPoint) {
 	// If the hovered point is within the range of all the hexagons
 	let numActives = 0;

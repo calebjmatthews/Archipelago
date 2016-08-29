@@ -46,7 +46,7 @@ function gameLoop() {
 function edit() {
 	// Click event handling
 	pointer.press = () =>   { editStateClick(); }
-	pointer.tap = () =>     { editStateClick(); }
+	// pointer.tap = () =>     { editStateClick(); }
 	pointer.release = () => { glbPointerDown = false; }
 
 	// Click and drag event handling
@@ -81,16 +81,7 @@ function monthSetup() {
 function plrMonSetup() {
 	// Draw the hand of three developments
 	for (let tCard=0; tCard < 3; tCard++) {
-		if ((currPlayer.deck.length === 0) && (currPlayer.discard.length === 0)) {
-			break;
-		}
-		else if (currPlayer.deck.length === 0) {
-			currPlayer.shuffleDeck();
-			currPlayer.drawDev();
-		}
-		else {
-			currPlayer.drawDev();
-		}
+		currPlayer.drawContainer();
 	}
 
 	glbSideBar = new ActionBar();
@@ -98,12 +89,19 @@ function plrMonSetup() {
 	glbState = active;
 }
 
+let dirtyClick: boolean = false; // To avoid multiple press events for the same click
 // Player chooses which of their active developments to use
 function active() {
 	// Click event handling
-	pointer.tap = () => {
-		if ((pointer.x) < (renderer.width-200)) { activeClick([pointer.x, pointer.y]); }
-		else { activeBarClick([pointer.x, pointer.y]); }
+	pointer.press = () => {
+		if (!dirtyClick) {
+			if ((pointer.x) < (renderer.width-200)) { activeClick([pointer.x, pointer.y]); }
+			else { glbSideBar.clickBar([pointer.x, pointer.y]); }
+		}
+		dirtyClick = true;
+	}
+	pointer.release = () => {
+		dirtyClick = false;
 	}
 
 	// Hover event handling
@@ -111,7 +109,7 @@ function active() {
 	else { glbSideBar.hoverOverBar(); }
 }
 
-// Choosing a target for a development's effect
+// Choosing a development as a target for a development's effect
 function selDevel() {
 
 }
