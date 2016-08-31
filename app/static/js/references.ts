@@ -15,4 +15,6 @@
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
 /// <reference path="action-effect.ts" />
+/// <reference path="buy-bar.ts" />
+/// <reference path="buy-button.ts" />
 /// <reference path="state.ts" />

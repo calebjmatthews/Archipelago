@@ -72,18 +72,18 @@ develArray[eDEVEL.LaborPort].requirement[eREQ.Treasure] = -1;
 develArray[eDEVEL.LaborPort].result = [];
 develArray[eDEVEL.LaborPort].result[eRES.Active] = 3;
 
-develArray[eDEVEL.SeasSideParade] = new Development(eDEVEL.SeasSideParade, 
-	["seassideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], 
+develArray[eDEVEL.SeaSideParade] = new Development(eDEVEL.SeaSideParade, 
+	["seasideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], 
 	("Requires: -1 Material; Result: For the rest of the month, all Blue developments " + 
 		"give an additional +1 Treasure"));
-develArray[eDEVEL.SeasSideParade].cost = [];
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Food] = -2;
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Material] = -2;
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Treasure] = -2;
-develArray[eDEVEL.SeasSideParade].requirement = []
-develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = -1;
-develArray[eDEVEL.SeasSideParade].result = [];
-develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
+develArray[eDEVEL.SeaSideParade].cost = [];
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Food] = -2;
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Material] = -2;
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Treasure] = -2;
+develArray[eDEVEL.SeaSideParade].requirement = []
+develArray[eDEVEL.SeaSideParade].requirement[eREQ.Material] = -1;
+develArray[eDEVEL.SeaSideParade].result = [];
+develArray[eDEVEL.SeaSideParade].result[eRES.BlueTreasure] = 1;
 
 develArray[eDEVEL.TradeHarbor] = new Development(eDEVEL.TradeHarbor, 
 	["tradeharbor.png"], "Trade Harbor", eDCLR.Blue, [eLSCP.Shore], 
@@ -97,7 +97,7 @@ develArray[eDEVEL.TradeHarbor].result = [];
 develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
 
 develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, 
-	["actionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], 
+	["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], 
 	("Requires: -1 Treasure; Result: +2 Treasure"));
 develArray[eDEVEL.AuctionHouse].cost = [];
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = -3;
@@ -168,7 +168,7 @@ develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
 
 develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, 
-	["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], 
+	["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Forested], 
 	("Result: +1 Material"));
 develArray[eDEVEL.Woodcutters].cost = [];
 develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -1;
@@ -276,7 +276,7 @@ develArray[eDEVEL.Town].result[eRES.Active] = 3;
 
 develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, 
 	["merchantship.png"], "Merchant Ship", eDCLR.Violet, 
-	null, ("Requires: Destroy 1 Blue Development to build this; Result: +1 Ship"));
+	[eLSCP.Sea], ("Requires: Destroy 1 Blue Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = -2;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = -1;
@@ -287,7 +287,7 @@ develArray[eDEVEL.MerchantShip].result[eRES.Ship] = 1;
 
 develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, 
 	["ventureship.png"], "Venture Ship", eDCLR.Violet, 
-	null, ("Requires: Destroy 1 Green Development to build this; Result: +1 Ship"));
+	[eLSCP.Sea], ("Requires: Destroy 1 Green Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = -4;
 develArray[eDEVEL.VentureShip].cost[eCOST.Material] = -1;
@@ -298,7 +298,7 @@ develArray[eDEVEL.VentureShip].result[eRES.Ship] = 1;
 
 develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, 
 	["workmanship.png"], "Workman Ship", eDCLR.Violet, 
-	null, ("Requires: Destroy 1 Orange Development to build this; Result: +1 Ship"));
+	[eLSCP.Sea], ("Requires: Destroy 1 Orange Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = -4;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.DestroyOrange] = 1;
@@ -307,7 +307,8 @@ develArray[eDEVEL.WorkmanShip].result = [];
 develArray[eDEVEL.WorkmanShip].result[eRES.Ship] = 1;
 
 develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel, 
-	["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+	["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, [eLSCP.Sea], 
+	("Result: +1 Ship"));
 develArray[eDEVEL.OpulentVessel].cost = [];
 develArray[eDEVEL.OpulentVessel].cost[eCOST.Treasure] = -3;
 develArray[eDEVEL.OpulentVessel].cost[eCOST.Material] = -2;
@@ -316,7 +317,8 @@ develArray[eDEVEL.OpulentVessel].result = [];
 develArray[eDEVEL.OpulentVessel].result[eRES.Ship] = 1;
 
 develArray[eDEVEL.AbundantVessel] = new Development(eDEVEL.AbundantVessel, 
-	["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+	["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, [eLSCP.Sea], 
+	("Result: +1 Ship"));
 develArray[eDEVEL.AbundantVessel].cost = [];
 develArray[eDEVEL.AbundantVessel].cost[eCOST.Food] = -6;
 develArray[eDEVEL.AbundantVessel].cost[eCOST.Material] = -2;
@@ -325,7 +327,7 @@ develArray[eDEVEL.AbundantVessel].result = [];
 develArray[eDEVEL.AbundantVessel].result[eRES.Ship] = 1;
 
 develArray[eDEVEL.SteadyVessel] = new Development(eDEVEL.SteadyVessel, 
-	["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+	["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
 develArray[eDEVEL.SteadyVessel].cost = [];
 develArray[eDEVEL.SteadyVessel].cost[eCOST.Material] = -7;
 develArray[eDEVEL.SteadyVessel].requirement = [];

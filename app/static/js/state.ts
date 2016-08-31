@@ -114,9 +114,20 @@ function selDevel() {
 
 }
 
+// Prepare the logic/visuals for development purchasing
+function buySetup() {
+	glbSideBar.removeBar();
+	glbSideBar = new BuyBar();
+	glbSideBar.formBar();
+	glbState = buy;
+}
+
 // Player chooses new developments to purchase
 function buy() {
 
+	// Hover event handling
+	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
+	else { glbSideBar.hoverOverBar(); }
 }
 
 // Set up the graphical/logical backing for the building state

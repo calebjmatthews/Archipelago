@@ -23,6 +23,10 @@ var glbEditBarSel = null;
 var glbBuildSel = null;
 var glbTileSelArray = [];
 var glbSideBar = null;
+// Set global button constants
+var glbBPadding = 3;
+var glbBWidth = 160;
+var glbBHeight = 30;
 // Initiate visual effect variables
 var glbPulseArray = [];
 // Enumerates the convention of how hex direction is ordered within this program
@@ -83,7 +87,7 @@ var eDEVEL;
     eDEVEL[eDEVEL["BaseCamp"] = 3] = "BaseCamp";
     eDEVEL[eDEVEL["FireCrew"] = 4] = "FireCrew";
     eDEVEL[eDEVEL["LaborPort"] = 5] = "LaborPort";
-    eDEVEL[eDEVEL["SeasSideParade"] = 6] = "SeasSideParade";
+    eDEVEL[eDEVEL["SeaSideParade"] = 6] = "SeaSideParade";
     eDEVEL[eDEVEL["TradeHarbor"] = 7] = "TradeHarbor";
     eDEVEL[eDEVEL["AuctionHouse"] = 8] = "AuctionHouse";
     eDEVEL[eDEVEL["EnvoyHarbor"] = 9] = "EnvoyHarbor";
@@ -819,10 +823,10 @@ var Land = (function () {
                 tDev++;
             }
             else {
-                var randClr = Math.floor(Math.random() * 4) + 1;
-                this.devSelection.push(this.getClrDev(randClr));
+                this.devSelection.push(this.getClrDev(null));
             }
         }
+        this.devSelection.sort(function (a, b) { return (a - b); });
     };
     return Land;
 }());
@@ -947,16 +951,16 @@ develArray[eDEVEL.LaborPort].requirement = [];
 develArray[eDEVEL.LaborPort].requirement[eREQ.Treasure] = -1;
 develArray[eDEVEL.LaborPort].result = [];
 develArray[eDEVEL.LaborPort].result[eRES.Active] = 3;
-develArray[eDEVEL.SeasSideParade] = new Development(eDEVEL.SeasSideParade, ["seassideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], ("Requires: -1 Material; Result: For the rest of the month, all Blue developments " +
+develArray[eDEVEL.SeaSideParade] = new Development(eDEVEL.SeaSideParade, ["seasideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], ("Requires: -1 Material; Result: For the rest of the month, all Blue developments " +
     "give an additional +1 Treasure"));
-develArray[eDEVEL.SeasSideParade].cost = [];
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Food] = -2;
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Material] = -2;
-develArray[eDEVEL.SeasSideParade].cost[eCOST.Treasure] = -2;
-develArray[eDEVEL.SeasSideParade].requirement = [];
-develArray[eDEVEL.SeasSideParade].requirement[eREQ.Material] = -1;
-develArray[eDEVEL.SeasSideParade].result = [];
-develArray[eDEVEL.SeasSideParade].result[eRES.BlueTreasure] = 1;
+develArray[eDEVEL.SeaSideParade].cost = [];
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Food] = -2;
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Material] = -2;
+develArray[eDEVEL.SeaSideParade].cost[eCOST.Treasure] = -2;
+develArray[eDEVEL.SeaSideParade].requirement = [];
+develArray[eDEVEL.SeaSideParade].requirement[eREQ.Material] = -1;
+develArray[eDEVEL.SeaSideParade].result = [];
+develArray[eDEVEL.SeaSideParade].result[eRES.BlueTreasure] = 1;
 develArray[eDEVEL.TradeHarbor] = new Development(eDEVEL.TradeHarbor, ["tradeharbor.png"], "Trade Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: -1 Food, -1 Material; Result: +1 Treasure"));
 develArray[eDEVEL.TradeHarbor].cost = [];
 develArray[eDEVEL.TradeHarbor].cost[eCOST.Material] = -2;
@@ -965,7 +969,7 @@ develArray[eDEVEL.TradeHarbor].requirement[eREQ.Food] = -1;
 develArray[eDEVEL.TradeHarbor].requirement[eREQ.Material] = -1;
 develArray[eDEVEL.TradeHarbor].result = [];
 develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
-develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["actionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: -1 Treasure; Result: +2 Treasure"));
+develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: -1 Treasure; Result: +2 Treasure"));
 develArray[eDEVEL.AuctionHouse].cost = [];
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = -3;
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Treasure] = -1;
@@ -1015,7 +1019,7 @@ develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = -2;
 develArray[eDEVEL.PeachOrchard].requirement = [];
 develArray[eDEVEL.PeachOrchard].result = [];
 develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
-develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["bamboocutters.png"], "Bamboo Cutters", eDCLR.Orange, [eLSCP.Forested], ("Result: +1 Material"));
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Forested], ("Result: +1 Material"));
 develArray[eDEVEL.Woodcutters].cost = [];
 develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = -1;
 develArray[eDEVEL.Woodcutters].requirement = [];
@@ -1088,7 +1092,7 @@ develArray[eDEVEL.Town].requirement = [];
 develArray[eDEVEL.Town].requirement[eREQ.Food] = -2;
 develArray[eDEVEL.Town].result = [];
 develArray[eDEVEL.Town].result[eRES.Active] = 3;
-develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, null, ("Requires: Destroy 1 Blue Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Blue Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = -2;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = -1;
@@ -1096,7 +1100,7 @@ develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 1;
 develArray[eDEVEL.MerchantShip].requirement = [];
 develArray[eDEVEL.MerchantShip].result = [];
 develArray[eDEVEL.MerchantShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, null, ("Requires: Destroy 1 Green Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Green Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = -4;
 develArray[eDEVEL.VentureShip].cost[eCOST.Material] = -1;
@@ -1104,28 +1108,28 @@ develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 1;
 develArray[eDEVEL.VentureShip].requirement = [];
 develArray[eDEVEL.VentureShip].result = [];
 develArray[eDEVEL.VentureShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, null, ("Requires: Destroy 1 Orange Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Orange Development to build this; Result: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = -4;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.DestroyOrange] = 1;
 develArray[eDEVEL.WorkmanShip].requirement = [];
 develArray[eDEVEL.WorkmanShip].result = [];
 develArray[eDEVEL.WorkmanShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel, ["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel, ["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
 develArray[eDEVEL.OpulentVessel].cost = [];
 develArray[eDEVEL.OpulentVessel].cost[eCOST.Treasure] = -3;
 develArray[eDEVEL.OpulentVessel].cost[eCOST.Material] = -2;
 develArray[eDEVEL.OpulentVessel].requirement = [];
 develArray[eDEVEL.OpulentVessel].result = [];
 develArray[eDEVEL.OpulentVessel].result[eRES.Ship] = 1;
-develArray[eDEVEL.AbundantVessel] = new Development(eDEVEL.AbundantVessel, ["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+develArray[eDEVEL.AbundantVessel] = new Development(eDEVEL.AbundantVessel, ["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
 develArray[eDEVEL.AbundantVessel].cost = [];
 develArray[eDEVEL.AbundantVessel].cost[eCOST.Food] = -6;
 develArray[eDEVEL.AbundantVessel].cost[eCOST.Material] = -2;
 develArray[eDEVEL.AbundantVessel].requirement = [];
 develArray[eDEVEL.AbundantVessel].result = [];
 develArray[eDEVEL.AbundantVessel].result[eRES.Ship] = 1;
-develArray[eDEVEL.SteadyVessel] = new Development(eDEVEL.SteadyVessel, ["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, null, ("Result: +1 Ship"));
+develArray[eDEVEL.SteadyVessel] = new Development(eDEVEL.SteadyVessel, ["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
 develArray[eDEVEL.SteadyVessel].cost = [];
 develArray[eDEVEL.SteadyVessel].cost[eCOST.Material] = -7;
 develArray[eDEVEL.SteadyVessel].requirement = [];
@@ -1353,15 +1357,15 @@ var ActionBar = (function (_super) {
         var xPos = 0;
         var yPos = 0;
         if ((activeSpot % 3) === 0) {
+            xPos = 100 - glbHWidth - (glbHWidth / 2);
+            yPos = 110 - glbHHeight - (glbHWidth / 2) +
+                ((((activeSpot) * 1.3) / 3) * glbHHeight);
+        }
+        else if (((activeSpot - 1) % 3) === 0) {
             xPos = 100 - (glbHWidth / 2);
             // Y positioning uses hex width in order to create an even margin on  both 
             //  top and sides
-            yPos = (glbHWidth / 2) + (((activeSpot * 1.3) / 3) * glbHHeight);
-        }
-        else if (((activeSpot - 1) % 3) === 0) {
-            xPos = 100 - glbHWidth - (glbHWidth / 2);
-            yPos = 110 - glbHHeight - (glbHWidth / 2) +
-                ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
+            yPos = (glbHWidth / 2) + ((((activeSpot - 1) * 1.3) / 3) * glbHHeight);
         }
         else if (((activeSpot - 2) % 3) === 0) {
             xPos = 100 + (glbHWidth / 2);
@@ -1474,6 +1478,7 @@ var ActionBar = (function (_super) {
                     applyDevEffect(currPlayer.hand[cButton]);
                 }
                 else if (cButton === currPlayer.hand.length) {
+                    glbState = buySetup;
                 }
                 else if (cButton === (currPlayer.hand.length + 1)) {
                 }
@@ -1486,12 +1491,11 @@ var ActionBar = (function (_super) {
     return ActionBar;
 }(SideBar));
 /// <reference path="references.ts" />
-// Set global button constants
-var glbBPadding = 3;
-var glbBWidth = 160;
-var glbBHeight = 30;
 var ArcButton = (function () {
     function ArcButton(setType, setId, setOtherName, setOrigin) {
+        // Set the height and width of the button to the defaults
+        this.bWidth = glbBWidth;
+        this.bHeight = glbBHeight;
         // What the button represents, e.g. landscape, development, or other
         this.type = null;
         // This id links the button to another element, e.g. for a development-type button
@@ -1520,18 +1524,18 @@ var ArcButton = (function () {
         this.bounds[3] = [];
         this.bounds[0] = [(setOrigin[0] - glbBPadding),
             (setOrigin[1] - glbBPadding)];
-        this.bounds[1] = [(setOrigin[0] + glbBWidth + glbBPadding),
+        this.bounds[1] = [(setOrigin[0] + this.bWidth + glbBPadding),
             (setOrigin[1] - glbBPadding)];
-        this.bounds[2] = [(setOrigin[0] + glbBWidth + glbBPadding),
-            (setOrigin[1] + glbBHeight + glbBPadding)];
+        this.bounds[2] = [(setOrigin[0] + this.bWidth + glbBPadding),
+            (setOrigin[1] + this.bHeight + glbBPadding)];
         this.bounds[3] = [(setOrigin[0] - glbBPadding),
-            (setOrigin[1] + glbBHeight + glbBPadding)];
+            (setOrigin[1] + this.bHeight + glbBPadding)];
     };
     ArcButton.prototype.displayButton = function () {
         // Initially invisible background for hovering/selecting effects
         this.sprBg = new Graphics();
         this.sprBg.beginFill(0xFFFFFF);
-        this.sprBg.drawRect(0, 0, (glbBWidth + (glbBPadding * 2)), (glbBHeight + (glbBPadding * 2)));
+        this.sprBg.drawRect(0, 0, (this.bWidth + (glbBPadding * 2)), (this.bHeight + (glbBPadding * 2)));
         this.sprBg.endFill();
         this.sprBg.x = this.bounds[0][0];
         this.sprBg.y = this.bounds[0][1];
@@ -2105,7 +2109,95 @@ function afterEffect(tileID) {
     updatePlayerBar();
     currPlayer.removeCard(tileID);
     glbSideBar.formBar();
+    // If last action is used, allow the program to proceed
 }
+/// <reference path="references.ts" />
+var BuyBar = (function (_super) {
+    __extends(BuyBar, _super);
+    function BuyBar() {
+        _super.apply(this, arguments);
+        this.buttonArray = [];
+    }
+    BuyBar.prototype.formBar = function () {
+        // The edit bar's origin for button placement
+        var oriB = [renderer.width - 180, 20];
+        // Edit bar has the buttons for each landscape, each black development, and the
+        //  "Randomize" and "Finish" buttons
+        for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
+            if (cButton < currLand.devSelection.length) {
+                this.buttonArray[cButton] = new BuyButton("choice", currLand.devSelection[cButton], null, [oriB[0], (oriB[1] + (cButton * 55))]);
+                this.buttonArray[cButton].displayChoice();
+            }
+            else if (cButton === currLand.devSelection.length) {
+                this.buttonArray[cButton] = new BuyButton("other", null, "Back", [oriB[0], (renderer.height - 50)]);
+                this.buttonArray[cButton].displayButton();
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+            }
+        }
+    };
+    BuyBar.prototype.removeBar = function () {
+        for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
+            if (cButton < currLand.devSelection.length) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
+                stage.removeChild(this.buttonArray[cButton].sprSecond);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else if (cButton === currLand.devSelection.length) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+                break;
+            }
+        }
+        this.buttonArray = [];
+    };
+    BuyBar.prototype.clickBar = function () {
+        if (currDescCard != null) {
+            currDescCard.selfDestruct();
+        }
+        for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                // Landscape / Development buttons
+                if (cButton < currLand.devSelection.length) {
+                }
+                else if (cButton === currLand.devSelection.length) {
+                }
+                else {
+                    console.log("Unexpected edit bar value.");
+                }
+            }
+        }
+    };
+    return BuyBar;
+}(SideBar));
+/// <reference path="references.ts" />
+var BuyButton = (function (_super) {
+    __extends(BuyButton, _super);
+    function BuyButton(setType, setId, setOtherName, setOrigin) {
+        _super.call(this, setType, setId, setOtherName, setOrigin);
+        this.bHeight = glbBHeight * 1.5;
+        this.formStandardBounds(setOrigin);
+    }
+    BuyButton.prototype.displayChoice = function () {
+        this.displayButton();
+        this.displayDevButton();
+        var tDev = develArray[this.id];
+        var shrinkValue = 0;
+        if (tDev.name.length > 10) {
+            shrinkValue = Math.round((tDev.name.length - 9) / 2);
+            this.txtLabel.style.font = (15 - shrinkValue) + "px sans-serif";
+        }
+        else {
+            this.txtLabel.style.font = "15px sans-serif";
+        }
+    };
+    return BuyButton;
+}(ArcButton));
 /// <reference path="global.ts" />
 /// <reference path="tile.ts" />
 /// <reference path="player.ts" />
@@ -2123,6 +2215,8 @@ function afterEffect(tileID) {
 /// <reference path="description.ts" />
 /// <reference path="effect.ts" />
 /// <reference path="action-effect.ts" />
+/// <reference path="buy-bar.ts" />
+/// <reference path="buy-button.ts" />
 /// <reference path="state.ts" /> 
 /// <reference path="references.ts" />
 function onImageLoad() {
@@ -2228,8 +2322,22 @@ function active() {
 // Choosing a development as a target for a development's effect
 function selDevel() {
 }
+// Prepare the logic/visuals for development purchasing
+function buySetup() {
+    glbSideBar.removeBar();
+    glbSideBar = new BuyBar();
+    glbSideBar.formBar();
+    glbState = buy;
+}
 // Player chooses new developments to purchase
 function buy() {
+    // Hover event handling
+    if (pointer.x < (renderer.width - 200)) {
+        hoverTile([pointer.x, pointer.y]);
+    }
+    else {
+        glbSideBar.hoverOverBar();
+    }
 }
 // Set up the graphical/logical backing for the building state
 function buildSetup() {

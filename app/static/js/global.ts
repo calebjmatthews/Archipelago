@@ -20,6 +20,11 @@ var glbBuildSel = null;
 var glbTileSelArray = [];
 var glbSideBar = null;
 
+// Set global button constants
+let glbBPadding = 3;
+let glbBWidth = 160;
+let glbBHeight = 30;
+
 // Initiate visual effect variables
 var glbPulseArray = [];
 
@@ -39,7 +44,7 @@ enum eCLIMATE { Grassy, Forested, Rocky, Desert, Varied, Jungle, Wet, Mountain }
 enum eLSCP { Grassy, Forested, Rocky, Desert, Sea, Shore }
 
 // Enumerates options for developments
-enum eDEVEL { Jungle, Freshwater, Cave, BaseCamp, FireCrew, LaborPort, SeasSideParade, 
+enum eDEVEL { Jungle, Freshwater, Cave, BaseCamp, FireCrew, LaborPort, SeaSideParade, 
 	TradeHarbor, AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, 
 	SmokeHouse, PeachOrchard, Woodcutters, SilverMine, StoneQuarry, CharcoalFurnace, 
 	CobaltMine, WorkerVillage, TeaHouse, Demolition, ShepherdVillage, Town, 

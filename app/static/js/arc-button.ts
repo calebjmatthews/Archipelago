@@ -1,11 +1,9 @@
 /// <reference path="references.ts" />
 
-// Set global button constants
-let glbBPadding = 3;
-let glbBWidth = 160;
-let glbBHeight = 30;
-
 class ArcButton {
+	// Set the height and width of the button to the defaults
+	bWidth: number = glbBWidth;
+	bHeight: number = glbBHeight;
 	// What the button represents, e.g. landscape, development, or other
 	type: string = null;
 	// This id links the button to another element, e.g. for a development-type button
@@ -49,20 +47,20 @@ class ArcButton {
 
 		this.bounds[0] = [(setOrigin[0] - glbBPadding), 
 		                  (setOrigin[1] - glbBPadding)];
-		this.bounds[1] = [(setOrigin[0] + glbBWidth + glbBPadding), 
+		this.bounds[1] = [(setOrigin[0] + this.bWidth + glbBPadding), 
 		                  (setOrigin[1] - glbBPadding)];
-		this.bounds[2] = [(setOrigin[0] + glbBWidth + glbBPadding), 
-		                  (setOrigin[1] + glbBHeight + glbBPadding)];
+		this.bounds[2] = [(setOrigin[0] + this.bWidth + glbBPadding), 
+		                  (setOrigin[1] + this.bHeight + glbBPadding)];
 		this.bounds[3] = [(setOrigin[0] - glbBPadding), 
-		                  (setOrigin[1] + glbBHeight + glbBPadding)];
+		                  (setOrigin[1] + this.bHeight + glbBPadding)];
 	}
 
 	displayButton() {
 		// Initially invisible background for hovering/selecting effects
 		this.sprBg = new Graphics();
 		this.sprBg.beginFill(0xFFFFFF);
-		this.sprBg.drawRect(0, 0, (glbBWidth + (glbBPadding*2)), 
-			                        (glbBHeight+ (glbBPadding*2)));
+		this.sprBg.drawRect(0, 0, (this.bWidth + (glbBPadding*2)), 
+			                        (this.bHeight+ (glbBPadding*2)));
 		this.sprBg.endFill();
 		this.sprBg.x = this.bounds[0][0];
 		this.sprBg.y = this.bounds[0][1];

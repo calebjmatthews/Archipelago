@@ -387,9 +387,9 @@ class Land {
 				tDev++;
 			}
 			else {
-				let randClr = Math.floor(Math.random() * 4) + 1;
-				this.devSelection.push(this.getClrDev(randClr));
+				this.devSelection.push(this.getClrDev(null));
 			}
 		}
+		this.devSelection.sort(function(a, b) { return (a - b); });
 	}
 }

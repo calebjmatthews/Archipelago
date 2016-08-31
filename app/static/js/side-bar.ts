@@ -27,4 +27,15 @@ class SideBar {
 			}
 		}
 	}
+
+	checkBarExcess() {
+		let barMax = this.buttonArray.length * (this.buttonArray[0].bHeight + 10);
+		let overflowRatio = Math.ceil((renderer.height - 80) / barMax);
+		if (overflowRatio < 1) { return 0; }
+		else { return overflowRatio; }
+	}
+
+	formPageButtons() {
+
+	}
 }

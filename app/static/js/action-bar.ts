@@ -18,15 +18,15 @@ class ActionBar extends SideBar {
 		let xPos = 0;
 		let yPos = 0;
 		if ((activeSpot % 3) === 0) {
+			xPos = 100 - glbHWidth - (glbHWidth/2);
+			yPos = 110 - glbHHeight - (glbHWidth / 2) + 
+				((((activeSpot)*1.3)/3) * glbHHeight);
+		}
+		else if (((activeSpot-1) % 3) === 0) {
 			xPos = 100 - (glbHWidth / 2);
 			// Y positioning uses hex width in order to create an even margin on  both 
 			//  top and sides
-			yPos = (glbHWidth / 2) + (((activeSpot*1.3)/3) * glbHHeight);
-		}
-		else if (((activeSpot-1) % 3) === 0) {
-			xPos = 100 - glbHWidth - (glbHWidth/2);
-			yPos = 110 - glbHHeight - (glbHWidth / 2) + 
-				((((activeSpot-1)*1.3)/3) * glbHHeight);
+			yPos = (glbHWidth / 2) + ((((activeSpot-1)*1.3)/3) * glbHHeight);
 		}
 		else if (((activeSpot-2) % 3) === 0) {
 			xPos = 100 + (glbHWidth/2);
@@ -152,7 +152,7 @@ class ActionBar extends SideBar {
 
 				// Build button
 				else if (cButton === currPlayer.hand.length) {
-					
+					glbState = buySetup;
 				}
 
 				// Pass button
