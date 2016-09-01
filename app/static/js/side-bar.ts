@@ -25,7 +25,8 @@ class SideBar {
 
 	hoverOverBar() {
 		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
-			if (this.buttonArray[cButton].nPage === this.cPage) {
+			if ((this.buttonArray[cButton].nPage === this.cPage) || 
+					(this.buttonArray[cButton].type === "other")) {
 				if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 					this.buttonArray[cButton].sprBg.alpha = 0.6;
 				}
@@ -76,12 +77,12 @@ class SideBar {
 				((cButton+1)/(this.buttonArray.length-2)) / displayRatio);
 			// Set the side bar's number of pages to the page of the final element
 			if (cButton === this.buttonArray.length - 3) {
-				this.nPages = this.buttonArray[cButton].nPage;
+				this.nPages = this.buttonArray[cButton].nPage + 1;
 			}
 		}
 	}
 
-	clickBar() {
+	baseClickBar() {
 		if (currDescCard != null) { currDescCard.selfDestruct(); }
 
 		if (this.nPages > 1) { // If the page up/down buttons exist
@@ -90,7 +91,8 @@ class SideBar {
 						withinButton([pointer.x, pointer.y])) && 
 					(this.cPage > 0)) {
 				this.cPage--;
-				this.displayBar();
+				this.removeMain();
+				this.formMain();
 			}
 
 			// Down button
@@ -98,11 +100,13 @@ class SideBar {
 								withinButton([pointer.x, pointer.y])) &&
 							 (this.cPage < this.nPages)) {
 				this.cPage++;
-				this.displayBar();
+				this.removeMain();
+				this.formMain();
 			}
 		}
 	}
 
-	// Empty function allows clickBar() to call the child class's displayBar() method
+	// Empty function allows the parent to call the child class's method
 	displayBar() { }
+	removeMain() { }
 }

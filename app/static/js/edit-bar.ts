@@ -81,6 +81,7 @@ class EditBar extends SideBar {
 	}
 
 	clickBar() {
+		this.baseClickBar();
 		let actionTaken = false;
 		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {

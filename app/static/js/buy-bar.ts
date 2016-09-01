@@ -36,7 +36,7 @@ class BuyBar extends SideBar {
 		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
 			if ((cButton < currLand.devSelection.length) && 
 				  (this.buttonArray[cButton].nPage === this.cPage)) {
-				let displaySpot = cButton - this.slotsAvailable;
+				let displaySpot = cButton - (this.cPage * this.slotsAvailable);
 				this.buttonArray[cButton].displayChoice(
 					[this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
 			}
@@ -67,7 +67,23 @@ class BuyBar extends SideBar {
 		this.buttonArray = [];
 	}
 
+	removeMain() {
+		for (let cButton=0; cButton < (currLand.devSelection.length); cButton++) {
+			if (cButton < currLand.devSelection.length) {
+				stage.removeChild(this.buttonArray[cButton].sprBg);
+				stage.removeChild(this.buttonArray[cButton].sprFirst);
+				stage.removeChild(this.buttonArray[cButton].sprSecond);
+				stage.removeChild(this.buttonArray[cButton].txtLabel);
+			}
+			else {
+				console.log("Error, unexpected menu button value.");
+				break;
+			}
+		}
+	}
+
 	clickBar() {
+		this.baseClickBar();
 		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 

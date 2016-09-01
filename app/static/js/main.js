@@ -1245,7 +1245,8 @@ var SideBar = (function () {
     };
     SideBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
-            if (this.buttonArray[cButton].nPage === this.cPage) {
+            if ((this.buttonArray[cButton].nPage === this.cPage) ||
+                (this.buttonArray[cButton].type === "other")) {
                 if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                     this.buttonArray[cButton].sprBg.alpha = 0.6;
                 }
@@ -1293,32 +1294,35 @@ var SideBar = (function () {
             this.buttonArray[cButton].nPage = Math.floor(((cButton + 1) / (this.buttonArray.length - 2)) / displayRatio);
             // Set the side bar's number of pages to the page of the final element
             if (cButton === this.buttonArray.length - 3) {
-                this.nPages = this.buttonArray[cButton].nPage;
+                this.nPages = this.buttonArray[cButton].nPage + 1;
             }
         }
     };
-    SideBar.prototype.clickBar = function () {
+    SideBar.prototype.baseClickBar = function () {
         if (currDescCard != null) {
             currDescCard.selfDestruct();
         }
-        if (this.slotsAvailable != null) {
+        if (this.nPages > 1) {
             // Up button
             if ((this.buttonArray[this.buttonArray.length - 2].
                 withinButton([pointer.x, pointer.y])) &&
                 (this.cPage > 0)) {
                 this.cPage--;
+                this.removeMain();
                 this.displayBar();
             }
             else if ((this.buttonArray[this.buttonArray.length - 1].
                 withinButton([pointer.x, pointer.y])) &&
                 (this.cPage < this.nPages)) {
                 this.cPage++;
+                this.removeMain();
                 this.displayBar();
             }
         }
     };
-    // Empty function allows clickBar() to call the child class's displayBar() method
+    // Empty function allows the parent to call the child class's method
     SideBar.prototype.displayBar = function () { };
+    SideBar.prototype.removeMain = function () { };
     return SideBar;
 }());
 /// <reference path="references.ts" />
@@ -1396,6 +1400,7 @@ var EditBar = (function (_super) {
         this.buttonArray = [];
     };
     EditBar.prototype.clickBar = function () {
+        this.baseClickBar();
         var actionTaken = false;
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
@@ -1560,6 +1565,7 @@ var ActionBar = (function (_super) {
         }
     };
     ActionBar.prototype.clickBar = function () {
+        this.baseClickBar();
         for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Development buttons
@@ -2242,7 +2248,7 @@ var BuyBar = (function (_super) {
         for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
             if ((cButton < currLand.devSelection.length) &&
                 (this.buttonArray[cButton].nPage === this.cPage)) {
-                var displaySpot = cButton - this.slotsAvailable;
+                var displaySpot = cButton - (this.cPage * this.slotsAvailable);
                 this.buttonArray[cButton].displayChoice([this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
             }
             else if (cButton === currLand.devSelection.length) {
@@ -2270,7 +2276,22 @@ var BuyBar = (function (_super) {
         }
         this.buttonArray = [];
     };
+    BuyBar.prototype.removeMain = function () {
+        for (var cButton = 0; cButton < (currLand.devSelection.length); cButton++) {
+            if (cButton < currLand.devSelection.length) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].sprFirst);
+                stage.removeChild(this.buttonArray[cButton].sprSecond);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+                break;
+            }
+        }
+    };
     BuyBar.prototype.clickBar = function () {
+        this.baseClickBar();
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Landscape / Development buttons

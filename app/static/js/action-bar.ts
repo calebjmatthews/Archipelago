@@ -143,6 +143,7 @@ class ActionBar extends SideBar {
 	}
 
 	clickBar() {
+		this.baseClickBar();
 		for (let cButton = 0; 
 				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
