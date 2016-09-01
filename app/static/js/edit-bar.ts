@@ -2,32 +2,55 @@
 
 class EditBar extends SideBar {
 
+	constructor() {
+		// Blank super call, as SideBar doesn't have a constructor
+		super();
+		this.btmHeight = 80;
+	}
+
 	formBar() {
-		// The edit bar's origin for button placement
-		let oriB = [renderer.width - 180, 20]; 
 		// Edit bar has the buttons for each landscape, each black development, and the
 		//  "Randomize" and "Finish" buttons
 		for (let cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
 			if (cButton < glbNumLscps) {
-				this.buttonArray[cButton] = new ArcButton("landscape", cButton, null, 
-					[oriB[0], (oriB[1] + (cButton * 40))]);
+				this.buttonArray[cButton] = new ArcButton("landscape", cButton, null);
 			}
 			else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
-				this.buttonArray[cButton] = new ArcButton("development", (cButton - glbNumLscps), 
-					null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+				this.buttonArray[cButton] = new ArcButton("development", 
+					(cButton - glbNumLscps), null);
 			}
 			else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
-				this.buttonArray[cButton] = new ArcButton("other", null, "Randomize", 
-					[oriB[0], (renderer.height - 90)]);
+				this.buttonArray[cButton] = new ArcButton("other", null, "Randomize");
 			}
 			else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
-				this.buttonArray[cButton] = new ArcButton("other", null, "Finish", 
-					[oriB[0], (renderer.height - 50)]);
+				this.buttonArray[cButton] = new ArcButton("other", null, "Finish");
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
 			}
-			this.buttonArray[cButton].displayButton();
+		}
+		this.displayBar();
+	}
+
+	displayBar() {
+		for (let cButton=0; cButton < (glbNumLscps+glbNumBlkDevels+2); cButton++) {
+			if (cButton < glbNumLscps) {
+				this.buttonArray[cButton].displayButton(
+					[this.oriB[0], (this.oriB[1] + (cButton * 40))]);
+			}
+			else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+				this.buttonArray[cButton].displayButton(
+					[this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
+			}
+			else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+				this.buttonArray[cButton].displayButton([this.oriB[0], (renderer.height - 90)]);
+			}
+			else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+				this.buttonArray[cButton].displayButton([this.oriB[0], (renderer.height - 50)]);
+			}
+			else {
+				console.log("Error, unexpected menu button value.");
+			}
 		}
 	}
 
@@ -58,8 +81,6 @@ class EditBar extends SideBar {
 	}
 
 	clickBar() {
-		if (currDescCard != null) { currDescCard.selfDestruct(); }
-
 		let actionTaken = false;
 		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {

@@ -7,6 +7,7 @@ class ActionBar extends SideBar {
 	constructor() {
 		// Blank super call, as SideBar doesn't have a constructor
 		super();
+		this.btmHeight = 100;
 		if (currPlayer.hand.length < 3) {
 			this.numActives = 3;
 		}
@@ -45,8 +46,6 @@ class ActionBar extends SideBar {
 	}
 
 	formBar() {
-		// The edit bar's origin for button placement
-		let oriB = [renderer.width - 180, 20]; 
 		// The action bar has buttons for each development in the player's hand, as well as
 		//  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
 		//  least three) at the bottom.
@@ -54,39 +53,44 @@ class ActionBar extends SideBar {
 				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
 			if (cButton < currPlayer.hand.length) {
 				this.buttonArray[cButton] = new ActionButton("development", 
-					(currLand.tileArray[currPlayer.hand[cButton]].development), null, 
-					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+					(currLand.tileArray[currPlayer.hand[cButton]].development), null);
 			}
 			else if (cButton === (currPlayer.hand.length)) {
-				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build", 
-					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build");
 			}
 			else if (cButton === (currPlayer.hand.length + 1)) {
-				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass", 
-					[oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass");
 			}
 			else if (cButton === (currPlayer.hand.length + 2)) {
-				this.buttonArray[cButton] = new ActionButton("counter", null, "Actions", 
-					[oriB[0], (oriB[1] + 425)]);
+				this.buttonArray[cButton] = new ActionButton("counter", null, "Actions");
 			}
 			else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
 				this.buttonArray[cButton] = new ActionButton("active", 
-					(cButton - (currPlayer.hand.length + 3)), null, 
-					this.getActivePos(cButton - (currPlayer.hand.length + 3)));
+					(cButton - (currPlayer.hand.length + 3)), null);
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
 			}
+		}
+		this.displayBar();
+	}
+
+	displayBar() {
+		for (let cButton=0; 
+				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
 			if (this.buttonArray[cButton].type === "active") {
-				this.buttonArray[cButton].displayActiveSlot();
+				this.buttonArray[cButton].displayActiveSlot(
+					this.getActivePos(cButton - (currPlayer.hand.length + 3)));
 			}
 			else if (this.buttonArray[cButton].type === "otherAction") {
-				this.buttonArray[cButton].displayOtherAction();
+				this.buttonArray[cButton].displayOtherAction(
+					[this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
 			}
 			else if (this.buttonArray[cButton].type === "counter") {
-				this.buttonArray[cButton].displayCounter();
+				this.buttonArray[cButton].displayCounter([this.oriB[0], (this.oriB[1] + 425)]);
 			}
-			else { this.buttonArray[cButton].displayButton(); }
+			else { this.buttonArray[cButton].displayButton(
+				[this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]); }
 		}
 	}
 
@@ -139,8 +143,6 @@ class ActionBar extends SideBar {
 	}
 
 	clickBar() {
-		if (currDescCard != null) { currDescCard.selfDestruct(); }
-
 		for (let cButton = 0; 
 				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {

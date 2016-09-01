@@ -4,6 +4,8 @@ class ArcButton {
 	// Set the height and width of the button to the defaults
 	bWidth: number = glbBWidth;
 	bHeight: number = glbBHeight;
+	// Which navitagional page the button belongs to
+	nPage: number = 0;
 	// What the button represents, e.g. landscape, development, or other
 	type: string = null;
 	// This id links the button to another element, e.g. for a development-type button
@@ -24,26 +26,15 @@ class ArcButton {
 	// The button's text label
 	txtLabel: Text;
 
-	constructor(setType: string, setId: number, setOtherName: string, 
-			setOrigin: number[]) {
+	constructor(setType: string, setId: number, setOtherName: string) {
 		this.type = setType;
 		this.id = setId;
 		this.otherName = setOtherName;
-
-		// Set bounds based on what type of button is being created
-		if ((this.type === "landscape") || (this.type === "development") || 
-			  (this.type === "other")) {
-			this.formStandardBounds(setOrigin);
-		}
-
 	}
 
 	formStandardBounds(setOrigin: number[]) {
 		// Initialize the four empty points that describe the button's boundaries
-		this.bounds[0] = [];
-		this.bounds[1] = [];
-		this.bounds[2] = [];
-		this.bounds[3] = [];
+		this.bounds[0] = []; this.bounds[1] = []; this.bounds[2] = []; this.bounds[3] = [];
 
 		this.bounds[0] = [(setOrigin[0] - glbBPadding), 
 		                  (setOrigin[1] - glbBPadding)];
@@ -55,7 +46,9 @@ class ArcButton {
 		                  (setOrigin[1] + this.bHeight + glbBPadding)];
 	}
 
-	displayButton() {
+	displayButton(setOrigin: number[]) {
+		this.formStandardBounds(setOrigin);
+
 		// Initially invisible background for hovering/selecting effects
 		this.sprBg = new Graphics();
 		this.sprBg.beginFill(0xFFFFFF);
@@ -69,6 +62,7 @@ class ArcButton {
 
 		if (this.type === "landscape") { this.displayLscpButton(); }
 		else if (this.type === "development") { this.displayDevButton(); }
+		else if (this.type === "page") { this.displayPageButton(); }
 		else if (this.type === "other") {
 			this.displayTextLayer(this.otherName, 
 				[(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
@@ -112,8 +106,23 @@ class ArcButton {
 		stage.addChild(this.sprSecond);
 	}
 
+	displayPageButton() {
+		this.sprFirst = null;
+		if (this.id === 0) {
+			this.sprFirst = new Sprite(sprMed["uparrow.png"]);
+		}
+		else if (this.id === 1) {
+			this.sprFirst = new Sprite(sprMed["downarrow.png"]);
+		}
+		
+		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
+			                         (this.bounds[0][1] + glbBPadding));
+		stage.addChild(this.sprFirst);
+	}
+
 	withinButton(givenPoint: number[]) {
-		if ((givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) && 
+		if ((this.nPage === glbSideBar.cPage) &&
+				(givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) && 
 			  (givenPoint[1] > this.bounds[0][1]) && (givenPoint[1] < this.bounds[2][1])) {
 			return true;
 		}

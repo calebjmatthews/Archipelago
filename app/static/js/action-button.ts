@@ -2,13 +2,6 @@
 
 class ActionButton extends ArcButton {
 
-	constructor(setType: string, setId: number, setOtherName: string, 
-			setOrigin: number[]) {
-		super(setType, setId, setOtherName, setOrigin);
-		if (this.type === "active") { this.formHexBounds(setOrigin); }
-		else { this.formStandardBounds(setOrigin); }
-	}
-
 	formHexBounds(setOrigin: number[]) {
 		this.bounds[0] = [];
 		this.bounds[1] = [];
@@ -21,9 +14,9 @@ class ActionButton extends ArcButton {
 		this.bounds[3] = [setOrigin[0], (setOrigin[1] + glbHHeight)];
 	}
 
-	displayOtherAction() {
+	displayOtherAction(setOrigin: number[]) {
 		// Display initially transparent background
-		this.displayButton();
+		this.displayButton(setOrigin);
 
 		// Display the black outline
 		this.sprFirst = new Sprite(sprMed["hex.png"]);
@@ -47,7 +40,8 @@ class ActionButton extends ArcButton {
 			[(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
 	}
 
-	displayCounter() {
+	displayCounter(setOrigin: number[]) {
+		this.bounds[0] = setOrigin;
 		let setText = ("Actions: " + currPlayer.actions + "/" + 
 			(currPlayer.actions + currPlayer.actionHistory.length));
 		this.txtLabel = new Text(setText, 
@@ -56,7 +50,8 @@ class ActionButton extends ArcButton {
 		stage.addChild(this.txtLabel);
 	}
 
-	displayActiveSlot() {
+	displayActiveSlot(setOrigin: number[]) {
+		this.formHexBounds(setOrigin);
 		// Display the white background
 		let randNum = Math.random()*3;
 		let whiteHexNum = "";

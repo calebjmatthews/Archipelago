@@ -1,15 +1,13 @@
 /// <reference path="references.ts" />
 
 class BuyButton extends ArcButton {
-	constructor(setType: string, setId: number, setOtherName: string, 
-			setOrigin: number[]) {
-		super(setType, setId, setOtherName, setOrigin);
+	constructor(setType: string, setId: number, setOtherName: string) {
+		super(setType, setId, setOtherName);
 		this.bHeight = glbBHeight*1.5;
-		this.formStandardBounds(setOrigin);
 	}
 
-	displayChoice() {
-		this.displayButton();
+	displayChoice(setOrigin: number[]) {
+		this.displayButton(setOrigin);
 		this.displayDevButton();
 		let tDev = develArray[this.id];
 		let shrinkValue = 0;

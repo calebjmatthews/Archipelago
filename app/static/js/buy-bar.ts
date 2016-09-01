@@ -3,25 +3,46 @@
 class BuyBar extends SideBar {
 	buttonArray: BuyButton[] = [];
 
+	constructor() {
+		// Blank super call, as SideBar doesn't have a constructor
+		super();
+		this.btmHeight = 40;
+	}
+
 	formBar() {
-		// The edit bar's origin for button placement
-		let oriB = [renderer.width - 180, 20]; 
 		// Edit bar has the buttons for each landscape, each black development, and the
 		//  "Randomize" and "Finish" buttons
 		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
 			if (cButton < currLand.devSelection.length) {
 				this.buttonArray[cButton] = new BuyButton("choice", 
-					currLand.devSelection[cButton], null, 
-					[oriB[0], (oriB[1] + (cButton * 55))]);
-				this.buttonArray[cButton].displayChoice();
+					currLand.devSelection[cButton], null);
 			}
 			else if (cButton === currLand.devSelection.length) {
-				this.buttonArray[cButton] = new BuyButton("other", null, "Back", 
-					[oriB[0], (renderer.height - 50)]);
-				this.buttonArray[cButton].displayButton();
+				this.buttonArray[cButton] = new BuyButton("other", null, "Back");
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
+			}
+		}
+
+		if (this.checkBarExcess() > 0) {
+			this.formPageButtons();
+			this.assignPageNumbers();
+		}
+		this.displayBar();
+	}
+
+	displayBar() {
+		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
+			if ((cButton < currLand.devSelection.length) && 
+				  (this.buttonArray[cButton].nPage === this.cPage)) {
+				let displaySpot = cButton - this.slotsAvailable;
+				this.buttonArray[cButton].displayChoice(
+					[this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
+			}
+			else if (cButton === currLand.devSelection.length) {
+				this.buttonArray[cButton].displayButton([
+					this.oriB[0], (renderer.height - 50)]);
 			}
 		}
 	}
@@ -47,8 +68,6 @@ class BuyBar extends SideBar {
 	}
 
 	clickBar() {
-		if (currDescCard != null) { currDescCard.selfDestruct(); }
-
 		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 

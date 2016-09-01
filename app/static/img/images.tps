@@ -201,6 +201,7 @@
             <key type="filename">cobaltmine.png</key>
             <key type="filename">demolition.png</key>
             <key type="filename">desert.png</key>
+            <key type="filename">downarrow.png</key>
             <key type="filename">envoyharbor.png</key>
             <key type="filename">firecrew.png</key>
             <key type="filename">forested.png</key>
@@ -238,6 +239,7 @@
             <key type="filename">tinyshore.png</key>
             <key type="filename">town.png</key>
             <key type="filename">tradeharbor.png</key>
+            <key type="filename">uparrow.png</key>
             <key type="filename">ventureship.png</key>
             <key type="filename">violetcard.png</key>
             <key type="filename">whitehex.png</key>
@@ -311,6 +313,8 @@
             <filename>tinyshore.png</filename>
             <filename>build.png</filename>
             <filename>pass.png</filename>
+            <filename>uparrow.png</filename>
+            <filename>downarrow.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

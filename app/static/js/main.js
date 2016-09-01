@@ -1223,6 +1223,15 @@ function paintLscp(clkTile) {
 var SideBar = (function () {
     function SideBar() {
         this.buttonArray = [];
+        // The current page state of the bar, in case of overflow
+        this.cPage = 0;
+        this.nPages = 1;
+        // The origin for placement of non-navigational buttons
+        this.oriB = [renderer.width - 180, 20];
+        // The pixel height of bottom-anchored elements that a given bar possesses
+        this.btmHeight = 0;
+        // The number of standard buttons that can fit in a bar's page, in case of overflow
+        this.slotsAvailable = null;
     }
     // Create the black background that exists for all sidebars
     SideBar.prototype.formBacking = function () {
@@ -1236,47 +1245,129 @@ var SideBar = (function () {
     };
     SideBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
-            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
-                this.buttonArray[cButton].sprBg.alpha = 0.6;
-            }
-            else if (glbEditBarSel === cButton) {
-                this.buttonArray[cButton].sprBg.alpha = 0.4;
-            }
-            else {
-                this.buttonArray[cButton].sprBg.alpha = 0;
+            if (this.buttonArray[cButton].nPage === this.cPage) {
+                if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                    this.buttonArray[cButton].sprBg.alpha = 0.6;
+                }
+                else if (glbEditBarSel === cButton) {
+                    this.buttonArray[cButton].sprBg.alpha = 0.4;
+                }
+                else {
+                    this.buttonArray[cButton].sprBg.alpha = 0;
+                }
             }
         }
     };
+    SideBar.prototype.checkBarExcess = function () {
+        var barMax = this.buttonArray.length * (this.buttonArray[0].bHeight + 10);
+        var overflowRatio = Math.ceil((renderer.height - this.btmHeight) / barMax);
+        if (overflowRatio < 1) {
+            return 0;
+        }
+        else {
+            return overflowRatio;
+        }
+    };
+    // The top and bottom page buttons will be the final members of the buttonArray
+    SideBar.prototype.formPageButtons = function () {
+        // Push the standard buttons down to allow room for top page button
+        this.oriB[1] += 40;
+        // Form top button
+        this.buttonArray[this.buttonArray.length] = new ArcButton("page", 0, null);
+        this.buttonArray[(this.buttonArray.length - 1)].bWidth = 140;
+        this.buttonArray[(this.buttonArray.length - 1)].bHeight = 20;
+        this.buttonArray[(this.buttonArray.length - 1)].displayButton([(renderer.width - 200 + 30), 20]);
+        // Form bottom button
+        this.buttonArray[this.buttonArray.length] = new ArcButton("page", 1, null);
+        this.buttonArray[(this.buttonArray.length - 1)].bWidth = 140;
+        this.buttonArray[(this.buttonArray.length - 1)].bHeight = 20;
+        this.buttonArray[(this.buttonArray.length - 1)].displayButton([(renderer.width - 200 + 30), (renderer.height - 50 - this.btmHeight)]);
+    };
+    SideBar.prototype.assignPageNumbers = function () {
+        var buttonFullHeight = this.buttonArray[0].bHeight + 10;
+        var barMax = this.buttonArray.length * (buttonFullHeight);
+        var spaceAvailable = renderer.height - 40 - this.btmHeight;
+        var displayRatio = (spaceAvailable / barMax);
+        this.slotsAvailable = (spaceAvailable / buttonFullHeight);
+        for (var cButton = 0; cButton < (this.buttonArray.length - 2); cButton++) {
+            this.buttonArray[cButton].nPage = Math.floor(((cButton + 1) / (this.buttonArray.length - 2)) / displayRatio);
+            // Set the side bar's number of pages to the page of the final element
+            if (cButton === this.buttonArray.length - 3) {
+                this.nPages = this.buttonArray[cButton].nPage;
+            }
+        }
+    };
+    SideBar.prototype.clickBar = function () {
+        if (currDescCard != null) {
+            currDescCard.selfDestruct();
+        }
+        if (this.slotsAvailable != null) {
+            // Up button
+            if ((this.buttonArray[this.buttonArray.length - 2].
+                withinButton([pointer.x, pointer.y])) &&
+                (this.cPage > 0)) {
+                this.cPage--;
+                this.displayBar();
+            }
+            else if ((this.buttonArray[this.buttonArray.length - 1].
+                withinButton([pointer.x, pointer.y])) &&
+                (this.cPage < this.nPages)) {
+                this.cPage++;
+                this.displayBar();
+            }
+        }
+    };
+    // Empty function allows clickBar() to call the child class's displayBar() method
+    SideBar.prototype.displayBar = function () { };
     return SideBar;
 }());
 /// <reference path="references.ts" />
 var EditBar = (function (_super) {
     __extends(EditBar, _super);
     function EditBar() {
-        _super.apply(this, arguments);
+        // Blank super call, as SideBar doesn't have a constructor
+        _super.call(this);
+        this.btmHeight = 80;
     }
     EditBar.prototype.formBar = function () {
-        // The edit bar's origin for button placement
-        var oriB = [renderer.width - 180, 20];
         // Edit bar has the buttons for each landscape, each black development, and the
         //  "Randomize" and "Finish" buttons
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (cButton < glbNumLscps) {
-                this.buttonArray[cButton] = new ArcButton("landscape", cButton, null, [oriB[0], (oriB[1] + (cButton * 40))]);
+                this.buttonArray[cButton] = new ArcButton("landscape", cButton, null);
             }
             else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
-                this.buttonArray[cButton] = new ArcButton("development", (cButton - glbNumLscps), null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ArcButton("development", (cButton - glbNumLscps), null);
             }
             else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
-                this.buttonArray[cButton] = new ArcButton("other", null, "Randomize", [oriB[0], (renderer.height - 90)]);
+                this.buttonArray[cButton] = new ArcButton("other", null, "Randomize");
             }
             else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
-                this.buttonArray[cButton] = new ArcButton("other", null, "Finish", [oriB[0], (renderer.height - 50)]);
+                this.buttonArray[cButton] = new ArcButton("other", null, "Finish");
             }
             else {
                 console.log("Error, unexpected menu button value.");
             }
-            this.buttonArray[cButton].displayButton();
+        }
+        this.displayBar();
+    };
+    EditBar.prototype.displayBar = function () {
+        for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+            if (cButton < glbNumLscps) {
+                this.buttonArray[cButton].displayButton([this.oriB[0], (this.oriB[1] + (cButton * 40))]);
+            }
+            else if (cButton < (glbNumLscps + glbNumBlkDevels)) {
+                this.buttonArray[cButton].displayButton([this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
+            }
+            else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+                this.buttonArray[cButton].displayButton([this.oriB[0], (renderer.height - 90)]);
+            }
+            else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
+                this.buttonArray[cButton].displayButton([this.oriB[0], (renderer.height - 50)]);
+            }
+            else {
+                console.log("Error, unexpected menu button value.");
+            }
         }
     };
     EditBar.prototype.removeBar = function () {
@@ -1305,9 +1396,6 @@ var EditBar = (function (_super) {
         this.buttonArray = [];
     };
     EditBar.prototype.clickBar = function () {
-        if (currDescCard != null) {
-            currDescCard.selfDestruct();
-        }
         var actionTaken = false;
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
@@ -1345,6 +1433,7 @@ var ActionBar = (function (_super) {
         _super.call(this);
         this.buttonArray = [];
         this.numActives = 0;
+        this.btmHeight = 100;
         if (currPlayer.hand.length < 3) {
             this.numActives = 3;
         }
@@ -1382,41 +1471,44 @@ var ActionBar = (function (_super) {
         return [xPos, yPos];
     };
     ActionBar.prototype.formBar = function () {
-        // The edit bar's origin for button placement
-        var oriB = [renderer.width - 180, 20];
         // The action bar has buttons for each development in the player's hand, as well as
         //  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
         //  least three) at the bottom.
         for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
             if (cButton < currPlayer.hand.length) {
-                this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null, [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null);
             }
             else if (cButton === (currPlayer.hand.length)) {
-                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build");
             }
             else if (cButton === (currPlayer.hand.length + 1)) {
-                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass", [oriB[0], (oriB[1] + 20 + (cButton * 40))]);
+                this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass");
             }
             else if (cButton === (currPlayer.hand.length + 2)) {
-                this.buttonArray[cButton] = new ActionButton("counter", null, "Actions", [oriB[0], (oriB[1] + 425)]);
+                this.buttonArray[cButton] = new ActionButton("counter", null, "Actions");
             }
             else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
-                this.buttonArray[cButton] = new ActionButton("active", (cButton - (currPlayer.hand.length + 3)), null, this.getActivePos(cButton - (currPlayer.hand.length + 3)));
+                this.buttonArray[cButton] = new ActionButton("active", (cButton - (currPlayer.hand.length + 3)), null);
             }
             else {
                 console.log("Error, unexpected menu button value.");
             }
+        }
+        this.displayBar();
+    };
+    ActionBar.prototype.displayBar = function () {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
             if (this.buttonArray[cButton].type === "active") {
-                this.buttonArray[cButton].displayActiveSlot();
+                this.buttonArray[cButton].displayActiveSlot(this.getActivePos(cButton - (currPlayer.hand.length + 3)));
             }
             else if (this.buttonArray[cButton].type === "otherAction") {
-                this.buttonArray[cButton].displayOtherAction();
+                this.buttonArray[cButton].displayOtherAction([this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
             }
             else if (this.buttonArray[cButton].type === "counter") {
-                this.buttonArray[cButton].displayCounter();
+                this.buttonArray[cButton].displayCounter([this.oriB[0], (this.oriB[1] + 425)]);
             }
             else {
-                this.buttonArray[cButton].displayButton();
+                this.buttonArray[cButton].displayButton([this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
             }
         }
     };
@@ -1468,9 +1560,6 @@ var ActionBar = (function (_super) {
         }
     };
     ActionBar.prototype.clickBar = function () {
-        if (currDescCard != null) {
-            currDescCard.selfDestruct();
-        }
         for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Development buttons
@@ -1492,10 +1581,12 @@ var ActionBar = (function (_super) {
 }(SideBar));
 /// <reference path="references.ts" />
 var ArcButton = (function () {
-    function ArcButton(setType, setId, setOtherName, setOrigin) {
+    function ArcButton(setType, setId, setOtherName) {
         // Set the height and width of the button to the defaults
         this.bWidth = glbBWidth;
         this.bHeight = glbBHeight;
+        // Which navitagional page the button belongs to
+        this.nPage = 0;
         // What the button represents, e.g. landscape, development, or other
         this.type = null;
         // This id links the button to another element, e.g. for a development-type button
@@ -1510,11 +1601,6 @@ var ArcButton = (function () {
         this.type = setType;
         this.id = setId;
         this.otherName = setOtherName;
-        // Set bounds based on what type of button is being created
-        if ((this.type === "landscape") || (this.type === "development") ||
-            (this.type === "other")) {
-            this.formStandardBounds(setOrigin);
-        }
     }
     ArcButton.prototype.formStandardBounds = function (setOrigin) {
         // Initialize the four empty points that describe the button's boundaries
@@ -1531,7 +1617,8 @@ var ArcButton = (function () {
         this.bounds[3] = [(setOrigin[0] - glbBPadding),
             (setOrigin[1] + this.bHeight + glbBPadding)];
     };
-    ArcButton.prototype.displayButton = function () {
+    ArcButton.prototype.displayButton = function (setOrigin) {
+        this.formStandardBounds(setOrigin);
         // Initially invisible background for hovering/selecting effects
         this.sprBg = new Graphics();
         this.sprBg.beginFill(0xFFFFFF);
@@ -1546,6 +1633,9 @@ var ArcButton = (function () {
         }
         else if (this.type === "development") {
             this.displayDevButton();
+        }
+        else if (this.type === "page") {
+            this.displayPageButton();
         }
         else if (this.type === "other") {
             this.displayTextLayer(this.otherName, [(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
@@ -1578,8 +1668,20 @@ var ArcButton = (function () {
         this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding - 30));
         stage.addChild(this.sprSecond);
     };
+    ArcButton.prototype.displayPageButton = function () {
+        this.sprFirst = null;
+        if (this.id === 0) {
+            this.sprFirst = new Sprite(sprMed["uparrow.png"]);
+        }
+        else if (this.id === 1) {
+            this.sprFirst = new Sprite(sprMed["downarrow.png"]);
+        }
+        this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding));
+        stage.addChild(this.sprFirst);
+    };
     ArcButton.prototype.withinButton = function (givenPoint) {
-        if ((givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) &&
+        if ((this.nPage === glbSideBar.cPage) &&
+            (givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) &&
             (givenPoint[1] > this.bounds[0][1]) && (givenPoint[1] < this.bounds[2][1])) {
             return true;
         }
@@ -1592,14 +1694,8 @@ var ArcButton = (function () {
 /// <reference path="references.ts" />
 var ActionButton = (function (_super) {
     __extends(ActionButton, _super);
-    function ActionButton(setType, setId, setOtherName, setOrigin) {
-        _super.call(this, setType, setId, setOtherName, setOrigin);
-        if (this.type === "active") {
-            this.formHexBounds(setOrigin);
-        }
-        else {
-            this.formStandardBounds(setOrigin);
-        }
+    function ActionButton() {
+        _super.apply(this, arguments);
     }
     ActionButton.prototype.formHexBounds = function (setOrigin) {
         this.bounds[0] = [];
@@ -1611,9 +1707,9 @@ var ActionButton = (function (_super) {
         this.bounds[2] = [(setOrigin[0] + glbHWidth), (setOrigin[1] + glbHHeight)];
         this.bounds[3] = [setOrigin[0], (setOrigin[1] + glbHHeight)];
     };
-    ActionButton.prototype.displayOtherAction = function () {
+    ActionButton.prototype.displayOtherAction = function (setOrigin) {
         // Display initially transparent background
-        this.displayButton();
+        this.displayButton(setOrigin);
         // Display the black outline
         this.sprFirst = new Sprite(sprMed["hex.png"]);
         this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding));
@@ -1634,14 +1730,16 @@ var ActionButton = (function (_super) {
         // Display the related text
         this.displayTextLayer(this.otherName, [(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
     };
-    ActionButton.prototype.displayCounter = function () {
+    ActionButton.prototype.displayCounter = function (setOrigin) {
+        this.bounds[0] = setOrigin;
         var setText = ("Actions: " + currPlayer.actions + "/" +
             (currPlayer.actions + currPlayer.actionHistory.length));
         this.txtLabel = new Text(setText, { font: "18px sans-serif", fill: "white" });
         this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
         stage.addChild(this.txtLabel);
     };
-    ActionButton.prototype.displayActiveSlot = function () {
+    ActionButton.prototype.displayActiveSlot = function (setOrigin) {
+        this.formHexBounds(setOrigin);
         // Display the white background
         var randNum = Math.random() * 3;
         var whiteHexNum = "";
@@ -2115,25 +2213,41 @@ function afterEffect(tileID) {
 var BuyBar = (function (_super) {
     __extends(BuyBar, _super);
     function BuyBar() {
-        _super.apply(this, arguments);
+        // Blank super call, as SideBar doesn't have a constructor
+        _super.call(this);
         this.buttonArray = [];
+        this.btmHeight = 40;
     }
     BuyBar.prototype.formBar = function () {
-        // The edit bar's origin for button placement
-        var oriB = [renderer.width - 180, 20];
         // Edit bar has the buttons for each landscape, each black development, and the
         //  "Randomize" and "Finish" buttons
         for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
             if (cButton < currLand.devSelection.length) {
-                this.buttonArray[cButton] = new BuyButton("choice", currLand.devSelection[cButton], null, [oriB[0], (oriB[1] + (cButton * 55))]);
-                this.buttonArray[cButton].displayChoice();
+                this.buttonArray[cButton] = new BuyButton("choice", currLand.devSelection[cButton], null);
             }
             else if (cButton === currLand.devSelection.length) {
-                this.buttonArray[cButton] = new BuyButton("other", null, "Back", [oriB[0], (renderer.height - 50)]);
-                this.buttonArray[cButton].displayButton();
+                this.buttonArray[cButton] = new BuyButton("other", null, "Back");
             }
             else {
                 console.log("Error, unexpected menu button value.");
+            }
+        }
+        if (this.checkBarExcess() > 0) {
+            this.formPageButtons();
+            this.assignPageNumbers();
+        }
+        this.displayBar();
+    };
+    BuyBar.prototype.displayBar = function () {
+        for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
+            if ((cButton < currLand.devSelection.length) &&
+                (this.buttonArray[cButton].nPage === this.cPage)) {
+                var displaySpot = cButton - this.slotsAvailable;
+                this.buttonArray[cButton].displayChoice([this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
+            }
+            else if (cButton === currLand.devSelection.length) {
+                this.buttonArray[cButton].displayButton([
+                    this.oriB[0], (renderer.height - 50)]);
             }
         }
     };
@@ -2157,9 +2271,6 @@ var BuyBar = (function (_super) {
         this.buttonArray = [];
     };
     BuyBar.prototype.clickBar = function () {
-        if (currDescCard != null) {
-            currDescCard.selfDestruct();
-        }
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Landscape / Development buttons
@@ -2178,13 +2289,12 @@ var BuyBar = (function (_super) {
 /// <reference path="references.ts" />
 var BuyButton = (function (_super) {
     __extends(BuyButton, _super);
-    function BuyButton(setType, setId, setOtherName, setOrigin) {
-        _super.call(this, setType, setId, setOtherName, setOrigin);
+    function BuyButton(setType, setId, setOtherName) {
+        _super.call(this, setType, setId, setOtherName);
         this.bHeight = glbBHeight * 1.5;
-        this.formStandardBounds(setOrigin);
     }
-    BuyButton.prototype.displayChoice = function () {
-        this.displayButton();
+    BuyButton.prototype.displayChoice = function (setOrigin) {
+        this.displayButton(setOrigin);
         this.displayDevButton();
         var tDev = develArray[this.id];
         var shrinkValue = 0;
