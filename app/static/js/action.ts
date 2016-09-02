@@ -42,6 +42,8 @@ function editClick(corPoint) {
 }
 
 function buildClick(corPoint) {
+	if (currDescCard != null) { currDescCard.selfDestruct(); }
+
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
@@ -51,7 +53,6 @@ function buildClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if (inArr(glbTileSelArray, clkTileID)) {
-
 				// Build the selected development and it to player's territory
 				currPlayer.addTerritory(clkTileID);
 				clkTile.reDrawTile();
@@ -70,11 +71,16 @@ function buildClick(corPoint) {
 					console.log("Error, unexpected player ID.");
 				}
 			}
+			else {
+				currDescCard = new DescCard(corPoint, clkTile);
+			}
 		}
 	}
 }
 
 function activeClick(corPoint) {
+	if (currDescCard != null) { currDescCard.selfDestruct(); }
+
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
@@ -83,6 +89,7 @@ function activeClick(corPoint) {
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if (clkTile.development != null) {
+				if (currDescCard != null) { currDescCard.selfDestruct(); }
 				currDescCard = new DescCard(corPoint, clkTile);
 			}
 		}

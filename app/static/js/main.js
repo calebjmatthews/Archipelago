@@ -1945,6 +1945,9 @@ function editClick(corPoint) {
     }
 }
 function buildClick(corPoint) {
+    if (currDescCard != null) {
+        currDescCard.selfDestruct();
+    }
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTileID = currLand.getID(clkAxial);
@@ -1970,16 +1973,25 @@ function buildClick(corPoint) {
                     console.log("Error, unexpected player ID.");
                 }
             }
+            else {
+                currDescCard = new DescCard(corPoint, clkTile);
+            }
         }
     }
 }
 function activeClick(corPoint) {
+    if (currDescCard != null) {
+        currDescCard.selfDestruct();
+    }
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         if (clkTile != undefined) {
             if (clkTile.development != null) {
+                if (currDescCard != null) {
+                    currDescCard.selfDestruct();
+                }
                 currDescCard = new DescCard(corPoint, clkTile);
             }
         }
