@@ -125,4 +125,39 @@ class BuyBar extends SideBar {
 			}			
 		}
 	}
+
+	hoverOverBar() {
+		let inAnyButton: boolean = false;
+		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
+			if ((this.buttonArray[cButton].nPage === this.cPage) || 
+					(this.buttonArray[cButton].type === "other") || 
+					(this.buttonArray[cButton].type === "page")) {
+				if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+					inAnyButton = true;
+					if (this.buttonArray[cButton].enabled) {
+						this.buttonArray[cButton].sprBg.alpha = 0.6;
+					}
+
+					if ((this.buttonArray[cButton].type === "choice") && 
+						  (currHovDescCard === null)) {
+						currHovDescCard = new DescCard([pointer.x, pointer.y], 
+							develArray[this.buttonArray[cButton].id]);
+					}
+					else if ((this.buttonArray[cButton].type === "choice") && 
+						  (currHovDescCard != null)) {
+						if (currHovDescCard.devel.id === this.buttonArray[cButton].id) {
+							continue;
+						}
+						else { currHovDescCard.selfDestruct(); }
+					}
+				}
+				else {
+					this.buttonArray[cButton].sprBg.alpha = 0;
+				}
+			}
+		}
+		if (!inAnyButton) {
+			if (currHovDescCard != null) { currHovDescCard.selfDestruct(); }
+		}
+	}
 }

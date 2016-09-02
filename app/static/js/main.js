@@ -1233,6 +1233,7 @@ cPlayerArray[1] = new Player();
 cPlayerArray[1].playerOrder = 1;
 var currPlayer = cPlayerArray[0];
 var currDescCard = null;
+var currHovDescCard = null;
 var plrMsg = null;
 function formPlayerBar() {
     // Create blank background for player bar
@@ -1301,22 +1302,16 @@ var SideBar = (function () {
         designBG.y = 0;
         stage.addChild(designBG);
     };
-    SideBar.prototype.hoverOverBar = function () {
+    SideBar.prototype.baseHoverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
-            if ((this.buttonArray[cButton].nPage === this.cPage) ||
-                (this.buttonArray[cButton].type === "other") ||
-                (this.buttonArray[cButton].type === "page")) {
-                if ((this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) &&
-                    (this.buttonArray[cButton].enabled)) {
-                    this.buttonArray[cButton].sprBg.alpha = 0.6;
-                }
-                else if ((glbEditBarSel === cButton) &&
-                    (this.buttonArray[cButton].enabled)) {
-                    this.buttonArray[cButton].sprBg.alpha = 0.4;
-                }
-                else {
-                    this.buttonArray[cButton].sprBg.alpha = 0;
-                }
+            if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                this.buttonArray[cButton].sprBg.alpha = 0.6;
+            }
+            else if (glbEditBarSel === cButton) {
+                this.buttonArray[cButton].sprBg.alpha = 0.4;
+            }
+            else {
+                this.buttonArray[cButton].sprBg.alpha = 0;
             }
         }
     };
@@ -1479,6 +1474,7 @@ var EditBar = (function (_super) {
         }
         this.buttonArray = [];
     };
+    EditBar.prototype.hoverOverBar = function () { this.baseHoverBar(); };
     EditBar.prototype.clickBar = function () {
         this.baseClickBar();
         var actionTaken = false;
@@ -1635,9 +1631,6 @@ var ActionBar = (function (_super) {
             else {
                 if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                     this.buttonArray[cButton].sprBg.alpha = 0.6;
-                }
-                else if (glbEditBarSel === cButton) {
-                    this.buttonArray[cButton].sprBg.alpha = 0.4;
                 }
                 else {
                     this.buttonArray[cButton].sprBg.alpha = 0;
@@ -1936,7 +1929,7 @@ function editClick(corPoint) {
                 if (currDescCard != null) {
                     currDescCard.selfDestruct();
                 }
-                currDescCard = new DescCard(corPoint, clkTile);
+                currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
             }
             else if (currDescCard != null) {
                 currDescCard.selfDestruct();
@@ -1974,7 +1967,7 @@ function buildClick(corPoint) {
                 }
             }
             else {
-                currDescCard = new DescCard(corPoint, clkTile);
+                currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
             }
         }
     }
@@ -1992,7 +1985,7 @@ function activeClick(corPoint) {
                 if (currDescCard != null) {
                     currDescCard.selfDestruct();
                 }
-                currDescCard = new DescCard(corPoint, clkTile);
+                currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
             }
         }
     }
@@ -2051,19 +2044,19 @@ function hoverTile(corPoint) {
 }
 /// <reference path="references.ts" />
 var DescCard = (function () {
-    function DescCard(givenPoint, givenTile) {
+    function DescCard(givenPoint, givenDevel) {
         this.clkPoint = [];
-        this.tile = null;
+        this.devel = null;
         this.tArray = [];
         this.clkPoint = givenPoint;
-        this.tile = givenTile;
+        this.devel = givenDevel;
         var dPosition = [];
-        var tDevel = develArray[this.tile.development];
+        var tDevel = this.devel;
         // Make display card on left
-        if (this.clkPoint[0] > 0) {
+        if (this.clkPoint[0] > glbOrigin[0]) {
             dPosition[0] = 20;
         }
-        else if (this.clkPoint[0] <= 0) {
+        else if (this.clkPoint[0] <= glbOrigin[0]) {
             dPosition[0] = renderer.width - 550;
         }
         else {
@@ -2205,6 +2198,7 @@ var DescCard = (function () {
             stage.removeChild(this.tArray[tSpr]);
         }
         currDescCard = null;
+        currHovDescCard = null;
     };
     return DescCard;
 }());
@@ -2423,6 +2417,42 @@ var BuyBar = (function (_super) {
                 else {
                     console.log("Unexpected buy bar value.");
                 }
+            }
+        }
+    };
+    BuyBar.prototype.hoverOverBar = function () {
+        var inAnyButton = false;
+        for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
+            if ((this.buttonArray[cButton].nPage === this.cPage) ||
+                (this.buttonArray[cButton].type === "other") ||
+                (this.buttonArray[cButton].type === "page")) {
+                if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                    inAnyButton = true;
+                    if (this.buttonArray[cButton].enabled) {
+                        this.buttonArray[cButton].sprBg.alpha = 0.6;
+                    }
+                    if ((this.buttonArray[cButton].type === "choice") &&
+                        (currHovDescCard === null)) {
+                        currHovDescCard = new DescCard([pointer.x, pointer.y], develArray[this.buttonArray[cButton].id]);
+                    }
+                    else if ((this.buttonArray[cButton].type === "choice") &&
+                        (currHovDescCard != null)) {
+                        if (currHovDescCard.devel.id === this.buttonArray[cButton].id) {
+                            continue;
+                        }
+                        else {
+                            currHovDescCard.selfDestruct();
+                        }
+                    }
+                }
+                else {
+                    this.buttonArray[cButton].sprBg.alpha = 0;
+                }
+            }
+        }
+        if (!inAnyButton) {
+            if (currHovDescCard != null) {
+                currHovDescCard.selfDestruct();
             }
         }
     };

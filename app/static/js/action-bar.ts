@@ -129,12 +129,9 @@ class ActionBar extends SideBar {
 				}
 			}
 			else if (this.buttonArray[cButton].type === "counter") { continue; }
-			else {
+			else { 
 				if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 					this.buttonArray[cButton].sprBg.alpha = 0.6;
-				}
-				else if (glbEditBarSel === cButton) {
-					this.buttonArray[cButton].sprBg.alpha = 0.4;
 				}
 				else {
 					this.buttonArray[cButton].sprBg.alpha = 0;

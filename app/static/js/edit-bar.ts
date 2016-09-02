@@ -80,6 +80,8 @@ class EditBar extends SideBar {
 		this.buttonArray = [];
 	}
 
+	hoverOverBar() { this.baseHoverBar(); }
+
 	clickBar() {
 		this.baseClickBar();
 		let actionTaken = false;

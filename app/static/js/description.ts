@@ -2,21 +2,21 @@
 
 class DescCard {
 	clkPoint: number[] = [];
-	tile: Tile = null;
+	devel: Development = null;
 	tArray: any[] = [];
 
-	constructor(givenPoint: number[], givenTile: Tile) {
+	constructor(givenPoint: number[], givenDevel: Development) {
 		this.clkPoint = givenPoint;
-		this.tile = givenTile;
+		this.devel = givenDevel;
 
 		let dPosition = [];
-		let tDevel = develArray[this.tile.development];
+		let tDevel = this.devel;
 		// Make display card on left
-		if (this.clkPoint[0] > 0) {
+		if (this.clkPoint[0] > glbOrigin[0]) {
 			dPosition[0] = 20;
 		}
 		// Make display card on right
-		else if (this.clkPoint[0] <= 0) {
+		else if (this.clkPoint[0] <= glbOrigin[0]) {
 			dPosition[0] = renderer.width - 550;
 		}
 		else { console.log("Unexpected describing point value."); }
@@ -158,5 +158,6 @@ class DescCard {
 			stage.removeChild(this.tArray[tSpr]);
 		}
 		currDescCard = null;
+		currHovDescCard = null;
 	}
 }

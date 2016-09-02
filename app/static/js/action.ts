@@ -34,7 +34,7 @@ function editClick(corPoint) {
 		if (clkTile != undefined) {
 			if ((glbPainting === null) && (clkTile.development != null)) {
 				if (currDescCard != null) { currDescCard.selfDestruct(); }
-				currDescCard = new DescCard(corPoint, clkTile);
+				currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
 			}
 			else if (currDescCard != null) { currDescCard.selfDestruct(); }
 		}
@@ -72,7 +72,7 @@ function buildClick(corPoint) {
 				}
 			}
 			else {
-				currDescCard = new DescCard(corPoint, clkTile);
+				currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
 			}
 		}
 	}
@@ -90,7 +90,7 @@ function activeClick(corPoint) {
 		if (clkTile != undefined) {
 			if (clkTile.development != null) {
 				if (currDescCard != null) { currDescCard.selfDestruct(); }
-				currDescCard = new DescCard(corPoint, clkTile);
+				currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
 			}
 		}
 	}

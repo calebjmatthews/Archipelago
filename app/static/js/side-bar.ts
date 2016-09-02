@@ -23,22 +23,16 @@ class SideBar {
 		stage.addChild(designBG);
 	}
 
-	hoverOverBar() {
+	baseHoverBar() {
 		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
-			if ((this.buttonArray[cButton].nPage === this.cPage) || 
-					(this.buttonArray[cButton].type === "other") || 
-					(this.buttonArray[cButton].type === "page")) {
-				if ((this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) && 
-					  (this.buttonArray[cButton].enabled)) {
-					this.buttonArray[cButton].sprBg.alpha = 0.6;
-				}
-				else if ((glbEditBarSel === cButton) && 
-					  		 (this.buttonArray[cButton].enabled)) {
-					this.buttonArray[cButton].sprBg.alpha = 0.4;
-				}
-				else {
-					this.buttonArray[cButton].sprBg.alpha = 0;
-				}
+			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+				this.buttonArray[cButton].sprBg.alpha = 0.6;
+			}
+			else if (glbEditBarSel === cButton) {
+				this.buttonArray[cButton].sprBg.alpha = 0.4;
+			}
+			else {
+				this.buttonArray[cButton].sprBg.alpha = 0;
 			}
 		}
 	}
