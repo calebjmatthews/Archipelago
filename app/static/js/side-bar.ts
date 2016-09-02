@@ -26,11 +26,14 @@ class SideBar {
 	hoverOverBar() {
 		for (let cButton=0; cButton < this.buttonArray.length; cButton++) {
 			if ((this.buttonArray[cButton].nPage === this.cPage) || 
-					(this.buttonArray[cButton].type === "other")) {
-				if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+					(this.buttonArray[cButton].type === "other") || 
+					(this.buttonArray[cButton].type === "page")) {
+				if ((this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) && 
+					  (this.buttonArray[cButton].enabled)) {
 					this.buttonArray[cButton].sprBg.alpha = 0.6;
 				}
-				else if (glbEditBarSel === cButton) {
+				else if ((glbEditBarSel === cButton) && 
+					  		 (this.buttonArray[cButton].enabled)) {
 					this.buttonArray[cButton].sprBg.alpha = 0.4;
 				}
 				else {
@@ -55,6 +58,7 @@ class SideBar {
 		this.buttonArray[this.buttonArray.length] = new ArcButton("page", 0, null);
 		this.buttonArray[(this.buttonArray.length - 1)].bWidth = 140;
 		this.buttonArray[(this.buttonArray.length - 1)].bHeight = 20;
+		this.buttonArray[(this.buttonArray.length - 1)].enabled = false;
 		this.buttonArray[(this.buttonArray.length - 1)].displayButton(
 			[(renderer.width - 200 + 30), 20]);
 		// Form bottom button
@@ -70,7 +74,7 @@ class SideBar {
 		let barMax = this.buttonArray.length * (buttonFullHeight);
 		let spaceAvailable = renderer.height - 40 - this.btmHeight;
 		let displayRatio = ( spaceAvailable / barMax);
-		this.slotsAvailable = (spaceAvailable / buttonFullHeight);
+		this.slotsAvailable = Math.floor(spaceAvailable / buttonFullHeight) - 1;
 
 		for (let cButton = 0; cButton < (this.buttonArray.length - 2); cButton++) {
 			this.buttonArray[cButton].nPage = Math.floor(
@@ -98,10 +102,28 @@ class SideBar {
 			// Down button
 			else if ((this.buttonArray[this.buttonArray.length - 1].
 								withinButton([pointer.x, pointer.y])) &&
-							 (this.cPage < this.nPages)) {
+							 (this.cPage < (this.nPages - 1))) {
 				this.cPage++;
 				this.removeMain();
 				this.formMain();
+			}
+
+			// If pages can be navigated to, enable page up/down buttons and vice versa
+			if (this.cPage > 0) {
+				this.buttonArray[this.buttonArray.length - 2].enabled = true;
+				this.buttonArray[this.buttonArray.length - 2].sprFirst.alpha = 1;
+			}
+			else {
+				this.buttonArray[this.buttonArray.length - 2].enabled = false;
+				this.buttonArray[this.buttonArray.length - 2].sprFirst.alpha = 0.5;
+			}
+			if (this.cPage < (this.nPages - 1)) {
+				this.buttonArray[this.buttonArray.length - 1].enabled = true;
+				this.buttonArray[this.buttonArray.length - 1].sprFirst.alpha = 1;
+			}
+			else {
+				this.buttonArray[this.buttonArray.length - 1].enabled = false;
+				this.buttonArray[this.buttonArray.length - 1].sprFirst.alpha = 0.5;
 			}
 		}
 	}
@@ -109,4 +131,5 @@ class SideBar {
 	// Empty function allows the parent to call the child class's method
 	displayBar() { }
 	removeMain() { }
+	formMain() { }
 }

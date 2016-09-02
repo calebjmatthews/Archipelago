@@ -1246,11 +1246,14 @@ var SideBar = (function () {
     SideBar.prototype.hoverOverBar = function () {
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
             if ((this.buttonArray[cButton].nPage === this.cPage) ||
-                (this.buttonArray[cButton].type === "other")) {
-                if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
+                (this.buttonArray[cButton].type === "other") ||
+                (this.buttonArray[cButton].type === "page")) {
+                if ((this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) &&
+                    (this.buttonArray[cButton].enabled)) {
                     this.buttonArray[cButton].sprBg.alpha = 0.6;
                 }
-                else if (glbEditBarSel === cButton) {
+                else if ((glbEditBarSel === cButton) &&
+                    (this.buttonArray[cButton].enabled)) {
                     this.buttonArray[cButton].sprBg.alpha = 0.4;
                 }
                 else {
@@ -1277,6 +1280,7 @@ var SideBar = (function () {
         this.buttonArray[this.buttonArray.length] = new ArcButton("page", 0, null);
         this.buttonArray[(this.buttonArray.length - 1)].bWidth = 140;
         this.buttonArray[(this.buttonArray.length - 1)].bHeight = 20;
+        this.buttonArray[(this.buttonArray.length - 1)].enabled = false;
         this.buttonArray[(this.buttonArray.length - 1)].displayButton([(renderer.width - 200 + 30), 20]);
         // Form bottom button
         this.buttonArray[this.buttonArray.length] = new ArcButton("page", 1, null);
@@ -1289,7 +1293,7 @@ var SideBar = (function () {
         var barMax = this.buttonArray.length * (buttonFullHeight);
         var spaceAvailable = renderer.height - 40 - this.btmHeight;
         var displayRatio = (spaceAvailable / barMax);
-        this.slotsAvailable = (spaceAvailable / buttonFullHeight);
+        this.slotsAvailable = Math.floor(spaceAvailable / buttonFullHeight) - 1;
         for (var cButton = 0; cButton < (this.buttonArray.length - 2); cButton++) {
             this.buttonArray[cButton].nPage = Math.floor(((cButton + 1) / (this.buttonArray.length - 2)) / displayRatio);
             // Set the side bar's number of pages to the page of the final element
@@ -1309,20 +1313,38 @@ var SideBar = (function () {
                 (this.cPage > 0)) {
                 this.cPage--;
                 this.removeMain();
-                this.displayBar();
+                this.formMain();
             }
             else if ((this.buttonArray[this.buttonArray.length - 1].
                 withinButton([pointer.x, pointer.y])) &&
-                (this.cPage < this.nPages)) {
+                (this.cPage < (this.nPages - 1))) {
                 this.cPage++;
                 this.removeMain();
-                this.displayBar();
+                this.formMain();
+            }
+            // If pages can be navigated to, enable page up/down buttons and vice versa
+            if (this.cPage > 0) {
+                this.buttonArray[this.buttonArray.length - 2].enabled = true;
+                this.buttonArray[this.buttonArray.length - 2].sprFirst.alpha = 1;
+            }
+            else {
+                this.buttonArray[this.buttonArray.length - 2].enabled = false;
+                this.buttonArray[this.buttonArray.length - 2].sprFirst.alpha = 0.5;
+            }
+            if (this.cPage < (this.nPages - 1)) {
+                this.buttonArray[this.buttonArray.length - 1].enabled = true;
+                this.buttonArray[this.buttonArray.length - 1].sprFirst.alpha = 1;
+            }
+            else {
+                this.buttonArray[this.buttonArray.length - 1].enabled = false;
+                this.buttonArray[this.buttonArray.length - 1].sprFirst.alpha = 0.5;
             }
         }
     };
     // Empty function allows the parent to call the child class's method
     SideBar.prototype.displayBar = function () { };
     SideBar.prototype.removeMain = function () { };
+    SideBar.prototype.formMain = function () { };
     return SideBar;
 }());
 /// <reference path="references.ts" />
@@ -1604,6 +1626,8 @@ var ArcButton = (function () {
         // An array of four numbers that defines the bounds of the button, from the upper left
         //  point and continuing clockwise
         this.bounds = [];
+        // Whether or not the button is able to be clicked, has a graphical effect
+        this.enabled = true;
         this.type = setType;
         this.id = setId;
         this.otherName = setOtherName;
@@ -1683,10 +1707,14 @@ var ArcButton = (function () {
             this.sprFirst = new Sprite(sprMed["downarrow.png"]);
         }
         this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding));
+        if (!this.enabled) {
+            this.sprFirst.alpha = 0.5;
+        }
         stage.addChild(this.sprFirst);
     };
     ArcButton.prototype.withinButton = function (givenPoint) {
-        if ((this.nPage === glbSideBar.cPage) &&
+        if (((this.nPage === glbSideBar.cPage) || (this.type === "page") ||
+            (this.type === "other")) &&
             (givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) &&
             (givenPoint[1] > this.bounds[0][1]) && (givenPoint[1] < this.bounds[2][1])) {
             return true;
@@ -2245,17 +2273,9 @@ var BuyBar = (function (_super) {
         this.displayBar();
     };
     BuyBar.prototype.displayBar = function () {
-        for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
-            if ((cButton < currLand.devSelection.length) &&
-                (this.buttonArray[cButton].nPage === this.cPage)) {
-                var displaySpot = cButton - (this.cPage * this.slotsAvailable);
-                this.buttonArray[cButton].displayChoice([this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
-            }
-            else if (cButton === currLand.devSelection.length) {
-                this.buttonArray[cButton].displayButton([
-                    this.oriB[0], (renderer.height - 50)]);
-            }
-        }
+        this.formMain();
+        this.buttonArray[currLand.devSelection.length].displayButton([
+            this.oriB[0], (renderer.height - 50)]);
     };
     BuyBar.prototype.removeBar = function () {
         for (var cButton = 0; cButton < (currLand.devSelection.length + 1); cButton++) {
@@ -2290,6 +2310,14 @@ var BuyBar = (function (_super) {
             }
         }
     };
+    BuyBar.prototype.formMain = function () {
+        for (var cButton = 0; cButton < (currLand.devSelection.length); cButton++) {
+            if (this.buttonArray[cButton].nPage === this.cPage) {
+                var displaySpot = cButton - (this.cPage * (this.slotsAvailable));
+                this.buttonArray[cButton].displayChoice([this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
+            }
+        }
+    };
     BuyBar.prototype.clickBar = function () {
         this.baseClickBar();
         for (var cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
@@ -2312,7 +2340,9 @@ var BuyButton = (function (_super) {
     __extends(BuyButton, _super);
     function BuyButton(setType, setId, setOtherName) {
         _super.call(this, setType, setId, setOtherName);
-        this.bHeight = glbBHeight * 1.5;
+        if (this.type === "choice") {
+            this.bHeight = glbBHeight * 1.5;
+        }
     }
     BuyButton.prototype.displayChoice = function (setOrigin) {
         this.displayButton(setOrigin);

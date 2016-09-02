@@ -10,8 +10,9 @@ class BuyBar extends SideBar {
 	}
 
 	formBar() {
-		// Edit bar has the buttons for each landscape, each black development, and the
-		//  "Randomize" and "Finish" buttons
+		// Organize the bar according to what can be bought
+		let .organizeOptions();
+		// Buy bar has the buttons for each development option and the "Back" button
 		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
 			if (cButton < currLand.devSelection.length) {
 				this.buttonArray[cButton] = new BuyButton("choice", 
@@ -30,21 +31,27 @@ class BuyBar extends SideBar {
 			this.assignPageNumbers();
 		}
 		this.displayBar();
+		this.applyEnabling();
 	}
 
 	displayBar() {
-		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
-			if ((cButton < currLand.devSelection.length) && 
-				  (this.buttonArray[cButton].nPage === this.cPage)) {
-				let displaySpot = cButton - (this.cPage * this.slotsAvailable);
+		this.formMain();
+		this.buttonArray[currLand.devSelection.length].displayButton([
+			this.oriB[0], (renderer.height - 50)]);
+	}
+
+	formMain() {
+		for (let cButton=0; cButton < (currLand.devSelection.length); cButton++) {
+			if (this.buttonArray[cButton].nPage === this.cPage) {
+				let displaySpot = cButton - (this.cPage * (this.slotsAvailable));
 				this.buttonArray[cButton].displayChoice(
 					[this.oriB[0], (this.oriB[1] + (displaySpot * 55))]);
 			}
-			else if (cButton === currLand.devSelection.length) {
-				this.buttonArray[cButton].displayButton([
-					this.oriB[0], (renderer.height - 50)]);
-			}
 		}
+	}
+
+	applyEnabling() {
+
 	}
 
 	removeBar() {

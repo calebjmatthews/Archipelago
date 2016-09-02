@@ -17,6 +17,8 @@ class ArcButton {
 	// An array of four numbers that defines the bounds of the button, from the upper left
 	//  point and continuing clockwise
 	bounds: number[][] = [];
+	// Whether or not the button is able to be clicked, has a graphical effect
+	enabled: boolean = true;
 	// Sprite for the initially invisible button background
 	sprBg: Sprite;
 	// Sprite for the first layer of the button's visual
@@ -117,11 +119,13 @@ class ArcButton {
 		
 		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
 			                         (this.bounds[0][1] + glbBPadding));
+		if (!this.enabled) { this.sprFirst.alpha = 0.5; }
 		stage.addChild(this.sprFirst);
 	}
 
 	withinButton(givenPoint: number[]) {
-		if ((this.nPage === glbSideBar.cPage) &&
+		if (((this.nPage === glbSideBar.cPage) || (this.type === "page") || 
+					(this.type === "other")) &&
 				(givenPoint[0] > this.bounds[0][0]) && (givenPoint[0] < this.bounds[2][0]) && 
 			  (givenPoint[1] > this.bounds[0][1]) && (givenPoint[1] < this.bounds[2][1])) {
 			return true;

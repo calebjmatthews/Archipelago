@@ -3,7 +3,7 @@
 class BuyButton extends ArcButton {
 	constructor(setType: string, setId: number, setOtherName: string) {
 		super(setType, setId, setOtherName);
-		this.bHeight = glbBHeight*1.5;
+		if (this.type === "choice") { this.bHeight = glbBHeight*1.5; }
 	}
 
 	displayChoice(setOrigin: number[]) {
