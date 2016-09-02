@@ -65,7 +65,7 @@ class BuyBar extends SideBar {
 	}
 
 	removeBar() {
-		for (let cButton=0; cButton < (currLand.devSelection.dSet.length + 1); cButton++) {
+		for (let cButton=0; cButton < (currLand.devSelection.dSet.length + 3); cButton++) {
 			if (cButton < currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
@@ -75,6 +75,10 @@ class BuyBar extends SideBar {
 			else if (cButton === currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
+			}
+			else if (cButton < currLand.devSelection.dSet.length + 3) {
+				stage.removeChild(this.buttonArray[cButton].sprBg);
+				stage.removeChild(this.buttonArray[cButton].sprFirst);
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
@@ -101,7 +105,7 @@ class BuyBar extends SideBar {
 
 	clickBar() {
 		this.baseClickBar();
-		for (let cButton = 0; cButton < (glbNumLscps + glbNumBlkDevels + 2); cButton++) {
+		for (let cButton = 0; cButton < (currLand.devSelection.dSet.length + 1); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
 				// Landscape / Development buttons
@@ -111,10 +115,13 @@ class BuyBar extends SideBar {
 
 				// Back button
 				else if (cButton === currLand.devSelection.dSet.length) {
-					
+					glbState = active;
+					glbSideBar.removeBar();
+					glbSideBar = new ActionBar();
+					glbSideBar.formBar();
 				}
 
-				else { console.log("Unexpected edit bar value."); }
+				else { console.log("Unexpected buy bar value."); }
 			}			
 		}
 	}
