@@ -2,6 +2,7 @@
 /// <reference path="tile.ts" />
 /// <reference path="player.ts" />
 /// <reference path="land.ts" />
+/// <reference path="dev-set.ts" />
 /// <reference path="climate.ts" />
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />

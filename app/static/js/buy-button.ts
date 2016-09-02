@@ -10,6 +10,8 @@ class BuyButton extends ArcButton {
 		this.displayButton(setOrigin);
 		this.displayDevButton();
 		let tDev = develArray[this.id];
+
+		// Shrink the development's name so that it fits into the button
 		let shrinkValue = 0;
 		if (tDev.name.length > 10) {
 			shrinkValue = Math.round((tDev.name.length - 9) / 2);
@@ -17,6 +19,13 @@ class BuyButton extends ArcButton {
 		}
 		else {
 			this.txtLabel.style.font = "15px sans-serif";
+		}
+
+		// Grey out disabled buttons
+		if (!this.enabled) {
+			this.sprFirst.tint = rgbToHclr([150, 150, 150]);
+			this.sprSecond.tint = rgbToHclr([150, 150, 150]);
+			this.txtLabel.alpha = 0.5;
 		}
 	}
 }

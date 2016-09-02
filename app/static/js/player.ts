@@ -26,6 +26,13 @@ class Player {
 		playerIncrement ++;
 	}
 
+	getResource(resource) {
+		if (resource === eCOST.Food) { return this.food; }
+		else if (resource === eCOST.Material) { return this.material; }
+		else if (resource === eCOST.Treasure) { return this.treasure; }
+		else { console.log("Error: Unexpected resource request to Player."); }
+	}
+
 	addTerritory(tTileID) {
 		let tTile = currLand.tileArray[tTileID];
 		tTile.development = glbBuildSel;

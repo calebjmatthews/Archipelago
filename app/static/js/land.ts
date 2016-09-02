@@ -9,7 +9,7 @@ class Land {
 	tileArray: Tile[];
 	spriteArray: Sprite[];
 	sprDevArray: Sprite[];
-	devSelection: number[] = [];
+	devSelection: DevSet;
 
 	constructor(sentSettings: [number, number, number]) {
 		this.landID = landIncrement;
@@ -352,44 +352,5 @@ class Land {
 			let cTile = this.tileArray[cTileID];
 			cTile.reDrawTile();
 		}
-	}
-
-	getClrDev(devClr) {
-		for (let attempts=0; attempts < 80; attempts++) {
-			let randDev = Math.floor(Math.random() * 27) + 4;
-			if (devClr === null) {
-				if (!inArr(this.devSelection, randDev)) {
-					return randDev;
-				}
-			}
-			else {
-				if ((!inArr(this.devSelection, randDev)) && 
-					(develArray[randDev].color === devClr)) {
-					return randDev;
-				}
-			}
-		}
-		console.log("Error, could not return appropriate development.");
-		return 0;
-	}
-
-	genDevSelection() {
-		this.devSelection = [];
-		for (let tDev = 0; tDev < 12; tDev++) {
-			// Ensure 1 of each color except black, 2 of violet, and fill the rest of the 12 
-			//  randomly
-			if (tDev < 4) {
-				this.devSelection.push(this.getClrDev(tDev+1));
-			}
-			else if (tDev === 4) {
-				this.devSelection.push(this.getClrDev(tDev+1));
-				this.devSelection.push(this.getClrDev(tDev+1));
-				tDev++;
-			}
-			else {
-				this.devSelection.push(this.getClrDev(null));
-			}
-		}
-		this.devSelection.sort(function(a, b) { return (a - b); });
 	}
 }

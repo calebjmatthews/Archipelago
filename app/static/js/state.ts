@@ -15,7 +15,8 @@ function onImageLoad() {
 	// This code runs when the texture atlas has loaded
 	currLand.generateLand();
 	currLand.displayLand();
-	currLand.genDevSelection();
+	currLand.devSelection = new DevSet();
+	currLand.devSelection.genDevSelection();
 
 	formPlayerBar();
 	glbSideBar = new EditBar();

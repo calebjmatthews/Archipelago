@@ -11,14 +11,29 @@ class BuyBar extends SideBar {
 
 	formBar() {
 		// Organize the bar according to what can be bought
-		let .organizeOptions();
+		// organizeByCost returns two arrays, one of buyable developments, and a second 
+		//  array containing the remainer
+		let joinedDArray = currLand.devSelection.organizeByCost();
+		let buyableDSet: Development[] = joinedDArray[0];
+		let rejectDSet: Development[] = joinedDArray[1];
 		// Buy bar has the buttons for each development option and the "Back" button
-		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
-			if (cButton < currLand.devSelection.length) {
+		for (let cButton=0; cButton < buyableDSet.length; cButton++) {
+			if (cButton < buyableDSet.length) {
 				this.buttonArray[cButton] = new BuyButton("choice", 
-					currLand.devSelection[cButton], null);
+					buyableDSet[cButton].id, null);
 			}
-			else if (cButton === currLand.devSelection.length) {
+			else {
+				console.log("Error, unexpected menu button value.");
+			}
+		}
+		for (let cButton = buyableDSet.length; 
+			cButton < (buyableDSet.length + rejectDSet.length + 1); cButton++) {
+			if (cButton < (buyableDSet.length + rejectDSet.length)) {
+				this.buttonArray[cButton] = new BuyButton("choice", 
+					rejectDSet[(cButton - buyableDSet.length)].id, null);
+				this.buttonArray[cButton].enabled = false;
+			}
+			else if (cButton === (buyableDSet.length + rejectDSet.length)) {
 				this.buttonArray[cButton] = new BuyButton("other", null, "Back");
 			}
 			else {
@@ -31,17 +46,16 @@ class BuyBar extends SideBar {
 			this.assignPageNumbers();
 		}
 		this.displayBar();
-		this.applyEnabling();
 	}
 
 	displayBar() {
 		this.formMain();
-		this.buttonArray[currLand.devSelection.length].displayButton([
+		this.buttonArray[currLand.devSelection.dSet.length].displayButton([
 			this.oriB[0], (renderer.height - 50)]);
 	}
 
 	formMain() {
-		for (let cButton=0; cButton < (currLand.devSelection.length); cButton++) {
+		for (let cButton=0; cButton < (currLand.devSelection.dSet.length); cButton++) {
 			if (this.buttonArray[cButton].nPage === this.cPage) {
 				let displaySpot = cButton - (this.cPage * (this.slotsAvailable));
 				this.buttonArray[cButton].displayChoice(
@@ -50,19 +64,15 @@ class BuyBar extends SideBar {
 		}
 	}
 
-	applyEnabling() {
-
-	}
-
 	removeBar() {
-		for (let cButton=0; cButton < (currLand.devSelection.length + 1); cButton++) {
-			if (cButton < currLand.devSelection.length) {
+		for (let cButton=0; cButton < (currLand.devSelection.dSet.length + 1); cButton++) {
+			if (cButton < currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
-			else if (cButton === currLand.devSelection.length) {
+			else if (cButton === currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
@@ -75,8 +85,8 @@ class BuyBar extends SideBar {
 	}
 
 	removeMain() {
-		for (let cButton=0; cButton < (currLand.devSelection.length); cButton++) {
-			if (cButton < currLand.devSelection.length) {
+		for (let cButton=0; cButton < (currLand.devSelection.dSet.length); cButton++) {
+			if (cButton < currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
@@ -95,12 +105,12 @@ class BuyBar extends SideBar {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
 				// Landscape / Development buttons
-				if (cButton < currLand.devSelection.length) {
+				if (cButton < currLand.devSelection.dSet.length) {
 					
 				}
 
 				// Back button
-				else if (cButton === currLand.devSelection.length) {
+				else if (cButton === currLand.devSelection.dSet.length) {
 					
 				}
 
