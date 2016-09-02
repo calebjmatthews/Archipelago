@@ -1001,7 +1001,7 @@ develArray[eDEVEL.FireCrew].requirement = [];
 develArray[eDEVEL.FireCrew].result = [];
 develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result[eRES.Active] = 1;
-develArray[eDEVEL.LaborPort] = new Development(eDEVEL.LaborPort, ["laborport.png"], "Labor Port", eDCLR.Blue, [eLSCP.Shore], "Requires: 1 Treasure; Result: +3 Actives");
+develArray[eDEVEL.LaborPort] = new Development(eDEVEL.LaborPort, ["laborport.png"], "Labor Port", eDCLR.Blue, [eLSCP.Shore], "Requires: 1 Treasure,; Result: +3 Actives");
 develArray[eDEVEL.LaborPort].cost = [];
 develArray[eDEVEL.LaborPort].cost[eCOST.Material] = 1;
 develArray[eDEVEL.LaborPort].cost[eCOST.Treasure] = 1;
@@ -1009,7 +1009,7 @@ develArray[eDEVEL.LaborPort].requirement = [];
 develArray[eDEVEL.LaborPort].requirement[eREQ.Treasure] = 1;
 develArray[eDEVEL.LaborPort].result = [];
 develArray[eDEVEL.LaborPort].result[eRES.Active] = 3;
-develArray[eDEVEL.SeaSideParade] = new Development(eDEVEL.SeaSideParade, ["seasideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Material; Result: For the rest of the month, all Blue developments " +
+develArray[eDEVEL.SeaSideParade] = new Development(eDEVEL.SeaSideParade, ["seasideparade.png"], "Sea Side Parade", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Material,; Result: For the rest of the month, all Blue developments " +
     "give an additional +1 Treasure"));
 develArray[eDEVEL.SeaSideParade].cost = [];
 develArray[eDEVEL.SeaSideParade].cost[eCOST.Food] = 2;
@@ -1019,7 +1019,7 @@ develArray[eDEVEL.SeaSideParade].requirement = [];
 develArray[eDEVEL.SeaSideParade].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SeaSideParade].result = [];
 develArray[eDEVEL.SeaSideParade].result[eRES.BlueTreasure] = 1;
-develArray[eDEVEL.TradeHarbor] = new Development(eDEVEL.TradeHarbor, ["tradeharbor.png"], "Trade Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Food, 1 Material; Result: +1 Treasure"));
+develArray[eDEVEL.TradeHarbor] = new Development(eDEVEL.TradeHarbor, ["tradeharbor.png"], "Trade Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Food, 1 Material,; Result: +1 Treasure"));
 develArray[eDEVEL.TradeHarbor].cost = [];
 develArray[eDEVEL.TradeHarbor].cost[eCOST.Material] = 2;
 develArray[eDEVEL.TradeHarbor].requirement = [];
@@ -1027,7 +1027,7 @@ develArray[eDEVEL.TradeHarbor].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.TradeHarbor].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.TradeHarbor].result = [];
 develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
-develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure; Result: +2 Treasure"));
+develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure,; Result: +2 Treasure"));
 develArray[eDEVEL.AuctionHouse].cost = [];
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = 3;
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Treasure] = 1;
@@ -1035,7 +1035,7 @@ develArray[eDEVEL.AuctionHouse].requirement = [];
 develArray[eDEVEL.AuctionHouse].requirement[eREQ.Treasure] = 1;
 develArray[eDEVEL.AuctionHouse].result = [];
 develArray[eDEVEL.AuctionHouse].result[eRES.Treasure] = 2;
-develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, ["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure; Result: +2 Food, +2 Material"));
+develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, ["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure,; Result: +2 Food, +2 Material"));
 develArray[eDEVEL.EnvoyHarbor].cost = [];
 develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Treasure] = 3;
 develArray[eDEVEL.EnvoyHarbor].requirement = [];
@@ -1049,7 +1049,7 @@ develArray[eDEVEL.RicePaddy].cost[eCOST.Material] = 1;
 develArray[eDEVEL.RicePaddy].requirement = [];
 develArray[eDEVEL.RicePaddy].result = [];
 develArray[eDEVEL.RicePaddy].result[eRES.Food] = 1;
-develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Food; Result: +3 Food"));
+develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +3 Food"));
 develArray[eDEVEL.BoarRanch].cost = [];
 develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 1;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 1;
@@ -1064,7 +1064,7 @@ develArray[eDEVEL.HuntingCamp].requirement = [];
 develArray[eDEVEL.HuntingCamp].result = [];
 develArray[eDEVEL.HuntingCamp].result[eRES.Food] = 1;
 develArray[eDEVEL.HuntingCamp].result[eRES.Active] = 1;
-develArray[eDEVEL.SmokeHouse] = new Development(eDEVEL.SmokeHouse, ["smokehouse.png"], "Smoke House", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Material; Result: +3 Food"));
+develArray[eDEVEL.SmokeHouse] = new Development(eDEVEL.SmokeHouse, ["smokehouse.png"], "Smoke House", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Material,; Result: +3 Food"));
 develArray[eDEVEL.SmokeHouse].cost = [];
 develArray[eDEVEL.SmokeHouse].cost[eCOST.Material] = 2;
 develArray[eDEVEL.SmokeHouse].requirement = [];
@@ -1083,14 +1083,14 @@ develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = 1;
 develArray[eDEVEL.Woodcutters].requirement = [];
 develArray[eDEVEL.Woodcutters].result = [];
 develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
-develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 2 Food; Result: +1 Treasure"));
+develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 2 Food,; Result: +1 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
 develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 2;
 develArray[eDEVEL.SilverMine].requirement = [];
 develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.SilverMine].result = [];
 develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 1;
-develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, ["stonequarry.png"], "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 1 Food; Result: +3 Material"));
+develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, ["stonequarry.png"], "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 1 Food,; Result: +3 Material"));
 develArray[eDEVEL.StoneQuarry].cost = [];
 develArray[eDEVEL.StoneQuarry].cost[eCOST.Material] = 2;
 develArray[eDEVEL.StoneQuarry].requirement = [];
@@ -1110,14 +1110,14 @@ develArray[eDEVEL.CobaltMine].cost[eCOST.Material] = 4;
 develArray[eDEVEL.CobaltMine].requirement = [];
 develArray[eDEVEL.CobaltMine].result = [];
 develArray[eDEVEL.CobaltMine].result[eRES.Treasure] = 1;
-develArray[eDEVEL.WorkerVillage] = new Development(eDEVEL.WorkerVillage, ["workervillage.png"], "Worker Village", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food; Result: +2 Active"));
+develArray[eDEVEL.WorkerVillage] = new Development(eDEVEL.WorkerVillage, ["workervillage.png"], "Worker Village", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food,; Result: +2 Active"));
 develArray[eDEVEL.WorkerVillage].cost = [];
 develArray[eDEVEL.WorkerVillage].cost[eCOST.Material] = 1;
 develArray[eDEVEL.WorkerVillage].requirement = [];
 develArray[eDEVEL.WorkerVillage].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.WorkerVillage].result = [];
 develArray[eDEVEL.WorkerVillage].result[eRES.Active] = 2;
-develArray[eDEVEL.TeaHouse] = new Development(eDEVEL.TeaHouse, ["teahouse.png"], "Tea House", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food; Result: For the rest of the month, all Red developments give " +
+develArray[eDEVEL.TeaHouse] = new Development(eDEVEL.TeaHouse, ["teahouse.png"], "Tea House", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food,; Result: For the rest of the month, all Red developments give " +
     "an additional +1 Active"));
 develArray[eDEVEL.TeaHouse].cost = [];
 develArray[eDEVEL.TeaHouse].cost[eCOST.Material] = 1;
@@ -1126,14 +1126,14 @@ develArray[eDEVEL.TeaHouse].requirement = [];
 develArray[eDEVEL.TeaHouse].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.TeaHouse].result = [];
 develArray[eDEVEL.TeaHouse].result[eRES.RedActive] = 1;
-develArray[eDEVEL.Demolition] = new Development(eDEVEL.Demolition, ["demolition.png"], "Demolition", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: Destroy 1 Development; Result: +1 Material"));
+develArray[eDEVEL.Demolition] = new Development(eDEVEL.Demolition, ["demolition.png"], "Demolition", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: Destroy 1 Development,; Result: +1 Material"));
 develArray[eDEVEL.Demolition].cost = [];
 develArray[eDEVEL.Demolition].cost[eCOST.Material] = 2;
 develArray[eDEVEL.Demolition].requirement = [];
 develArray[eDEVEL.Demolition].requirement[eREQ.Destroy] = 1;
 develArray[eDEVEL.Demolition].result = [];
 develArray[eDEVEL.Demolition].result[eRES.Material] = 1;
-develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, ["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, [eLSCP.Grassy], ("Requires: 1 Food; Result: +2 Active,  +1 Material"));
+develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, ["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active,  +1 Material"));
 develArray[eDEVEL.ShepherdVillage].cost = [];
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Material] = 2;
@@ -1142,7 +1142,7 @@ develArray[eDEVEL.ShepherdVillage].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].result = [];
 develArray[eDEVEL.ShepherdVillage].result[eRES.Active] = 2;
 develArray[eDEVEL.ShepherdVillage].result[eRES.Material] = 1;
-develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food; Result: +3 Active"));
+develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,; Result: +3 Active"));
 develArray[eDEVEL.Town].cost = [];
 develArray[eDEVEL.Town].cost[eCOST.Material] = 3;
 develArray[eDEVEL.Town].cost[eCOST.Treasure] = 1;
@@ -1150,7 +1150,7 @@ develArray[eDEVEL.Town].requirement = [];
 develArray[eDEVEL.Town].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.Town].result = [];
 develArray[eDEVEL.Town].result[eRES.Active] = 3;
-develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Blue Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Blue Development to build this,; Result: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = 2;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 1;
@@ -1158,7 +1158,7 @@ develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 1;
 develArray[eDEVEL.MerchantShip].requirement = [];
 develArray[eDEVEL.MerchantShip].result = [];
 develArray[eDEVEL.MerchantShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Green Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Green Development to build this,; Result: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = 4;
 develArray[eDEVEL.VentureShip].cost[eCOST.Material] = 1;
@@ -1166,7 +1166,7 @@ develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 1;
 develArray[eDEVEL.VentureShip].requirement = [];
 develArray[eDEVEL.VentureShip].result = [];
 develArray[eDEVEL.VentureShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Orange Development to build this; Result: +1 Ship"));
+develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Orange Development to build this,; Result: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = 4;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.DestroyOrange] = 1;
@@ -1990,36 +1990,10 @@ function activeClick(corPoint) {
         }
     }
 }
-function hoverActiveBar(corPoint) {
-    // If the hovered point is within the range of all the hexagons
-    var numActives = 0;
-    if (currPlayer.hand.length < 3) {
-        numActives = 3;
-    }
-    else {
-        numActives = this.hand.length;
-    }
-    var activeRow = numActives - (numActives % 3);
-    // Check that the cursor exists in the neighborhood of the active slots.  A buffer of
-    //  10xp is added to allow the hover shading to be removed if the cursor exits the hex
-    if ((corPoint[0] > (renderer.width - 110 - glbHWidth - (glbHWidth / 2))) &&
-        (corPoint[0] < (renderer.width - 60 + glbHWidth + (glbHWidth / 2))) &&
-        (corPoint[1] > (-10 + (glbHWidth / 2))) &&
-        (corPoint[1] < (10 + (glbHWidth / 2) +
-            (((activeRow * 1.3) / 3) * glbHHeight) + glbHHeight + (glbHHeight / 2)))) {
-        for (var activeSpot = 0; activeSpot < currPlayer.activeSprArray.length; activeSpot++) {
-            var activePos = currPlayer.getActivePos(activeSpot);
-            activePos[1] += 30;
-            if (currPlayer.inActiveHex(activePos, corPoint)) {
-                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([160, 160, 160]);
-            }
-            else {
-                currPlayer.activeSprArray[activeSpot].tint = rgbToHclr([255, 255, 255]);
-            }
-        }
-    }
-}
 function hoverTile(corPoint) {
+    if (currHovDescCard != null) {
+        currHovDescCard.selfDestruct();
+    }
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var hovAxial = pointToHex(clkPoint);
     if (hovAxial != undefined) {
@@ -2394,6 +2368,9 @@ var BuyBar = (function (_super) {
                 stage.removeChild(this.buttonArray[cButton].sprFirst);
                 stage.removeChild(this.buttonArray[cButton].sprSecond);
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
+                stage.removeChild(this.buttonArray[cButton].txtCost[0]);
+                stage.removeChild(this.buttonArray[cButton].txtCost[1]);
+                stage.removeChild(this.buttonArray[cButton].txtCost[2]);
             }
             else {
                 console.log("Error, unexpected menu button value.");
@@ -2463,19 +2440,55 @@ var BuyButton = (function (_super) {
     __extends(BuyButton, _super);
     function BuyButton(setType, setId, setOtherName) {
         _super.call(this, setType, setId, setOtherName);
+        this.txtCost = [];
         if (this.type === "choice") {
             this.bHeight = glbBHeight * 1.5;
         }
     }
     BuyButton.prototype.displayChoice = function (setOrigin) {
         this.displayButton(setOrigin);
-        this.displayDevButton();
         var tDev = develArray[this.id];
+        // Display a sprite of the landscape required by this development
+        this.sprFirst = new Sprite(sprMed[lscpArray[develArray[this.id].lscpRequired[0]].sprID]);
+        this.sprFirst.scale.set(0.2, 0.2);
+        this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding + 8));
+        stage.addChild(this.sprFirst);
+        this.displayTextLayer(develArray[this.id].name, [(this.bounds[0][0] + 70 + glbBPadding), (this.bounds[0][1] + glbBPadding)]);
+        // Display text that indicates the price of the development
+        var tResource = [eCOST.Food, eCOST.Material, eCOST.Treasure];
+        var labelLetter = ["F", "M", "T"];
+        for (var iii = 0; iii < 3; iii++) {
+            var setText = null;
+            if (tDev.cost[tResource[iii]] === undefined) {
+                setText = labelLetter[iii] + "-0";
+            }
+            else {
+                setText = labelLetter[iii] + "-" + tDev.cost[tResource[iii]];
+            }
+            var setFill = null;
+            if (tDev.checkCost(tResource[iii])) {
+                setFill = "white";
+            }
+            else {
+                setFill = "red";
+            }
+            this.txtCost[iii] = new Text(setText, { font: "13px sans-serif", fill: setFill });
+            this.txtCost[iii].position.set((this.bounds[0][0] + glbBPadding + 70 + (iii * 30)), (this.bounds[0][1] + glbBPadding + 25));
+            stage.addChild(this.txtCost[iii]);
+        }
+        // Display the first development in the array above the landscape tile, 30 pixels
+        //  higher to account for the extra height of development sprites
+        this.sprSecond = new Sprite(sprMed[develArray[this.id].sprID[0]]);
+        this.sprSecond.scale.set(0.2, 0.2);
+        this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + glbBPadding - 22));
+        stage.addChild(this.sprSecond);
         // Shrink the development's name so that it fits into the button
         var shrinkValue = 0;
         if (tDev.name.length > 10) {
             shrinkValue = Math.round((tDev.name.length - 9) / 2);
             this.txtLabel.style.font = (15 - shrinkValue) + "px sans-serif";
+            this.txtLabel.position.set = ((this.bounds[0][0] + 70 + glbBPadding),
+                (this.bounds[0][1] + glbBPadding + shrinkValue));
         }
         else {
             this.txtLabel.style.font = "15px sans-serif";
@@ -2485,6 +2498,11 @@ var BuyButton = (function (_super) {
             this.sprFirst.tint = rgbToHclr([150, 150, 150]);
             this.sprSecond.tint = rgbToHclr([150, 150, 150]);
             this.txtLabel.alpha = 0.5;
+            for (var iii = 0; iii < 3; iii++) {
+                if (tDev.checkCost(tResource[iii])) {
+                    this.txtCost[iii].alpha = 0.5;
+                }
+            }
         }
     };
     return BuyButton;

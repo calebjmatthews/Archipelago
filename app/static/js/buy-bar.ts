@@ -95,6 +95,9 @@ class BuyBar extends SideBar {
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
+				stage.removeChild(this.buttonArray[cButton].txtCost[0]);
+				stage.removeChild(this.buttonArray[cButton].txtCost[1]);
+				stage.removeChild(this.buttonArray[cButton].txtCost[2]);
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
