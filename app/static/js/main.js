@@ -2382,14 +2382,9 @@ var BuyBar = (function (_super) {
         }
     };
     BuyBar.prototype.removeBar = function () {
-        for (var cButton = 0; cButton < (currLand.devSelection.dSet.length + 3); cButton++) {
-            if (cButton < currLand.devSelection.dSet.length) {
-                stage.removeChild(this.buttonArray[cButton].sprBg);
-                stage.removeChild(this.buttonArray[cButton].sprFirst);
-                stage.removeChild(this.buttonArray[cButton].sprSecond);
-                stage.removeChild(this.buttonArray[cButton].txtLabel);
-            }
-            else if (cButton === currLand.devSelection.dSet.length) {
+        this.removeMain();
+        for (var cButton = currLand.devSelection.dSet.length; cButton < (currLand.devSelection.dSet.length + 3); cButton++) {
+            if (cButton === currLand.devSelection.dSet.length) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
                 stage.removeChild(this.buttonArray[cButton].txtLabel);
             }

@@ -65,14 +65,10 @@ class BuyBar extends SideBar {
 	}
 
 	removeBar() {
-		for (let cButton=0; cButton < (currLand.devSelection.dSet.length + 3); cButton++) {
-			if (cButton < currLand.devSelection.dSet.length) {
-				stage.removeChild(this.buttonArray[cButton].sprBg);
-				stage.removeChild(this.buttonArray[cButton].sprFirst);
-				stage.removeChild(this.buttonArray[cButton].sprSecond);
-				stage.removeChild(this.buttonArray[cButton].txtLabel);
-			}
-			else if (cButton === currLand.devSelection.dSet.length) {
+		this.removeMain();
+		for (let cButton = currLand.devSelection.dSet.length; 
+			cButton < (currLand.devSelection.dSet.length + 3); cButton++) {
+			if (cButton === currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}
@@ -89,7 +85,7 @@ class BuyBar extends SideBar {
 	}
 
 	removeMain() {
-		for (let cButton=0; cButton < (currLand.devSelection.dSet.length); cButton++) {
+		for (let cButton = 0; cButton < (currLand.devSelection.dSet.length); cButton++) {
 			if (cButton < currLand.devSelection.dSet.length) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprFirst);
