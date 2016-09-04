@@ -50,7 +50,7 @@ class DescCard {
 		this.tArray.push(new Sprite(sprMed[tDevel.sprID[0]]));
 		this.tArray[this.tArray.length-1].scale.set(0.5, 0.5);
 		this.tArray[this.tArray.length-1].position.set((dPosition[0] + 93), 
-			(dPosition[1] + 101));
+			(dPosition[1] + 107));
 
 		// Development description
 		let expDesc = [];

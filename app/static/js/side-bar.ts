@@ -123,6 +123,7 @@ class SideBar {
 	}
 
 	// Empty function allows the parent to call the child class's method
+	removeBar() { }
 	displayBar() { }
 	removeMain() { }
 	formMain() { }

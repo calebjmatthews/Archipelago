@@ -1219,8 +1219,6 @@ loader
 var sprMed = null;
 // Create global Pixi and Tink variables
 var tb = null;
-// Set the default game state to 'edit'
-glbState = edit;
 var pointer = null;
 // Initiate game values (to be obsoleted)
 var littleLand = new Land([Math.floor(Math.random() * 3), eSHAPE.Round,
@@ -1395,6 +1393,7 @@ var SideBar = (function () {
         }
     };
     // Empty function allows the parent to call the child class's method
+    SideBar.prototype.removeBar = function () { };
     SideBar.prototype.displayBar = function () { };
     SideBar.prototype.removeMain = function () { };
     SideBar.prototype.formMain = function () { };
@@ -1487,9 +1486,12 @@ var EditBar = (function (_super) {
                     actionTaken = true;
                 }
                 else if (cButton === (glbNumLscps + glbNumBlkDevels)) {
+                    currLand.lSize = (Math.floor(Math.random() * 3));
+                    currLand.lClimate = (Math.floor(Math.random() * 7));
                     currLand.generateLand();
-                    currLand.genDevSelection();
+                    currLand.devSelection.genDevSelection();
                     currLand.refreshLandSpr();
+                    actionTaken = true;
                 }
                 else if (cButton === (glbNumLscps + glbNumBlkDevels + 1)) {
                     glbState = buildSetup;
@@ -1505,6 +1507,45 @@ var EditBar = (function (_super) {
         }
     };
     return EditBar;
+}(SideBar));
+/// <reference path="references.ts" />
+var BuildBar = (function (_super) {
+    __extends(BuildBar, _super);
+    function BuildBar() {
+        _super.apply(this, arguments);
+        this.buttonArray = [];
+    }
+    BuildBar.prototype.formBar = function () {
+        this.buttonArray[0] = new ArcButton("other", null, "Back");
+        this.displayBar();
+    };
+    BuildBar.prototype.displayBar = function () {
+        this.buttonArray[0].displayButton([this.oriB[0], (renderer.height - 50)]);
+    };
+    BuildBar.prototype.removeBar = function () {
+        stage.removeChild(this.buttonArray[0].sprBg);
+        stage.removeChild(this.buttonArray[0].txtLabel);
+        this.buttonArray = [];
+    };
+    BuildBar.prototype.clickBar = function () {
+        // Back button
+        if (this.buttonArray[0].withinButton([pointer.x, pointer.y])) {
+            veClearTint(glbPulseArray);
+            glbTileSelArray = [];
+            glbPulseArray = [];
+            if (glbMonth === 0) {
+                glbState = editSetup;
+                glbPointerDown = false; // Fix for stuck pointer after hitting back button
+            }
+            else {
+                glbState = buySetup;
+            }
+        }
+    };
+    BuildBar.prototype.hoverOverBar = function () {
+        this.baseHoverBar();
+    };
+    return BuildBar;
 }(SideBar));
 /// <reference path="references.ts" />
 var ActionBar = (function (_super) {
@@ -1903,9 +1944,10 @@ function editHold(corPoint) {
     var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         if (clkTile != undefined) {
-            if ((clkTile.landscape != glbPainting) && (glbPainting != null)) {
+            if (glbPainting != null) {
                 if (glbPainting < glbNumLscps) {
                     clkTile.landscape = glbPainting;
+                    clkTile.development = null;
                 }
                 else if ((glbPainting < (glbNumLscps + glbNumBlkDevels)) &&
                     (inArr(develArray[glbPainting - glbNumLscps].lscpRequired, clkTile.landscape))) {
@@ -1960,7 +2002,8 @@ function buildClick(corPoint) {
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
                     glbPulseArray = [];
-                    glbState = plrMonSetup;
+                    currPlayer = cPlayerArray[0];
+                    glbState = monthSetup;
                 }
                 else {
                     console.log("Error, unexpected player ID.");
@@ -2073,7 +2116,7 @@ var DescCard = (function () {
         // Development sprite
         this.tArray.push(new Sprite(sprMed[tDevel.sprID[0]]));
         this.tArray[this.tArray.length - 1].scale.set(0.5, 0.5);
-        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 93), (dPosition[1] + 101));
+        this.tArray[this.tArray.length - 1].position.set((dPosition[0] + 93), (dPosition[1] + 107));
         // Development description
         var expDesc = [];
         expDesc = this.expandDescription(tDevel);
@@ -2384,6 +2427,8 @@ var BuyBar = (function (_super) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Landscape / Development buttons
                 if (cButton < currLand.devSelection.dSet.length) {
+                    glbBuildSel = this.buttonArray[cButton].id;
+                    glbState = buildSetup;
                 }
                 else if (cButton === currLand.devSelection.dSet.length) {
                     glbState = active;
@@ -2518,6 +2563,7 @@ var BuyButton = (function (_super) {
 /// <reference path="setup.ts" />
 /// <reference path="side-bar.ts" />
 /// <reference path="edit-bar.ts" />
+/// <reference path="build-bar.ts" />
 /// <reference path="action-bar.ts" />
 /// <reference path="arc-button.ts" />
 /// <reference path="action-button.ts" />
@@ -2545,9 +2591,9 @@ function onImageLoad() {
     currLand.devSelection = new DevSet();
     currLand.devSelection.genDevSelection();
     formPlayerBar();
-    glbSideBar = new EditBar();
+    glbSideBar = new SideBar();
     glbSideBar.formBacking();
-    glbSideBar.formBar();
+    glbState = editSetup;
     // Start the game loop
     gameLoop();
 }
@@ -2561,11 +2607,17 @@ function gameLoop() {
     glbState();
     renderer.render(stage);
 }
+function editSetup() {
+    glbSideBar.removeBar();
+    glbSideBar = new EditBar();
+    glbSideBar.formBar();
+    glbState = edit;
+}
 // Executes on loop when game is in 'edit' state
 function edit() {
     // Click event handling
     pointer.press = function () { editStateClick(); };
-    // pointer.tap = () =>     { editStateClick(); }
+    pointer.tap = function () { editTap(); };
     pointer.release = function () { glbPointerDown = false; };
     // Click and drag event handling
     if (glbPointerDown === true) {
@@ -2581,6 +2633,13 @@ function edit() {
         glbSideBar.hoverOverBar();
     }
 }
+function editTap() {
+    // Check that this tap doesn't occur in the sidebar, so the click isn't applied twice
+    if ((pointer.x) < (renderer.width - 200)) {
+        editStateClick();
+    }
+    glbPointerDown = false;
+}
 function editStateClick() {
     if ((pointer.x) > (renderer.width - 200)) {
         glbSideBar.clickBar();
@@ -2593,6 +2652,10 @@ function editStateClick() {
 }
 // Applies prior to every game round
 function monthSetup() {
+    glbMonth++;
+    updatePlayerBar();
+    currPlayer = cPlayerArray[1];
+    glbState = plrMonSetup;
 }
 // Applies prior to each player's round
 function plrMonSetup() {
@@ -2652,21 +2715,25 @@ function buy() {
 }
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
+    var selTerritory = null;
     if (glbMonth === 0) {
         glbBuildSel = eDEVEL.BaseCamp;
     }
+    else {
+        selTerritory = currPlayer.territory;
+    }
     var tDevel = develArray[glbBuildSel];
-    glbTileSelArray = [];
-    glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
     if (glbTileSelArray != []) {
+        glbTileSelArray = currLand.getSel(selTerritory, tDevel.lscpRequired);
         glbPulseArray = glbTileSelArray;
-        if (glbSideBar.buttonArray.length != 0) {
-            glbSideBar.removeBar();
-        }
+        glbSideBar.removeBar();
+        glbSideBar = new BuildBar();
+        glbSideBar.formBar();
         glbState = build;
     }
     else {
         console.log("No applicable tile.");
+        glbState = buy;
     }
 }
 // Player chooses where to build a newly bought development
@@ -2675,7 +2742,13 @@ function build() {
     pointer.tap = function () {
         buildClick([pointer.x, pointer.y]);
     };
-    hoverTile([pointer.x, pointer.y]);
+    // Hover event handling
+    if (pointer.x < (renderer.width - 200)) {
+        hoverTile([pointer.x, pointer.y]);
+    }
+    else {
+        glbSideBar.hoverOverBar();
+    }
 }
 // Applies after a player has finished their turn
 function cleanup() {

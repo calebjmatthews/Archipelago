@@ -97,9 +97,12 @@ class EditBar extends SideBar {
 
 				// Randomize button
 				else if (cButton === (glbNumLscps+glbNumBlkDevels)) {
+					currLand.lSize = (Math.floor(Math.random() * 3));
+					currLand.lClimate = (Math.floor(Math.random() * 7));
 					currLand.generateLand();
-					currLand.genDevSelection();
+					currLand.devSelection.genDevSelection();
 					currLand.refreshLandSpr();
+					actionTaken = true;
 				}
 
 				// Finish button

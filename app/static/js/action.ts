@@ -8,8 +8,11 @@ function editHold(corPoint) {
 
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
-			if ((clkTile.landscape != glbPainting) && (glbPainting != null)) {
-				if (glbPainting < glbNumLscps) { clkTile.landscape = glbPainting; }
+			if (glbPainting != null) {
+				if (glbPainting < glbNumLscps) {
+					clkTile.landscape = glbPainting;
+					clkTile.development = null;
+				}
 				else if ((glbPainting < (glbNumLscps+glbNumBlkDevels)) && 
 					(inArr(develArray[glbPainting - glbNumLscps].lscpRequired, 
 					clkTile.landscape))) {
@@ -65,7 +68,8 @@ function buildClick(corPoint) {
 				else if ((glbMonth ===0) && currPlayer.playerID === 1) {
 					veClearTint(glbPulseArray);
 					glbTileSelArray = []; glbPulseArray = [];
-					glbState = plrMonSetup;
+					currPlayer = cPlayerArray[0];
+					glbState = monthSetup;
 				}
 				else {
 					console.log("Error, unexpected player ID.");

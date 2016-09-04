@@ -113,7 +113,8 @@ class BuyBar extends SideBar {
 
 				// Landscape / Development buttons
 				if (cButton < currLand.devSelection.dSet.length) {
-					
+					glbBuildSel = this.buttonArray[cButton].id;
+					glbState = buildSetup;
 				}
 
 				// Back button

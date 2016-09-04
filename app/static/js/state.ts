@@ -19,9 +19,9 @@ function onImageLoad() {
 	currLand.devSelection.genDevSelection();
 
 	formPlayerBar();
-	glbSideBar = new EditBar();
+	glbSideBar = new SideBar();
 	glbSideBar.formBacking();
-	glbSideBar.formBar();
+	glbState = editSetup;
 	
 	// Start the game loop
 	gameLoop();
@@ -43,11 +43,18 @@ function gameLoop() {
 	renderer.render(stage);
 }
 
+function editSetup() {
+	glbSideBar.removeBar();
+	glbSideBar = new EditBar();
+	glbSideBar.formBar();
+	glbState = edit;
+}
+
 // Executes on loop when game is in 'edit' state
 function edit() {
 	// Click event handling
 	pointer.press = () =>   { editStateClick(); }
-	// pointer.tap = () =>     { editStateClick(); }
+	pointer.tap = () =>     { editTap(); }
 	pointer.release = () => { glbPointerDown = false; }
 
 	// Click and drag event handling
@@ -60,6 +67,12 @@ function edit() {
 	// Hover event handling
 	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
 	else { glbSideBar.hoverOverBar(); }
+}
+
+function editTap() {
+	// Check that this tap doesn't occur in the sidebar, so the click isn't applied twice
+	if ((pointer.x) < (renderer.width-200)) { editStateClick(); }
+	glbPointerDown = false;
 }
 
 function editStateClick() {
@@ -75,7 +88,10 @@ function editStateClick() {
 
 // Applies prior to every game round
 function monthSetup() {
-
+	glbMonth++;
+	updatePlayerBar();
+	currPlayer = cPlayerArray[1];
+	glbState = plrMonSetup;
 }
 
 // Applies prior to each player's round
@@ -133,20 +149,22 @@ function buy() {
 
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
-	if (glbMonth === 0) {
-		glbBuildSel = eDEVEL.BaseCamp;
-	}
+	let selTerritory = null;
+	if (glbMonth === 0) { glbBuildSel = eDEVEL.BaseCamp; }
+	else { selTerritory = currPlayer.territory; }
 	let tDevel = develArray[glbBuildSel];
-	glbTileSelArray = [];
-	glbTileSelArray = currLand.getSel(null, tDevel.lscpRequired);
 
 	if (glbTileSelArray != []) {
+		glbTileSelArray = currLand.getSel(selTerritory, tDevel.lscpRequired);
 		glbPulseArray = glbTileSelArray;
-		if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
+		glbSideBar.removeBar();
+		glbSideBar = new BuildBar();
+		glbSideBar.formBar();
 		glbState = build;
 	}
 	else {
 		console.log("No applicable tile.")
+		glbState = buy;
 	}
 }
 
@@ -156,7 +174,10 @@ function build() {
 	pointer.tap = () => {
 		buildClick([pointer.x, pointer.y]);
 	}
-	hoverTile([pointer.x, pointer.y])
+
+	// Hover event handling
+	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
+	else { glbSideBar.hoverOverBar(); }
 }
 
 // Applies after a player has finished their turn

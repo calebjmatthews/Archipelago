@@ -9,6 +9,7 @@
 /// <reference path="setup.ts" />
 /// <reference path="side-bar.ts" />
 /// <reference path="edit-bar.ts" />
+/// <reference path="build-bar.ts" />
 /// <reference path="action-bar.ts" />
 /// <reference path="arc-button.ts" />
 /// <reference path="action-button.ts" />
