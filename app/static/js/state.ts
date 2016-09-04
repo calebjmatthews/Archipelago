@@ -101,6 +101,11 @@ function plrMonSetup() {
 		currPlayer.drawContainer();
 	}
 
+	glbState = activeSetup;
+}
+
+function activeSetup() {
+	glbSideBar.removeBar();
 	glbSideBar = new ActionBar();
 	glbSideBar.formBar();
 	glbState = active;

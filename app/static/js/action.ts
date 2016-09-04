@@ -72,7 +72,10 @@ function buildClick(corPoint) {
 					glbState = monthSetup;
 				}
 				else {
-					console.log("Error, unexpected player ID.");
+					currPlayer.actionHistory.push("Build");
+					veClearTint(glbPulseArray);
+					glbTileSelArray = []; glbPulseArray = [];
+					glbState = activeSetup;
 				}
 			}
 			else {

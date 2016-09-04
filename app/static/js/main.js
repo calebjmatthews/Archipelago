@@ -2006,7 +2006,11 @@ function buildClick(corPoint) {
                     glbState = monthSetup;
                 }
                 else {
-                    console.log("Error, unexpected player ID.");
+                    currPlayer.actionHistory.push("Build");
+                    veClearTint(glbPulseArray);
+                    glbTileSelArray = [];
+                    glbPulseArray = [];
+                    glbState = activeSetup;
                 }
             }
             else {
@@ -2658,6 +2662,10 @@ function plrMonSetup() {
     for (var tCard = 0; tCard < 3; tCard++) {
         currPlayer.drawContainer();
     }
+    glbState = activeSetup;
+}
+function activeSetup() {
+    glbSideBar.removeBar();
     glbSideBar = new ActionBar();
     glbSideBar.formBar();
     glbState = active;
