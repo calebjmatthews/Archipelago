@@ -19,4 +19,5 @@
 /// <reference path="action-effect.ts" />
 /// <reference path="buy-bar.ts" />
 /// <reference path="buy-button.ts" />
+/// <reference path="arc-history.ts" />
 /// <reference path="state.ts" />

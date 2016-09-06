@@ -1,12 +1,12 @@
 /// <reference path="references.ts" />
 
-function applyDevEffect(tileID: number) {
+function applyDevEffect(tileID: number, undoing: boolean = false) {
 	beforeEffect();
 	let tDev = develArray[currLand.tileArray[tileID].development];
 	let resultArray = considerPlayerEffects(tDev);
 	for (let cResult = 0; cResult < glbNumRes; cResult++) {
 		if (tDev.result[cResult] != undefined) {
-			applySingleEffect(resultArray, cResult);
+			applySingleEffect(resultArray, cResult, undoing);
 		}
 	}
 	afterEffect(tileID);
@@ -37,16 +37,19 @@ function considerPlayerEffects(tDev: Development) {
 	return resultArray;
 }
 
-function applySingleEffect(resultArray: number[], cResult: number) {
+function applySingleEffect(resultArray: number[], cResult: number, undoing: boolean) {
+	let undModify = 1;
+	if (undoing) { undModify = -1; }
 	if (cResult === eRES.Active) {
 		for (let iii = 0; iii < resultArray[eRES.Active]; iii++) {
-			currPlayer.actions++;
+			currPlayer.actions += (1 * undModify);
 			currPlayer.drawContainer();
 		}
 	}
 
 	else if (cResult === eRES.BlueTreasure) {
-		currPlayer.activeEffects[eRES.BlueTreasure] = resultArray[eRES.BlueTreasure];
+		currPlayer.activeEffects[eRES.BlueTreasure] += 
+			(resultArray[eRES.BlueTreasure] * undModify);
 	}
 
 	else if (cResult === eRES.Destroy) {
@@ -56,35 +59,39 @@ function applySingleEffect(resultArray: number[], cResult: number) {
 	}
 
 	else if (cResult === eRES.Food) {
-		currPlayer.food += resultArray[eRES.Food];
+		currPlayer.food += (resultArray[eRES.Food] * undModify);
 	}
 
 	else if (cResult === eRES.Material) {
-		currPlayer.material += resultArray[eRES.Material];
+		currPlayer.material += (resultArray[eRES.Material] * undModify);
 	}
 
 	else if (cResult === eRES.RedActive) {
-		currPlayer.activeEffects[eRES.RedActive] = resultArray[eRES.RedActive];
+		currPlayer.activeEffects[eRES.RedActive] += 
+			(resultArray[eRES.RedActive] * undModify);
 	}
 
 	else if (cResult === eRES.Ship) {
-		currPlayer.ships += resultArray[eRES.Ship];
+		currPlayer.ships += (resultArray[eRES.Ship] * undModify);
 	}
 
 	else if (cResult === eRES.Treasure) {
-		currPlayer.treasure += resultArray[eRES.Treasure];
+		currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
 	}
 }
 
 function afterEffect(tileID: number) {
 	// Account for spent card
 	currPlayer.actions--;
-	currPlayer.actionHistory.push(["development", tileID]);
+	let ahSpot = currPlayer.actionHistory.length;
+	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+	currPlayer.actionHistory[ahSpot].id = tileID;
 
 	// Update display
 	updatePlayerBar();
 	currPlayer.removeCard(tileID);
 	glbSideBar.formBar();
 
-	// If last action is used, allow the program to proceed
+	// If last action is used, allow the program to proceed to the next stage
+	
 }

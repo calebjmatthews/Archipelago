@@ -392,6 +392,20 @@ var Player = (function () {
             console.log("Error: Unexpected resource request to Player.");
         }
     };
+    Player.prototype.giveResource = function (resource, amount) {
+        if (resource === eCOST.Food) {
+            this.food += amount;
+        }
+        else if (resource === eCOST.Material) {
+            this.food += amount;
+        }
+        else if (resource === eCOST.Treasure) {
+            this.food += amount;
+        }
+        else {
+            console.log("Error: Unexpected resource request to Player.");
+        }
+    };
     Player.prototype.addTerritory = function (tTileID) {
         var tTile = currLand.tileArray[tTileID];
         tTile.development = glbBuildSel;
@@ -1596,7 +1610,7 @@ var ActionBar = (function (_super) {
         // The action bar has buttons for each development in the player's hand, as well as
         //  "Build" and "Pass" buttons.  The bar also has a display of chosen actions (at 
         //  least three) at the bottom.
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (cButton < currPlayer.hand.length) {
                 this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null);
             }
@@ -1612,6 +1626,10 @@ var ActionBar = (function (_super) {
             else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
                 this.buttonArray[cButton] = new ActionButton("active", (cButton - (currPlayer.hand.length + 3)), null);
             }
+            else if (cButton < (currPlayer.hand.length + 3 + this.numActives + 1)) {
+                this.buttonArray[cButton] = new ActionButton("other", null, "Finish");
+                this.buttonArray[cButton].enabled = false;
+            }
             else {
                 console.log("Error, unexpected menu button value.");
             }
@@ -1619,7 +1637,7 @@ var ActionBar = (function (_super) {
         this.displayBar();
     };
     ActionBar.prototype.displayBar = function () {
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (this.buttonArray[cButton].type === "active") {
                 this.buttonArray[cButton].displayActiveSlot(this.getActivePos(cButton - (currPlayer.hand.length + 3)));
             }
@@ -1629,13 +1647,16 @@ var ActionBar = (function (_super) {
             else if (this.buttonArray[cButton].type === "counter") {
                 this.buttonArray[cButton].displayCounter([this.oriB[0], (this.oriB[1] + 425)]);
             }
+            else if (this.buttonArray[cButton].type === "other") {
+                this.buttonArray[cButton].displayButton([this.oriB[0], (renderer.height - 50)]);
+            }
             else {
                 this.buttonArray[cButton].displayButton([this.oriB[0], (this.oriB[1] + 20 + (cButton * 40))]);
             }
         }
     };
     ActionBar.prototype.removeBar = function () {
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (cButton < currPlayer.hand.length + 2) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
                 stage.removeChild(this.buttonArray[cButton].sprFirst);
@@ -1671,7 +1692,12 @@ var ActionBar = (function (_super) {
             }
             else {
                 if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
-                    this.buttonArray[cButton].sprBg.alpha = 0.6;
+                    if (this.buttonArray[cButton].enabled) {
+                        this.buttonArray[cButton].sprBg.alpha = 0.6;
+                    }
+                    else {
+                        this.buttonArray[cButton].sprBg.alpha = 0.2;
+                    }
                 }
                 else {
                     this.buttonArray[cButton].sprBg.alpha = 0;
@@ -1762,6 +1788,10 @@ var ArcButton = (function () {
         }
         else if (this.type === "other") {
             this.displayTextLayer(this.otherName, [(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
+        }
+        // Greyed text for inactive buttons
+        if ((!this.enabled) && (this.txtLabel != undefined)) {
+            this.txtLabel.alpha = 0.5;
         }
     };
     ArcButton.prototype.displayLscpLayer = function (lscpId) {
@@ -1868,27 +1898,23 @@ var ActionButton = (function (_super) {
     ActionButton.prototype.displayActiveSlot = function (setOrigin) {
         this.formHexBounds(setOrigin);
         // Display the white background
-        var randNum = Math.random() * 3;
-        var whiteHexNum = "";
-        if (randNum < 1) {
-            whiteHexNum = "whitehex.png";
-        }
-        else if ((randNum > 1) && (randNum < 2)) {
-            whiteHexNum = "whitehex2.png";
-        }
-        else {
-            whiteHexNum = "whitehex3.png";
-        }
-        this.sprBg = new Sprite(sprMed[whiteHexNum]);
+        this.sprBg = new Sprite(sprMed["whitehex.png"]);
         this.sprBg.scale.set(0.2, 0.2);
         // Subtract hex height from sprite to correct for tallness
         this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
         stage.addChild(this.sprBg);
         if (currPlayer.actionHistory[this.id] != undefined) {
             if (currPlayer.actionHistory[this.id][0] === "development") {
-                var tileId = currPlayer.actionHistory[this.id][1];
+                var tileId = currPlayer.actionHistory[this.id].id;
                 var tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
                 this.sprSecond = new Sprite(sprMed[tSprName]);
+                this.sprSecond.scale.set(0.2, 0.2);
+                this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+                stage.addChild(this.sprSecond);
+            }
+            else if ((currPlayer.actionHistory[this.id][0] === "other") &&
+                (currPlayer.actionHistory[this.id][1] === "Build")) {
+                this.sprSecond = new Sprite(sprMed["build.png"]);
                 this.sprSecond.scale.set(0.2, 0.2);
                 this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
                 stage.addChild(this.sprSecond);
@@ -2006,7 +2032,8 @@ function buildClick(corPoint) {
                     glbState = monthSetup;
                 }
                 else {
-                    currPlayer.actionHistory.push("Build");
+                    currPlayer.actionHistory.push(["other", "Build"]);
+                    currPlayer.actions--;
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
                     glbPulseArray = [];
@@ -2016,6 +2043,16 @@ function buildClick(corPoint) {
             else {
                 currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
             }
+        }
+    }
+}
+function subtractPrice() {
+    var tDev = develArray[glbBuildSel];
+    var rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
+    for (var tResource = 0; tResource < tDev.cost.length; tResource++) {
+        if ((tResource === eCOST.Food) ||
+            (tResource === eCOST.Material) ||
+            (tResource === eCOST.Treasure)) {
         }
     }
 }
@@ -2255,13 +2292,14 @@ function veAllEffects() {
     }
 }
 /// <reference path="references.ts" />
-function applyDevEffect(tileID) {
+function applyDevEffect(tileID, undoing) {
+    if (undoing === void 0) { undoing = false; }
     beforeEffect();
     var tDev = develArray[currLand.tileArray[tileID].development];
     var resultArray = considerPlayerEffects(tDev);
     for (var cResult = 0; cResult < glbNumRes; cResult++) {
         if (tDev.result[cResult] != undefined) {
-            applySingleEffect(resultArray, cResult);
+            applySingleEffect(resultArray, cResult, undoing);
         }
     }
     afterEffect(tileID);
@@ -2288,15 +2326,20 @@ function considerPlayerEffects(tDev) {
     }
     return resultArray;
 }
-function applySingleEffect(resultArray, cResult) {
+function applySingleEffect(resultArray, cResult, undoing) {
+    var undModify = 1;
+    if (undoing) {
+        undModify = -1;
+    }
     if (cResult === eRES.Active) {
         for (var iii = 0; iii < resultArray[eRES.Active]; iii++) {
-            currPlayer.actions++;
+            currPlayer.actions += (1 * undModify);
             currPlayer.drawContainer();
         }
     }
     else if (cResult === eRES.BlueTreasure) {
-        currPlayer.activeEffects[eRES.BlueTreasure] = resultArray[eRES.BlueTreasure];
+        currPlayer.activeEffects[eRES.BlueTreasure] +=
+            (resultArray[eRES.BlueTreasure] * undModify);
     }
     else if (cResult === eRES.Destroy) {
         currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
@@ -2304,30 +2347,33 @@ function applySingleEffect(resultArray, cResult) {
         glbState = selDevel;
     }
     else if (cResult === eRES.Food) {
-        currPlayer.food += resultArray[eRES.Food];
+        currPlayer.food += (resultArray[eRES.Food] * undModify);
     }
     else if (cResult === eRES.Material) {
-        currPlayer.material += resultArray[eRES.Material];
+        currPlayer.material += (resultArray[eRES.Material] * undModify);
     }
     else if (cResult === eRES.RedActive) {
-        currPlayer.activeEffects[eRES.RedActive] = resultArray[eRES.RedActive];
+        currPlayer.activeEffects[eRES.RedActive] +=
+            (resultArray[eRES.RedActive] * undModify);
     }
     else if (cResult === eRES.Ship) {
-        currPlayer.ships += resultArray[eRES.Ship];
+        currPlayer.ships += (resultArray[eRES.Ship] * undModify);
     }
     else if (cResult === eRES.Treasure) {
-        currPlayer.treasure += resultArray[eRES.Treasure];
+        currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
     }
 }
 function afterEffect(tileID) {
     // Account for spent card
     currPlayer.actions--;
-    currPlayer.actionHistory.push(["development", tileID]);
+    var ahSpot = currPlayer.actionHistory.length;
+    currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+    currPlayer.actionHistory[ahSpot].id = tileID;
     // Update display
     updatePlayerBar();
     currPlayer.removeCard(tileID);
     glbSideBar.formBar();
-    // If last action is used, allow the program to proceed
+    // If last action is used, allow the program to proceed to the next stage
 }
 /// <reference path="references.ts" />
 var BuyBar = (function (_super) {
@@ -2551,6 +2597,36 @@ var BuyButton = (function (_super) {
     };
     return BuyButton;
 }(ArcButton));
+/// <reference path="references.ts" />
+var ArcHistory = (function () {
+    function ArcHistory(setType) {
+        // The type of action this represents, e.g. resource change or development built
+        this.type = null;
+        this.type = setType;
+    }
+    ArcHistory.prototype.recordDevAction = function (setTileId) {
+        this.id = setTileId;
+    };
+    ArcHistory.prototype.recordBuildTileId = function (setBuildTileId) {
+        this.buildTileId.push(setBuildTileId);
+    };
+    ArcHistory.prototype.recordDestruction = function (setDestroyedTileId, setDestroyedDev) {
+        this.destroyedTileId.push(setDestroyedTileId);
+        this.destroyedDev.push(setDestroyedDev);
+    };
+    ArcHistory.prototype.undoAction = function () {
+        if (this.type === "development") {
+            applyDevEffect(this.id, true);
+        }
+        else if (this.type === "build") {
+        }
+        else if (this.type === "pass") {
+        }
+    };
+    ArcHistory.prototype.undoBuildCost = function () {
+    };
+    return ArcHistory;
+}());
 /// <reference path="global.ts" />
 /// <reference path="tile.ts" />
 /// <reference path="player.ts" />
@@ -2572,6 +2648,7 @@ var BuyButton = (function (_super) {
 /// <reference path="action-effect.ts" />
 /// <reference path="buy-bar.ts" />
 /// <reference path="buy-button.ts" />
+/// <reference path="arc-history.ts" />
 /// <reference path="state.ts" /> 
 /// <reference path="references.ts" />
 function onImageLoad() {

@@ -19,7 +19,7 @@ class Player {
 	trash: number[] = [];
 	activeEffects: number[] = [];
 	actions: number = 3;
-	actionHistory: any[] = [];
+	actionHistory: ArcHistory[] = [];
 
 	constructor() {
 		this.playerID = playerIncrement;
@@ -30,6 +30,13 @@ class Player {
 		if (resource === eCOST.Food) { return this.food; }
 		else if (resource === eCOST.Material) { return this.material; }
 		else if (resource === eCOST.Treasure) { return this.treasure; }
+		else { console.log("Error: Unexpected resource request to Player."); }
+	}
+
+	giveResource(resource, amount) {
+		if (resource === eCOST.Food) { this.food += amount; }
+		else if (resource === eCOST.Material) { this.food += amount; }
+		else if (resource === eCOST.Treasure) { this.food += amount; }
 		else { console.log("Error: Unexpected resource request to Player."); }
 	}
 

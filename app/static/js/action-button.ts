@@ -53,12 +53,7 @@ class ActionButton extends ArcButton {
 	displayActiveSlot(setOrigin: number[]) {
 		this.formHexBounds(setOrigin);
 		// Display the white background
-		let randNum = Math.random()*3;
-		let whiteHexNum = "";
-		if (randNum < 1) { whiteHexNum = "whitehex.png"; }
-		else if ((randNum > 1) && (randNum < 2)) { whiteHexNum = "whitehex2.png"; }
-		else { whiteHexNum = "whitehex3.png"; }
-		this.sprBg = new Sprite(sprMed[whiteHexNum]);
+		this.sprBg = new Sprite(sprMed["whitehex.png"]);
 		this.sprBg.scale.set(0.2, 0.2);
 		// Subtract hex height from sprite to correct for tallness
 		this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
@@ -66,9 +61,16 @@ class ActionButton extends ArcButton {
 
 		if (currPlayer.actionHistory[this.id] != undefined) {
 			if (currPlayer.actionHistory[this.id][0] === "development") {
-				let tileId = currPlayer.actionHistory[this.id][1];
+				let tileId = currPlayer.actionHistory[this.id].id;
 				let tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
 				this.sprSecond = new Sprite(sprMed[tSprName]);
+				this.sprSecond.scale.set(0.2, 0.2);
+				this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+				stage.addChild(this.sprSecond);
+			}
+			else if ((currPlayer.actionHistory[this.id][0] === "other") && 
+							 (currPlayer.actionHistory[this.id][1] === "Build")) {
+				this.sprSecond = new Sprite(sprMed["build.png"]);
 				this.sprSecond.scale.set(0.2, 0.2);
 				this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
 				stage.addChild(this.sprSecond);

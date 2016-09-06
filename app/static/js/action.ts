@@ -72,7 +72,8 @@ function buildClick(corPoint) {
 					glbState = monthSetup;
 				}
 				else {
-					currPlayer.actionHistory.push("Build");
+					currPlayer.actionHistory.push(["other", "Build"]);
+					currPlayer.actions--;
 					veClearTint(glbPulseArray);
 					glbTileSelArray = []; glbPulseArray = [];
 					glbState = activeSetup;
@@ -81,6 +82,18 @@ function buildClick(corPoint) {
 			else {
 				currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
 			}
+		}
+	}
+}
+
+function subtractPrice() {
+	let tDev: Development = develArray[glbBuildSel];
+	let rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
+	for (let tResource = 0; tResource < tDev.cost.length; tResource++) {
+		if ((tResource === eCOST.Food) || 
+			  (tResource === eCOST.Material) || 
+			  (tResource === eCOST.Treasure)) {
+
 		}
 	}
 }
