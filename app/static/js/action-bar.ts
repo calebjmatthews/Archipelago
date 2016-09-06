@@ -117,6 +117,10 @@ class ActionBar extends SideBar {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
 			}
+			else if (cButton === (currPlayer.hand.length + 3 + this.numActives + 1)) {
+				stage.removeChild(this.buttonArray[cButton].sprBg);
+				stage.removeChild(this.buttonArray[cButton].txtLabel);
+			}
 			else {
 				console.log("Error, unexpected menu button value.");
 				break;
