@@ -1726,6 +1726,10 @@ var ActionBar = (function (_super) {
                     glbState = buySetup;
                 }
                 else if (cButton === (currPlayer.hand.length + 1)) {
+                    currPlayer.actions--;
+                    var ahSpot = currPlayer.actionHistory.length;
+                    currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
+                    glbState = activeSetup;
                 }
                 else {
                     console.log("Unexpected edit bar value.");
@@ -1917,17 +1921,16 @@ var ActionButton = (function (_super) {
                 var tileId = currPlayer.actionHistory[this.id].id;
                 var tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
                 this.sprSecond = new Sprite(sprMed[tSprName]);
-                this.sprSecond.scale.set(0.2, 0.2);
-                this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
-                stage.addChild(this.sprSecond);
             }
-            else if ((currPlayer.actionHistory[this.id][0] === "other") &&
-                (currPlayer.actionHistory[this.id][1] === "Build")) {
+            else if ((currPlayer.actionHistory[this.id].type === "build")) {
                 this.sprSecond = new Sprite(sprMed["build.png"]);
-                this.sprSecond.scale.set(0.2, 0.2);
-                this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
-                stage.addChild(this.sprSecond);
             }
+            else if ((currPlayer.actionHistory[this.id].type === "pass")) {
+                this.sprSecond = new Sprite(sprMed["pass.png"]);
+            }
+            this.sprSecond.scale.set(0.2, 0.2);
+            this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+            stage.addChild(this.sprSecond);
         }
     };
     ActionButton.prototype.inActiveHex = function (corPoint) {

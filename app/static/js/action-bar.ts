@@ -173,7 +173,10 @@ class ActionBar extends SideBar {
 
 				// Pass button
 				else if (cButton === (currPlayer.hand.length+1)) {
-					
+					currPlayer.actions--;
+					let ahSpot = currPlayer.actionHistory.length;
+					currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
+					glbState = activeSetup;
 				}
 				else { console.log("Unexpected edit bar value."); }
 			}			
