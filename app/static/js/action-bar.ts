@@ -102,7 +102,7 @@ class ActionBar extends SideBar {
 	}
 
 	removeBar() {
-		for (let cButton=0; 
+		for (let cButton=0;  
 				cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
 			if (cButton < currPlayer.hand.length + 2) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
@@ -117,7 +117,7 @@ class ActionBar extends SideBar {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].sprSecond);
 			}
-			else if (cButton === (currPlayer.hand.length + 3 + this.numActives + 1)) {
+			else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
 				stage.removeChild(this.buttonArray[cButton].sprBg);
 				stage.removeChild(this.buttonArray[cButton].txtLabel);
 			}

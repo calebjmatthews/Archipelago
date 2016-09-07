@@ -85,7 +85,7 @@ function afterEffect(tileID: number) {
 	currPlayer.actions--;
 	let ahSpot = currPlayer.actionHistory.length;
 	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-	currPlayer.actionHistory[ahSpot].id = tileID;
+	currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
 
 	// Update display
 	updatePlayerBar();

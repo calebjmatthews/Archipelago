@@ -60,7 +60,7 @@ class ActionButton extends ArcButton {
 		stage.addChild(this.sprBg);
 
 		if (currPlayer.actionHistory[this.id] != undefined) {
-			if (currPlayer.actionHistory[this.id][0] === "development") {
+			if (currPlayer.actionHistory[this.id].type === "development") {
 				let tileId = currPlayer.actionHistory[this.id].id;
 				let tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
 				this.sprSecond = new Sprite(sprMed[tSprName]);

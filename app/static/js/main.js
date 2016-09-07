@@ -1670,6 +1670,10 @@ var ActionBar = (function (_super) {
                 stage.removeChild(this.buttonArray[cButton].sprBg);
                 stage.removeChild(this.buttonArray[cButton].sprSecond);
             }
+            else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
+                stage.removeChild(this.buttonArray[cButton].sprBg);
+                stage.removeChild(this.buttonArray[cButton].txtLabel);
+            }
             else {
                 console.log("Error, unexpected menu button value.");
                 break;
@@ -1904,7 +1908,7 @@ var ActionButton = (function (_super) {
         this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
         stage.addChild(this.sprBg);
         if (currPlayer.actionHistory[this.id] != undefined) {
-            if (currPlayer.actionHistory[this.id][0] === "development") {
+            if (currPlayer.actionHistory[this.id].type === "development") {
                 var tileId = currPlayer.actionHistory[this.id].id;
                 var tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
                 this.sprSecond = new Sprite(sprMed[tSprName]);
@@ -2368,7 +2372,7 @@ function afterEffect(tileID) {
     currPlayer.actions--;
     var ahSpot = currPlayer.actionHistory.length;
     currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-    currPlayer.actionHistory[ahSpot].id = tileID;
+    currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
     // Update display
     updatePlayerBar();
     currPlayer.removeCard(tileID);
