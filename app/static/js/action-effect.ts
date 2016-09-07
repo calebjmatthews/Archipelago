@@ -9,7 +9,7 @@ function applyDevEffect(tileID: number, undoing: boolean = false) {
 			applySingleEffect(resultArray, cResult, undoing);
 		}
 	}
-	afterEffect(tileID);
+	afterEffect(tileID, undoing);
 }
 
 function beforeEffect() {
@@ -80,18 +80,26 @@ function applySingleEffect(resultArray: number[], cResult: number, undoing: bool
 	}
 }
 
-function afterEffect(tileID: number) {
+function afterEffect(tileID: number, undoing: boolean) {
+	let undModify = 1;
+	if (undoing) { undModify = -1; }
+
 	// Account for spent card
-	currPlayer.actions--;
-	let ahSpot = currPlayer.actionHistory.length;
-	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-	currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
+	currPlayer.actions += (-1 * undModify);
+	if (!undoing) {
+		let ahSpot = currPlayer.actionHistory.length;
+		currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+		currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
+	}
+	else {
+		// Remove the undone card from the array
+		let ahSpot = currPlayer.actionHistory.length - 1;
+		currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
+	}
 
 	// Update display
 	updatePlayerBar();
 	currPlayer.removeCard(tileID);
 	glbSideBar.formBar();
-
-	// If last action is used, allow the program to proceed to the next stage
 	
 }

@@ -63,18 +63,17 @@ class ActionButton extends ArcButton {
 			if (currPlayer.actionHistory[this.id].type === "development") {
 				let tileId = currPlayer.actionHistory[this.id].id;
 				let tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
-				this.sprSecond = new Sprite(sprMed[tSprName]);
-				this.sprSecond.scale.set(0.2, 0.2);
-				this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
-				stage.addChild(this.sprSecond);
+				this.sprSecond = new Sprite(sprMed[tSprName]);	
 			}
-			else if ((currPlayer.actionHistory[this.id][0] === "other") && 
-							 (currPlayer.actionHistory[this.id][1] === "Build")) {
+			else if ((currPlayer.actionHistory[this.id].type === "build")) {
 				this.sprSecond = new Sprite(sprMed["build.png"]);
-				this.sprSecond.scale.set(0.2, 0.2);
-				this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
-				stage.addChild(this.sprSecond);
 			}
+			else if ((currPlayer.actionHistory[this.id].type === "pass")) {
+				this.sprSecond = new Sprite(sprMed["pass.png"]);
+			}
+			this.sprSecond.scale.set(0.2, 0.2);
+			this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));
+			stage.addChild(this.sprSecond);
 		}
 	}
 

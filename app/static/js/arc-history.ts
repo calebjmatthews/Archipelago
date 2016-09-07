@@ -6,11 +6,11 @@ class ArcHistory {
 	// If the effect came from a development, this is the development's tileID
 	id: number;
 	// If developments were built, this contains the location(s)
-	buildTileId: number[];
+	buildTileId: number[] = [];
 	// If development(s) were destroyed, this contains the location(s)
-	destroyedTileId: number[];
+	destroyedTileId: number[] = [];
 	// If development(s) was destroyed, this contains the development(s)'s id(s)
-	destroyedDev: number[];
+	destroyedDev: number[] = [];
 
 	constructor(setType: string) {
 		this.type = setType;

@@ -1628,7 +1628,12 @@ var ActionBar = (function (_super) {
             }
             else if (cButton < (currPlayer.hand.length + 3 + this.numActives + 1)) {
                 this.buttonArray[cButton] = new ActionButton("other", null, "Finish");
-                this.buttonArray[cButton].enabled = false;
+                if (currPlayer.actions > 0) {
+                    this.buttonArray[cButton].enabled = false;
+                }
+                else {
+                    this.buttonArray[cButton].enabled = true;
+                }
             }
             else {
                 console.log("Error, unexpected menu button value.");
@@ -2036,7 +2041,9 @@ function buildClick(corPoint) {
                     glbState = monthSetup;
                 }
                 else {
-                    currPlayer.actionHistory.push(["other", "Build"]);
+                    var ahSpot = currPlayer.actionHistory.length;
+                    currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
+                    currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
                     currPlayer.actions--;
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
@@ -2306,7 +2313,7 @@ function applyDevEffect(tileID, undoing) {
             applySingleEffect(resultArray, cResult, undoing);
         }
     }
-    afterEffect(tileID);
+    afterEffect(tileID, undoing);
 }
 function beforeEffect() {
     glbSideBar.removeBar();
@@ -2367,17 +2374,27 @@ function applySingleEffect(resultArray, cResult, undoing) {
         currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
     }
 }
-function afterEffect(tileID) {
+function afterEffect(tileID, undoing) {
+    var undModify = 1;
+    if (undoing) {
+        undModify = -1;
+    }
     // Account for spent card
-    currPlayer.actions--;
-    var ahSpot = currPlayer.actionHistory.length;
-    currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-    currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
+    currPlayer.actions += (-1 * undModify);
+    if (!undoing) {
+        var ahSpot = currPlayer.actionHistory.length;
+        currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+        currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
+    }
+    else {
+        // Remove the undone card from the array
+        var ahSpot = currPlayer.actionHistory.length - 1;
+        currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
+    }
     // Update display
     updatePlayerBar();
     currPlayer.removeCard(tileID);
     glbSideBar.formBar();
-    // If last action is used, allow the program to proceed to the next stage
 }
 /// <reference path="references.ts" />
 var BuyBar = (function (_super) {
@@ -2606,6 +2623,12 @@ var ArcHistory = (function () {
     function ArcHistory(setType) {
         // The type of action this represents, e.g. resource change or development built
         this.type = null;
+        // If developments were built, this contains the location(s)
+        this.buildTileId = [];
+        // If development(s) were destroyed, this contains the location(s)
+        this.destroyedTileId = [];
+        // If development(s) was destroyed, this contains the development(s)'s id(s)
+        this.destroyedDev = [];
         this.type = setType;
     }
     ArcHistory.prototype.recordDevAction = function (setTileId) {
@@ -2789,6 +2812,15 @@ function buySetup() {
 }
 // Player chooses new developments to purchase
 function buy() {
+    // Click event handling
+    pointer.press = function () {
+        if ((pointer.x) < (renderer.width - 200)) {
+            activeClick([pointer.x, pointer.y]);
+        }
+        else {
+            glbSideBar.clickBar([pointer.x, pointer.y]);
+        }
+    };
     // Hover event handling
     if (pointer.x < (renderer.width - 200)) {
         hoverTile([pointer.x, pointer.y]);

@@ -72,7 +72,9 @@ function buildClick(corPoint) {
 					glbState = monthSetup;
 				}
 				else {
-					currPlayer.actionHistory.push(["other", "Build"]);
+					let ahSpot = currPlayer.actionHistory.length;
+					currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
+					currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
 					currPlayer.actions--;
 					veClearTint(glbPulseArray);
 					glbTileSelArray = []; glbPulseArray = [];

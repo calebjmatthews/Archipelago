@@ -146,6 +146,11 @@ function buySetup() {
 
 // Player chooses new developments to purchase
 function buy() {
+	// Click event handling
+	pointer.press = () => {
+		if ((pointer.x) < (renderer.width-200)) { activeClick([pointer.x, pointer.y]); }
+		else { glbSideBar.clickBar([pointer.x, pointer.y]); }
+	}
 
 	// Hover event handling
 	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }

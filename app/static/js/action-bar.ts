@@ -70,7 +70,8 @@ class ActionBar extends SideBar {
 			}
 			else if (cButton < (currPlayer.hand.length + 3 + this.numActives + 1)) {
 				this.buttonArray[cButton] = new ActionButton("other", null, "Finish");
-				this.buttonArray[cButton].enabled = false;
+				if (currPlayer.actions > 0) { this.buttonArray[cButton].enabled = false; }
+				else { this.buttonArray[cButton].enabled = true; }
 			}
 			else {
 				console.log("Error, unexpected menu button value.");
