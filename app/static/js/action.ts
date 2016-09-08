@@ -61,18 +61,19 @@ function buildClick(corPoint) {
 				clkTile.reDrawTile();
 
 				// Move to the next game state
-				if ((glbMonth ===0) && (currPlayer.playerID === 0)) {
+				if ((glbMonth === 0) && (currPlayer.playerID === 0)) {
 					currPlayer = cPlayerArray[1];
 					glbState = buildSetup;
 				}
-				else if ((glbMonth ===0) && currPlayer.playerID === 1) {
+				else if ((glbMonth === 0) && currPlayer.playerID === 1) {
 					veClearTint(glbPulseArray);
 					glbTileSelArray = []; glbPulseArray = [];
-					currPlayer = cPlayerArray[0];
 					glbState = monthSetup;
 				}
 				else {
 					let ahSpot = currPlayer.actionHistory.length;
+					subtractPrice();
+					updatePlayerBar();
 					currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
 					currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
 					currPlayer.actions--;
@@ -91,11 +92,14 @@ function buildClick(corPoint) {
 function subtractPrice() {
 	let tDev: Development = develArray[glbBuildSel];
 	let rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
-	for (let tResource = 0; tResource < tDev.cost.length; tResource++) {
+	for (let iii = 0; iii < rArray.length; iii++) {
+		let tResource = rArray[iii];
 		if ((tResource === eCOST.Food) || 
 			  (tResource === eCOST.Material) || 
 			  (tResource === eCOST.Treasure)) {
-
+			if (tDev.cost[tResource] != undefined) {
+				currPlayer.giveResource(tResource, (-1 * tDev.cost[tResource]));
+			}
 		}
 	}
 }

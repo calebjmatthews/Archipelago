@@ -41,7 +41,7 @@ class ActionButton extends ArcButton {
 	}
 
 	displayCounter(setOrigin: number[]) {
-		this.bounds[0] = setOrigin;
+		this.formStandardBounds(setOrigin);
 		let setText = ("Actions: " + currPlayer.actions + "/" + 
 			(currPlayer.actions + currPlayer.actionHistory.length));
 		this.txtLabel = new Text(setText, 

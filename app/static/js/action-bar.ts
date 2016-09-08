@@ -68,7 +68,7 @@ class ActionBar extends SideBar {
 				this.buttonArray[cButton] = new ActionButton("active", 
 					(cButton - (currPlayer.hand.length + 3)), null);
 			}
-			else if (cButton < (currPlayer.hand.length + 3 + this.numActives + 1)) {
+			else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
 				this.buttonArray[cButton] = new ActionButton("other", null, "Finish");
 				if (currPlayer.actions > 0) { this.buttonArray[cButton].enabled = false; }
 				else { this.buttonArray[cButton].enabled = true; }
@@ -158,7 +158,7 @@ class ActionBar extends SideBar {
 	clickBar() {
 		this.baseClickBar();
 		for (let cButton = 0; 
-				cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+				cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
 				// Development buttons
@@ -178,6 +178,17 @@ class ActionBar extends SideBar {
 					currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
 					glbState = activeSetup;
 				}
+
+				// Finish button
+				else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
+					if (currPlayer === cPlayerArray[1]) {
+						glbState = plrMonSetup;
+					}
+					else if (currPlayer === cPlayerArray[0]) {
+						glbState = monthSetup;
+					}
+				}
+
 				else { console.log("Unexpected edit bar value."); }
 			}			
 		}

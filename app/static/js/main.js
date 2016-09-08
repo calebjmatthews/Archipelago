@@ -397,10 +397,10 @@ var Player = (function () {
             this.food += amount;
         }
         else if (resource === eCOST.Material) {
-            this.food += amount;
+            this.material += amount;
         }
         else if (resource === eCOST.Treasure) {
-            this.food += amount;
+            this.treasure += amount;
         }
         else {
             console.log("Error: Unexpected resource request to Player.");
@@ -486,6 +486,7 @@ var Player = (function () {
         if (handSpot === null) {
             console.log("Error: Tile not found in hand.");
         }
+        this.discard.push(this.hand[handSpot]);
         var newHand = this.hand.slice(0, handSpot);
         for (var tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
             newHand.push(this.hand[tCard]);
@@ -1626,7 +1627,7 @@ var ActionBar = (function (_super) {
             else if (cButton < (currPlayer.hand.length + 3 + this.numActives)) {
                 this.buttonArray[cButton] = new ActionButton("active", (cButton - (currPlayer.hand.length + 3)), null);
             }
-            else if (cButton < (currPlayer.hand.length + 3 + this.numActives + 1)) {
+            else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
                 this.buttonArray[cButton] = new ActionButton("other", null, "Finish");
                 if (currPlayer.actions > 0) {
                     this.buttonArray[cButton].enabled = false;
@@ -1716,7 +1717,7 @@ var ActionBar = (function (_super) {
     };
     ActionBar.prototype.clickBar = function () {
         this.baseClickBar();
-        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives); cButton++) {
+        for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Development buttons
                 if (cButton < currPlayer.hand.length) {
@@ -1730,6 +1731,14 @@ var ActionBar = (function (_super) {
                     var ahSpot = currPlayer.actionHistory.length;
                     currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
                     glbState = activeSetup;
+                }
+                else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
+                    if (currPlayer === cPlayerArray[1]) {
+                        glbState = plrMonSetup;
+                    }
+                    else if (currPlayer === cPlayerArray[0]) {
+                        glbState = monthSetup;
+                    }
                 }
                 else {
                     console.log("Unexpected edit bar value.");
@@ -1901,7 +1910,7 @@ var ActionButton = (function (_super) {
         this.displayTextLayer(this.otherName, [(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
     };
     ActionButton.prototype.displayCounter = function (setOrigin) {
-        this.bounds[0] = setOrigin;
+        this.formStandardBounds(setOrigin);
         var setText = ("Actions: " + currPlayer.actions + "/" +
             (currPlayer.actions + currPlayer.actionHistory.length));
         this.txtLabel = new Text(setText, { font: "18px sans-serif", fill: "white" });
@@ -2040,11 +2049,12 @@ function buildClick(corPoint) {
                     veClearTint(glbPulseArray);
                     glbTileSelArray = [];
                     glbPulseArray = [];
-                    currPlayer = cPlayerArray[0];
                     glbState = monthSetup;
                 }
                 else {
                     var ahSpot = currPlayer.actionHistory.length;
+                    subtractPrice();
+                    updatePlayerBar();
                     currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
                     currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
                     currPlayer.actions--;
@@ -2063,10 +2073,14 @@ function buildClick(corPoint) {
 function subtractPrice() {
     var tDev = develArray[glbBuildSel];
     var rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
-    for (var tResource = 0; tResource < tDev.cost.length; tResource++) {
+    for (var iii = 0; iii < rArray.length; iii++) {
+        var tResource = rArray[iii];
         if ((tResource === eCOST.Food) ||
             (tResource === eCOST.Material) ||
             (tResource === eCOST.Treasure)) {
+            if (tDev.cost[tResource] != undefined) {
+                currPlayer.giveResource(tResource, (-1 * tDev.cost[tResource]));
+            }
         }
     }
 }
@@ -2760,16 +2774,32 @@ function editStateClick() {
 function monthSetup() {
     glbMonth++;
     updatePlayerBar();
-    currPlayer = cPlayerArray[1];
+    // Months should begin with Player 2, and plrMonSetup switches the current player
+    //  Therefore, set the current player to Player 1 here
+    currPlayer = cPlayerArray[0];
     glbState = plrMonSetup;
 }
 // Applies prior to each player's round
 function plrMonSetup() {
+    glbSideBar.removeBar();
+    if (currPlayer.playerID === 1) {
+        currPlayer = cPlayerArray[0];
+    }
+    else {
+        currPlayer = cPlayerArray[1];
+    }
     // Draw the hand of three developments
     for (var tCard = 0; tCard < 3; tCard++) {
         currPlayer.drawContainer();
     }
-    glbState = activeSetup;
+    currPlayer.actions = 3;
+    currPlayer.actionHistory = [];
+    glbState = initialActiveSetup;
+}
+function initialActiveSetup() {
+    glbSideBar = new ActionBar();
+    glbSideBar.formBar();
+    glbState = active;
 }
 function activeSetup() {
     glbSideBar.removeBar();

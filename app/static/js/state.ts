@@ -90,18 +90,28 @@ function editStateClick() {
 function monthSetup() {
 	glbMonth++;
 	updatePlayerBar();
-	currPlayer = cPlayerArray[1];
+	// Months should begin with Player 2, and plrMonSetup switches the current player
+	//  Therefore, set the current player to Player 1 here
+	currPlayer = cPlayerArray[0];
 	glbState = plrMonSetup;
 }
 
 // Applies prior to each player's round
 function plrMonSetup() {
+	glbSideBar.removeBar();
+	if (currPlayer.playerID === 1) { currPlayer = cPlayerArray[0]; }
+	else { currPlayer = cPlayerArray[1]; }
 	// Draw the hand of three developments
-	for (let tCard=0; tCard < 3; tCard++) {
-		currPlayer.drawContainer();
-	}
+	for (let tCard=0; tCard < 3; tCard++) { currPlayer.drawContainer(); }
+	currPlayer.actions = 3;
+	currPlayer.actionHistory = [];
+	glbState = initialActiveSetup;
+}
 
-	glbState = activeSetup;
+function initialActiveSetup() {
+	glbSideBar = new ActionBar();
+	glbSideBar.formBar();
+	glbState = active;
 }
 
 function activeSetup() {

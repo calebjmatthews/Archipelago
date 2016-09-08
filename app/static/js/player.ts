@@ -35,8 +35,8 @@ class Player {
 
 	giveResource(resource, amount) {
 		if (resource === eCOST.Food) { this.food += amount; }
-		else if (resource === eCOST.Material) { this.food += amount; }
-		else if (resource === eCOST.Treasure) { this.food += amount; }
+		else if (resource === eCOST.Material) { this.material += amount; }
+		else if (resource === eCOST.Treasure) { this.treasure += amount; }
 		else { console.log("Error: Unexpected resource request to Player."); }
 	}
 
@@ -123,6 +123,8 @@ class Player {
 			if (this.hand[tCard] === tileID) { handSpot = tCard; }
 		}
 		if (handSpot === null) { console.log("Error: Tile not found in hand."); }
+
+		this.discard.push(this.hand[handSpot]);
 
 		let newHand: number[] = this.hand.slice(0, handSpot);
 		for (let tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
