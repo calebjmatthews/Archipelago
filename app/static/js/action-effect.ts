@@ -4,12 +4,18 @@ function applyDevEffect(tileID: number, undoing: boolean = false) {
 	beforeEffect();
 	let tDev = develArray[currLand.tileArray[tileID].development];
 	let resultArray = considerPlayerEffects(tDev);
-	for (let cResult = 0; cResult < glbNumRes; cResult++) {
-		if (tDev.result[cResult] != undefined) {
-			applySingleEffect(resultArray, cResult, undoing);
+	if (requirementCheck(tileID, undoing)) {
+		for (let cResult = 0; cResult < glbNumRes; cResult++) {
+			if (tDev.result[cResult] != undefined) {
+				applySingleEffect(resultArray, cResult, undoing);
+			}
 		}
+		applyRequirement(tileID, undoing);
+		afterEffect(tileID, undoing);
 	}
-	afterEffect(tileID, undoing);
+	else {
+		glbState = activeSetup;
+	}
 }
 
 function beforeEffect() {
@@ -35,6 +41,39 @@ function considerPlayerEffects(tDev: Development) {
 		}
 	}
 	return resultArray;
+}
+
+function requirementCheck(tileId: number, undoing: boolean) {
+	let tDev: Development = develArray[currLand.tileArray[tileId].development];
+	if (tDev.requirement === []) { return true; }
+	if (undoing) { return true; }
+	else {
+		let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material, 
+			eREQ.Ship, eREQ.Treasure];
+		for (let cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {
+			let cReq = reqArray[cReqSpot];
+			if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
+			}
+			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.ownedDevs === []) { return false; }
+			}
+			else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.food < tDev.requirement[cReq]) { return false; }
+			}
+			else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.material < tDev.requirement[cReq]) { return false; }
+			}
+			else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.ships < tDev.requirement[cReq]) { return false; }
+			}
+			else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
+				if (currPlayer.treasure < tDev.requirement[cReq]) { return false; }
+			}
+			else { console.log("Error: unexpected dev requirement value."); }
+		}
+		return true;
+	}
 }
 
 function applySingleEffect(resultArray: number[], cResult: number, undoing: boolean) {
@@ -77,6 +116,40 @@ function applySingleEffect(resultArray: number[], cResult: number, undoing: bool
 
 	else if (cResult === eRES.Treasure) {
 		currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
+	}
+}
+
+function applyRequirement(tileId: number, undoing: boolean) {
+	let tDev: Development = develArray[currLand.tileArray[tileId].development];
+	let undModify = 1;
+	if (undoing) { undModify = -1; }
+	if (tDev.requirement === []) { return; }
+	else {
+		let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, 
+			eREQ.Ship, eREQ.Treasure];
+		for (let cReqSpot = 0; cReqSpot < reqArray.length; cReqSpot++) {
+			let cReq = reqArray[cReqSpot];
+			if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
+				currPlayer.actions -= (tDev.requirement[cReq] * undModify);
+				// glbState = selActive
+			}
+			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
+				// glbState = selDevel
+			}
+			else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
+				currPlayer.food -= (tDev.requirement[cReq] * undModify);
+			}
+			else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
+				currPlayer.material -= (tDev.requirement[cReq] * undModify);
+			}
+			else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
+				currPlayer.ships -= (tDev.requirement[cReq] * undModify);
+			}
+			else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
+				currPlayer.treasure -= (tDev.requirement[cReq] * undModify);
+			}
+			else { console.log("Error: unexpected dev requirement value."); }
+		}
 	}
 }
 

@@ -2325,12 +2325,18 @@ function applyDevEffect(tileID, undoing) {
     beforeEffect();
     var tDev = develArray[currLand.tileArray[tileID].development];
     var resultArray = considerPlayerEffects(tDev);
-    for (var cResult = 0; cResult < glbNumRes; cResult++) {
-        if (tDev.result[cResult] != undefined) {
-            applySingleEffect(resultArray, cResult, undoing);
+    if (requirementCheck(tileID, undoing)) {
+        for (var cResult = 0; cResult < glbNumRes; cResult++) {
+            if (tDev.result[cResult] != undefined) {
+                applySingleEffect(resultArray, cResult, undoing);
+            }
         }
+        applyRequirement(tileID, undoing);
+        afterEffect(tileID, undoing);
     }
-    afterEffect(tileID, undoing);
+    else {
+        glbState = activeSetup;
+    }
 }
 function beforeEffect() {
     glbSideBar.removeBar();
@@ -2353,6 +2359,56 @@ function considerPlayerEffects(tDev) {
         }
     }
     return resultArray;
+}
+function requirementCheck(tileId, undoing) {
+    var tDev = develArray[currLand.tileArray[tileId].development];
+    if (tDev.requirement === []) {
+        return true;
+    }
+    if (undoing) {
+        return true;
+    }
+    else {
+        var reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material,
+            eREQ.Ship, eREQ.Treasure];
+        for (var cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {
+            var cReq = reqArray[cReqSpot];
+            if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.actions < tDev.requirement[cReq]) {
+                    return false;
+                }
+            }
+            else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.ownedDevs === []) {
+                    return false;
+                }
+            }
+            else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.food < tDev.requirement[cReq]) {
+                    return false;
+                }
+            }
+            else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.material < tDev.requirement[cReq]) {
+                    return false;
+                }
+            }
+            else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.ships < tDev.requirement[cReq]) {
+                    return false;
+                }
+            }
+            else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
+                if (currPlayer.treasure < tDev.requirement[cReq]) {
+                    return false;
+                }
+            }
+            else {
+                console.log("Error: unexpected dev requirement value.");
+            }
+        }
+        return true;
+    }
 }
 function applySingleEffect(resultArray, cResult, undoing) {
     var undModify = 1;
@@ -2389,6 +2445,43 @@ function applySingleEffect(resultArray, cResult, undoing) {
     }
     else if (cResult === eRES.Treasure) {
         currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
+    }
+}
+function applyRequirement(tileId, undoing) {
+    var tDev = develArray[currLand.tileArray[tileId].development];
+    var undModify = 1;
+    if (undoing) {
+        undModify = -1;
+    }
+    if (tDev.requirement === []) {
+        return;
+    }
+    else {
+        var reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material,
+            eREQ.Ship, eREQ.Treasure];
+        for (var cReqSpot = 0; cReqSpot < reqArray.length; cReqSpot++) {
+            var cReq = reqArray[cReqSpot];
+            if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
+                currPlayer.actions -= (tDev.requirement[cReq] * undModify);
+            }
+            else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
+            }
+            else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
+                currPlayer.food -= (tDev.requirement[cReq] * undModify);
+            }
+            else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
+                currPlayer.material -= (tDev.requirement[cReq] * undModify);
+            }
+            else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
+                currPlayer.ships -= (tDev.requirement[cReq] * undModify);
+            }
+            else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
+                currPlayer.treasure -= (tDev.requirement[cReq] * undModify);
+            }
+            else {
+                console.log("Error: unexpected dev requirement value.");
+            }
+        }
     }
 }
 function afterEffect(tileID, undoing) {
@@ -2833,7 +2926,7 @@ function active() {
         glbSideBar.hoverOverBar();
     }
 }
-// Choosing a development as a target for a development's effect
+// Choosing a development as a target for another development's effect
 function selDevel() {
 }
 // Prepare the logic/visuals for development purchasing

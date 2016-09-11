@@ -141,7 +141,7 @@ function active() {
 	else { glbSideBar.hoverOverBar(); }
 }
 
-// Choosing a development as a target for a development's effect
+// Choosing a development as a target for another development's effect
 function selDevel() {
 
 }
