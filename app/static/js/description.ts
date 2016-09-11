@@ -83,7 +83,7 @@ class DescCard {
 	}
 
 	expandDescription(tDevel: Development) {
-		let pieces = tDevel.description.split(";");
+		let pieces = tDevel.description.split("; ");
 		let result = [];
 		let anyOver30 = false;
 		for (let tPiece = 0; tPiece < pieces.length; tPiece++) {
@@ -96,7 +96,7 @@ class DescCard {
 					beforeT[iii] = pieces[iii];
 				}
 				let afterT = [];
-				for (let iii = tPiece+1; iii < pieces.length; iii++) {
+				for (let iii = (tPiece + 1); iii < pieces.length; iii++) {
 					afterT[iii] = pieces[iii];
 				}
 
@@ -106,16 +106,16 @@ class DescCard {
 				// Use pseudo-while loop to break an indeterminate number of times
 				for (let iii = 0; iii < 80; iii++) {
 					if (tooLong.length > 34) {
-						for (let jjj = 35; jjj > 0; jjj--) {
+						for (let jjj = 34; jjj > 0; jjj--) {
 							if (tooLong[jjj] === " ") {
-								metaPieces.push(tooLong.slice(1, jjj));
+								metaPieces.push(tooLong.slice(0, jjj));
 								tooLong = tooLong.slice(jjj);
 								break;
 							}
 						}
 					}
 					else { 
-						metaPieces.push(tooLong.slice(1,tooLong.length));
+						metaPieces.push(tooLong.slice(0, tooLong.length));
 						break; }
 				}
 

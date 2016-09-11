@@ -2210,7 +2210,7 @@ var DescCard = (function () {
         }
     }
     DescCard.prototype.expandDescription = function (tDevel) {
-        var pieces = tDevel.description.split(";");
+        var pieces = tDevel.description.split("; ");
         var result = [];
         var anyOver30 = false;
         for (var tPiece = 0; tPiece < pieces.length; tPiece++) {
@@ -2223,7 +2223,7 @@ var DescCard = (function () {
                     beforeT[iii] = pieces[iii];
                 }
                 var afterT = [];
-                for (var iii = tPiece + 1; iii < pieces.length; iii++) {
+                for (var iii = (tPiece + 1); iii < pieces.length; iii++) {
                     afterT[iii] = pieces[iii];
                 }
                 // Break the >30 character piece along a space
@@ -2232,16 +2232,16 @@ var DescCard = (function () {
                 // Use pseudo-while loop to break an indeterminate number of times
                 for (var iii = 0; iii < 80; iii++) {
                     if (tooLong.length > 34) {
-                        for (var jjj = 35; jjj > 0; jjj--) {
+                        for (var jjj = 34; jjj > 0; jjj--) {
                             if (tooLong[jjj] === " ") {
-                                metaPieces.push(tooLong.slice(1, jjj));
+                                metaPieces.push(tooLong.slice(0, jjj));
                                 tooLong = tooLong.slice(jjj);
                                 break;
                             }
                         }
                     }
                     else {
-                        metaPieces.push(tooLong.slice(1, tooLong.length));
+                        metaPieces.push(tooLong.slice(0, tooLong.length));
                         break;
                     }
                 }

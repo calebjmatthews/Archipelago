@@ -259,7 +259,7 @@ develArray[eDEVEL.Demolition].result[eRES.Material] = 1;
 
 develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, 
 	["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, 
-	[eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active,  +1 Material"));
+	[eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active, +1 Material"));
 develArray[eDEVEL.ShepherdVillage].cost = [];
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Material] = 2;
