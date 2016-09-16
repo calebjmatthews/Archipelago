@@ -488,6 +488,18 @@ var Player = (function () {
         }
         this.deck = newDeck;
     };
+    Player.prototype.discardHand = function () {
+        for (var tHandCard = 0; tHandCard < this.hand.length; tHandCard++) {
+            this.discard.push(this.hand[tHandCard]);
+        }
+        this.hand = [];
+    };
+    Player.prototype.discardInPlay = function () {
+        for (var tPlayCard = 0; tPlayCard < this.inPlay.length; tPlayCard++) {
+            this.discard.push(this.inPlay[tPlayCard]);
+        }
+        this.inPlay = [];
+    };
     Player.prototype.removeCard = function (tileID) {
         var handSpot = null;
         for (var tCard = 0; tCard < this.hand.length; tCard++) {
@@ -498,7 +510,7 @@ var Player = (function () {
         if (handSpot === null) {
             console.log("Error: Tile not found in hand.");
         }
-        this.discard.push(this.hand[handSpot]);
+        this.inPlay.push(this.hand[handSpot]);
         var newHand = this.hand.slice(0, handSpot);
         for (var tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
             newHand.push(this.hand[tCard]);
@@ -1755,12 +1767,7 @@ var ActionBar = (function (_super) {
                     glbState = activeSetup;
                 }
                 else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
-                    if (currPlayer === cPlayerArray[1]) {
-                        glbState = plrMonSetup;
-                    }
-                    else if (currPlayer === cPlayerArray[0]) {
-                        glbState = monthSetup;
-                    }
+                    glbState = cleanup;
                 }
                 else {
                     console.log("Unexpected edit bar value.");
@@ -2843,7 +2850,9 @@ function gameLoop() {
     renderer.render(stage);
 }
 function editSetup() {
-    glbSideBar.removeBar();
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
     glbSideBar = new EditBar();
     glbSideBar.formBar();
     glbState = edit;
@@ -2896,7 +2905,9 @@ function monthSetup() {
 }
 // Applies prior to each player's round
 function plrMonSetup() {
-    glbSideBar.removeBar();
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
     if (currPlayer.playerID === 1) {
         currPlayer = cPlayerArray[0];
     }
@@ -2909,15 +2920,12 @@ function plrMonSetup() {
     }
     currPlayer.actions = 3;
     currPlayer.actionHistory = [];
-    glbState = initialActiveSetup;
-}
-function initialActiveSetup() {
-    glbSideBar = new ActionBar();
-    glbSideBar.formBar();
-    glbState = active;
+    glbState = activeSetup;
 }
 function activeSetup() {
-    glbSideBar.removeBar();
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
     glbSideBar = new ActionBar();
     glbSideBar.formBar();
     glbState = active;
@@ -2953,7 +2961,9 @@ function selDevel() {
 }
 // Prepare the logic/visuals for development purchasing
 function buySetup() {
-    glbSideBar.removeBar();
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
     glbSideBar = new BuyBar();
     glbSideBar.formBar();
     glbState = buy;
@@ -3016,4 +3026,15 @@ function build() {
 }
 // Applies after a player has finished their turn
 function cleanup() {
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
+    currPlayer.discardHand();
+    currPlayer.discardInPlay();
+    if (currPlayer === cPlayerArray[1]) {
+        glbState = plrMonSetup;
+    }
+    else if (currPlayer === cPlayerArray[0]) {
+        glbState = monthSetup;
+    }
 }

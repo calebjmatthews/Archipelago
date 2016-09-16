@@ -44,7 +44,7 @@ function gameLoop() {
 }
 
 function editSetup() {
-	glbSideBar.removeBar();
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	glbSideBar = new EditBar();
 	glbSideBar.formBar();
 	glbState = edit;
@@ -98,24 +98,18 @@ function monthSetup() {
 
 // Applies prior to each player's round
 function plrMonSetup() {
-	glbSideBar.removeBar();
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	if (currPlayer.playerID === 1) { currPlayer = cPlayerArray[0]; }
 	else { currPlayer = cPlayerArray[1]; }
 	// Draw the hand of three developments
-	for (let tCard=0; tCard < 3; tCard++) { currPlayer.drawContainer(); }
+	for (let tCard = 0; tCard < 3; tCard++) { currPlayer.drawContainer(); }
 	currPlayer.actions = 3;
 	currPlayer.actionHistory = [];
-	glbState = initialActiveSetup;
-}
-
-function initialActiveSetup() {
-	glbSideBar = new ActionBar();
-	glbSideBar.formBar();
-	glbState = active;
+	glbState = activeSetup;
 }
 
 function activeSetup() {
-	glbSideBar.removeBar();
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	glbSideBar = new ActionBar();
 	glbSideBar.formBar();
 	glbState = active;
@@ -148,7 +142,7 @@ function selDevel() {
 
 // Prepare the logic/visuals for development purchasing
 function buySetup() {
-	glbSideBar.removeBar();
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	glbSideBar = new BuyBar();
 	glbSideBar.formBar();
 	glbState = buy;
@@ -202,5 +196,13 @@ function build() {
 
 // Applies after a player has finished their turn
 function cleanup() {
-
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
+	currPlayer.discardHand();
+	currPlayer.discardInPlay();
+	if (currPlayer === cPlayerArray[1]) {
+		glbState = plrMonSetup;
+	}
+	else if (currPlayer === cPlayerArray[0]) {
+		glbState = monthSetup;
+	}
 }

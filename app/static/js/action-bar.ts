@@ -181,12 +181,7 @@ class ActionBar extends SideBar {
 
 				// Finish button
 				else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
-					if (currPlayer === cPlayerArray[1]) {
-						glbState = plrMonSetup;
-					}
-					else if (currPlayer === cPlayerArray[0]) {
-						glbState = monthSetup;
-					}
+					glbState = cleanup;
 				}
 
 				else { console.log("Unexpected edit bar value."); }

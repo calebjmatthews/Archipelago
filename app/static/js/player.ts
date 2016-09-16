@@ -125,6 +125,20 @@ class Player {
 		this.deck = newDeck;
 	}
 
+	discardHand() {
+		for (let tHandCard = 0; tHandCard < this.hand.length; tHandCard++) {
+			this.discard.push(this.hand[tHandCard]);
+		}
+		this.hand = [];
+	}
+
+	discardInPlay() {
+		for (let tPlayCard = 0; tPlayCard < this.inPlay.length; tPlayCard++) {
+			this.discard.push(this.inPlay[tPlayCard]);
+		}
+		this.inPlay = [];
+	}
+
 	removeCard(tileID: number) {
 		let handSpot: number = null;
 		for (let tCard = 0; tCard < this.hand.length; tCard++) {
@@ -132,7 +146,7 @@ class Player {
 		}
 		if (handSpot === null) { console.log("Error: Tile not found in hand."); }
 
-		this.discard.push(this.hand[handSpot]);
+		this.inPlay.push(this.hand[handSpot]);
 
 		let newHand: number[] = this.hand.slice(0, handSpot);
 		for (let tCard = (newHand.length + 1); tCard < this.hand.length; tCard++) {
