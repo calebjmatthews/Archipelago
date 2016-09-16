@@ -54,12 +54,15 @@ class ActionBar extends SideBar {
 			if (cButton < currPlayer.hand.length) {
 				this.buttonArray[cButton] = new ActionButton("development", 
 					(currLand.tileArray[currPlayer.hand[cButton]].development), null);
+				if (currPlayer.actions === 0) { this.buttonArray[cButton].enabled = false; }
 			}
 			else if (cButton === (currPlayer.hand.length)) {
 				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build");
+				if (currPlayer.actions === 0) { this.buttonArray[cButton].enabled = false; }
 			}
 			else if (cButton === (currPlayer.hand.length + 1)) {
 				this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass");
+				if (currPlayer.actions === 0) { this.buttonArray[cButton].enabled = false; }
 			}
 			else if (cButton === (currPlayer.hand.length + 2)) {
 				this.buttonArray[cButton] = new ActionButton("counter", null, "Actions");

@@ -1648,12 +1648,21 @@ var ActionBar = (function (_super) {
         for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (cButton < currPlayer.hand.length) {
                 this.buttonArray[cButton] = new ActionButton("development", (currLand.tileArray[currPlayer.hand[cButton]].development), null);
+                if (currPlayer.actions === 0) {
+                    this.buttonArray[cButton].enabled = false;
+                }
             }
             else if (cButton === (currPlayer.hand.length)) {
                 this.buttonArray[cButton] = new ActionButton("otherAction", null, "Build");
+                if (currPlayer.actions === 0) {
+                    this.buttonArray[cButton].enabled = false;
+                }
             }
             else if (cButton === (currPlayer.hand.length + 1)) {
                 this.buttonArray[cButton] = new ActionButton("otherAction", null, "Pass");
+                if (currPlayer.actions === 0) {
+                    this.buttonArray[cButton].enabled = false;
+                }
             }
             else if (cButton === (currPlayer.hand.length + 2)) {
                 this.buttonArray[cButton] = new ActionButton("counter", null, "Actions");
@@ -1840,9 +1849,17 @@ var ArcButton = (function () {
         else if (this.type === "other") {
             this.displayTextLayer(this.otherName, [(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
         }
-        // Greyed text for inactive buttons
-        if ((!this.enabled) && (this.txtLabel != undefined)) {
-            this.txtLabel.alpha = 0.5;
+        // Greyed text and sprites for inactive buttons
+        if (!this.enabled) {
+            if (this.txtLabel != undefined) {
+                this.txtLabel.alpha = 0.5;
+            }
+            if (this.sprFirst != undefined) {
+                this.sprFirst.tint = rgbToHclr([150, 150, 150]);
+            }
+            if (this.sprSecond != undefined) {
+                this.sprSecond.tint = rgbToHclr([150, 150, 150]);
+            }
         }
     };
     ArcButton.prototype.displayLscpLayer = function (lscpId) {
@@ -1937,6 +1954,10 @@ var ActionButton = (function (_super) {
         stage.addChild(this.sprSecond);
         // Display the related text
         this.displayTextLayer(this.otherName, [(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
+        if (!this.enabled) {
+            this.sprSecond.tint = rgbToHclr([150, 150, 150]);
+            this.txtLabel.alpha = 0.5;
+        }
     };
     ActionButton.prototype.displayCounter = function (setOrigin) {
         this.formStandardBounds(setOrigin);

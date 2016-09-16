@@ -70,9 +70,15 @@ class ArcButton {
 				[(this.bounds[0][0] + glbBPadding), (this.bounds[0][1] + 5 + glbBPadding)]);
 		}
 
-		// Greyed text for inactive buttons
-		if ((!this.enabled) && (this.txtLabel != undefined)) {
-			this.txtLabel.alpha = 0.5;
+		// Greyed text and sprites for inactive buttons
+		if (!this.enabled) {
+			if (this.txtLabel != undefined) { this.txtLabel.alpha = 0.5; }
+			if (this.sprFirst != undefined) {
+				this.sprFirst.tint = rgbToHclr([150, 150, 150]); 
+			}
+			if (this.sprSecond != undefined) {
+				this.sprSecond.tint = rgbToHclr([150, 150, 150]); 
+			}
 		}
 	}
 

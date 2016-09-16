@@ -38,6 +38,11 @@ class ActionButton extends ArcButton {
 		// Display the related text
 		this.displayTextLayer(this.otherName, 
 			[(this.bounds[0][0] + 73), (this.bounds[0][1]) + 7]);
+		
+		if (!this.enabled) {
+			this.sprSecond.tint = rgbToHclr([150, 150, 150]);
+			this.txtLabel.alpha = 0.5;
+		}
 	}
 
 	displayCounter(setOrigin: number[]) {
