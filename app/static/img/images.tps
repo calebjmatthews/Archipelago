@@ -242,6 +242,7 @@
             <key type="filename">uparrow.png</key>
             <key type="filename">ventureship.png</key>
             <key type="filename">violetcard.png</key>
+            <key type="filename">whiteborder.png</key>
             <key type="filename">whitehex.png</key>
             <key type="filename">whitehex2.png</key>
             <key type="filename">whitehex3.png</key>
@@ -315,6 +316,7 @@
             <filename>pass.png</filename>
             <filename>uparrow.png</filename>
             <filename>downarrow.png</filename>
+            <filename>whiteborder.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

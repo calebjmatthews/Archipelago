@@ -6,6 +6,7 @@ class Player {
 	//  toss analogue and is used in practice for the rest of the game
 	playerID: number;
 	playerOrder: number = 0;
+	color: number[] = [255, 255, 255];
 	food: number = 2;
 	material: number = 2;
 	treasure: number = 0;
@@ -24,6 +25,13 @@ class Player {
 	constructor() {
 		this.playerID = playerIncrement;
 		playerIncrement ++;
+
+		if (this.playerID === 0) {
+			this.color = [255, 0, 0];
+		}
+		else if (this.playerID === 1) {
+			this.color = [0, 0, 255];
+		}
 	}
 
 	getResource(resource) {

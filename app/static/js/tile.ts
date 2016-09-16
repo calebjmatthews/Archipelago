@@ -80,8 +80,13 @@ class Tile extends Hex {
 	reDrawTile() {
 		let arraySpot = currLand.getID([this.axialRow, this.axialCol]);
 		let tSprite = currLand.spriteArray[arraySpot];
+		let tBSprite = currLand.sprBorderArray[arraySpot];
 		let tDevSpr = currLand.sprDevArray[arraySpot];
 		tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
+		if (this.ownedBy != null) {
+			tBSprite.alpha = 1;
+			tBSprite.tint = rgbToHclr(cPlayerArray[this.ownedBy].color);
+		}
 		if (this.development != null) {
 			tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
 		}

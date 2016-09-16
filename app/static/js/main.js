@@ -345,8 +345,13 @@ var Tile = (function (_super) {
     Tile.prototype.reDrawTile = function () {
         var arraySpot = currLand.getID([this.axialRow, this.axialCol]);
         var tSprite = currLand.spriteArray[arraySpot];
+        var tBSprite = currLand.sprBorderArray[arraySpot];
         var tDevSpr = currLand.sprDevArray[arraySpot];
         tSprite.texture = sprMed[lscpArray[this.landscape].sprID];
+        if (this.ownedBy != null) {
+            tBSprite.alpha = 1;
+            tBSprite.tint = rgbToHclr(cPlayerArray[this.ownedBy].color);
+        }
         if (this.development != null) {
             tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
         }
@@ -361,6 +366,7 @@ var playerIncrement = 0; // Global incrementing variable used to set playerID
 var Player = (function () {
     function Player() {
         this.playerOrder = 0;
+        this.color = [255, 255, 255];
         this.food = 2;
         this.material = 2;
         this.treasure = 0;
@@ -377,6 +383,12 @@ var Player = (function () {
         this.actionHistory = [];
         this.playerID = playerIncrement;
         playerIncrement++;
+        if (this.playerID === 0) {
+            this.color = [255, 0, 0];
+        }
+        else if (this.playerID === 1) {
+            this.color = [0, 0, 255];
+        }
     }
     Player.prototype.getResource = function (resource) {
         if (resource === eCOST.Food) {
@@ -770,11 +782,13 @@ var Land = (function () {
     Land.prototype.displayLand = function () {
         var lTiles = this.tileArray;
         var landSprites = [];
+        var landBSprites = [];
         var landDevSprs = [];
         for (var currX = (-1 * glbBoundary); currX < glbBoundary; currX++) {
             for (var currY = (-1 * glbBoundary); currY < glbBoundary; currY++) {
                 var arraySpot = this.getID([currX, currY]);
                 if (arraySpot != null) {
+                    // Add landscape sprite
                     var tTile = lTiles[arraySpot];
                     var tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
                     tSprite.scale.set(tTile.scale, tTile.scale);
@@ -782,6 +796,13 @@ var Land = (function () {
                     tSprite.position.set(sPos[0], sPos[1]);
                     stage.addChild(tSprite);
                     landSprites[arraySpot] = tSprite;
+                    // Add border sprite
+                    var tBSprite = new Sprite(sprMed["whiteborder.png"]);
+                    tBSprite.scale.set(tTile.scale, tTile.scale);
+                    tBSprite.position.set(sPos[0], sPos[1]);
+                    stage.addChild(tBSprite);
+                    landBSprites[arraySpot] = tBSprite;
+                    landBSprites[arraySpot].alpha = 0;
                 }
             }
         }
@@ -810,6 +831,7 @@ var Land = (function () {
             }
         }
         this.spriteArray = landSprites;
+        this.sprBorderArray = landBSprites;
         this.sprDevArray = landDevSprs;
         renderer.render(stage);
     };
@@ -1148,7 +1170,7 @@ develArray[eDEVEL.Demolition].requirement = [];
 develArray[eDEVEL.Demolition].requirement[eREQ.Destroy] = 1;
 develArray[eDEVEL.Demolition].result = [];
 develArray[eDEVEL.Demolition].result[eRES.Material] = 1;
-develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, ["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active,  +1 Material"));
+develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, ["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active, +1 Material"));
 develArray[eDEVEL.ShepherdVillage].cost = [];
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].cost[eCOST.Material] = 2;

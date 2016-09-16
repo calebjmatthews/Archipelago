@@ -8,6 +8,7 @@ class Land {
 	lClimate: number;
 	tileArray: Tile[];
 	spriteArray: Sprite[];
+	sprBorderArray: Sprite[];
 	sprDevArray: Sprite[];
 	devSelection: DevSet;
 
@@ -298,11 +299,13 @@ class Land {
 	displayLand() {
 		let lTiles = this.tileArray;
 		let landSprites = [];
+		let landBSprites = [];
 		let landDevSprs = [];
 		for (var currX=(-1 * glbBoundary); currX < glbBoundary; currX++) {
 			for (var currY=(-1 * glbBoundary); currY < glbBoundary; currY++) {
 				let arraySpot = this.getID([currX, currY]);
 				if (arraySpot != null) {
+					// Add landscape sprite
 					let tTile = lTiles[arraySpot];
 					let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
 					tSprite.scale.set(tTile.scale, tTile.scale);
@@ -312,6 +315,16 @@ class Land {
 
 					stage.addChild(tSprite);
 					landSprites[arraySpot] = tSprite;
+
+					// Add border sprite
+					let tBSprite = new Sprite(sprMed["whiteborder.png"]);
+					tBSprite.scale.set(tTile.scale, tTile.scale);
+
+					tBSprite.position.set(sPos[0], sPos[1]);
+
+					stage.addChild(tBSprite);
+					landBSprites[arraySpot] = tBSprite;
+					landBSprites[arraySpot].alpha = 0;
 				}
 			}
 		}
@@ -343,6 +356,7 @@ class Land {
 			}
 		}
 		this.spriteArray = landSprites;
+		this.sprBorderArray = landBSprites;
 		this.sprDevArray = landDevSprs;
 		renderer.render(stage);
 	}

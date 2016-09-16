@@ -2,7 +2,7 @@
 
 "forested.png":
 {
-	"frame": {"x":908,"y":1512,"w":300,"h":150},
+	"frame": {"x":2,"y":1770,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -20,7 +20,7 @@
 },
 "grassy.png":
 {
-	"frame": {"x":1210,"y":1512,"w":300,"h":150},
+	"frame": {"x":304,"y":1770,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -29,7 +29,7 @@
 },
 "hex.png":
 {
-	"frame": {"x":1512,"y":1512,"w":300,"h":150},
+	"frame": {"x":554,"y":606,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -38,7 +38,7 @@
 },
 "huntingcamp.png":
 {
-	"frame": {"x":554,"y":2,"w":300,"h":300},
+	"frame": {"x":2,"y":1166,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -47,7 +47,7 @@
 },
 "jungle1.png":
 {
-	"frame": {"x":2,"y":1166,"w":300,"h":300},
+	"frame": {"x":2,"y":1468,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -56,7 +56,7 @@
 },
 "laborport.png":
 {
-	"frame": {"x":554,"y":304,"w":300,"h":300},
+	"frame": {"x":304,"y":864,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -65,7 +65,7 @@
 },
 "merchantship.png":
 {
-	"frame": {"x":856,"y":2,"w":300,"h":300},
+	"frame": {"x":304,"y":1166,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -74,7 +74,7 @@
 },
 "opulentvessel.png":
 {
-	"frame": {"x":2,"y":1468,"w":300,"h":300},
+	"frame": {"x":304,"y":1468,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -83,7 +83,7 @@
 },
 "pass.png":
 {
-	"frame": {"x":856,"y":304,"w":300,"h":300},
+	"frame": {"x":554,"y":2,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -92,7 +92,7 @@
 },
 "peachorchard.png":
 {
-	"frame": {"x":1158,"y":2,"w":300,"h":300},
+	"frame": {"x":554,"y":304,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -101,7 +101,7 @@
 },
 "ricepaddy.png":
 {
-	"frame": {"x":1158,"y":304,"w":300,"h":300},
+	"frame": {"x":856,"y":2,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -110,7 +110,7 @@
 },
 "rocky.png":
 {
-	"frame": {"x":908,"y":1664,"w":300,"h":150},
+	"frame": {"x":1210,"y":1512,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -119,7 +119,7 @@
 },
 "sea.png":
 {
-	"frame": {"x":1210,"y":1664,"w":300,"h":150},
+	"frame": {"x":1512,"y":1512,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -128,7 +128,7 @@
 },
 "seasideparade.png":
 {
-	"frame": {"x":1460,"y":2,"w":300,"h":300},
+	"frame": {"x":1158,"y":2,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -137,7 +137,7 @@
 },
 "shepherdvillage.png":
 {
-	"frame": {"x":1460,"y":304,"w":300,"h":300},
+	"frame": {"x":1460,"y":2,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -146,7 +146,7 @@
 },
 "shore.png":
 {
-	"frame": {"x":1512,"y":1664,"w":300,"h":150},
+	"frame": {"x":1210,"y":1664,"w":300,"h":150},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
@@ -155,7 +155,7 @@
 },
 "silvermine.png":
 {
-	"frame": {"x":554,"y":606,"w":300,"h":300},
+	"frame": {"x":856,"y":304,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -164,7 +164,7 @@
 },
 "smokehouse.png":
 {
-	"frame": {"x":856,"y":606,"w":300,"h":300},
+	"frame": {"x":1158,"y":304,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -173,7 +173,7 @@
 },
 "steadyvessel.png":
 {
-	"frame": {"x":1158,"y":606,"w":300,"h":300},
+	"frame": {"x":1460,"y":304,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -182,7 +182,7 @@
 },
 "stonequarry.png":
 {
-	"frame": {"x":1460,"y":606,"w":300,"h":300},
+	"frame": {"x":856,"y":606,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -191,7 +191,7 @@
 },
 "tall hex.png":
 {
-	"frame": {"x":304,"y":908,"w":300,"h":300},
+	"frame": {"x":1158,"y":606,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -200,7 +200,7 @@
 },
 "tallblank.png":
 {
-	"frame": {"x":304,"y":1210,"w":300,"h":300},
+	"frame": {"x":1460,"y":606,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -227,7 +227,7 @@
 },
 "tradeharbor.png":
 {
-	"frame": {"x":908,"y":908,"w":300,"h":300},
+	"frame": {"x":606,"y":1512,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -236,7 +236,7 @@
 },
 "ventureship.png":
 {
-	"frame": {"x":908,"y":1210,"w":300,"h":300},
+	"frame": {"x":908,"y":908,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -250,6 +250,15 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":550,"h":860},
 	"sourceSize": {"w":550,"h":860},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"whiteborder.png":
+{
+	"frame": {"x":1512,"y":1664,"w":300,"h":150},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":150},
+	"sourceSize": {"w":300,"h":150},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "whitehex.png":
@@ -272,7 +281,7 @@
 },
 "whitehex3.png":
 {
-	"frame": {"x":1210,"y":1210,"w":300,"h":300},
+	"frame": {"x":908,"y":1210,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -281,7 +290,7 @@
 },
 "woodcutters.png":
 {
-	"frame": {"x":1512,"y":1210,"w":300,"h":300},
+	"frame": {"x":908,"y":1512,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -290,7 +299,7 @@
 },
 "workervillage.png":
 {
-	"frame": {"x":304,"y":1512,"w":300,"h":300},
+	"frame": {"x":1210,"y":1210,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -299,7 +308,7 @@
 },
 "workmanship.png":
 {
-	"frame": {"x":606,"y":1512,"w":300,"h":300},
+	"frame": {"x":1512,"y":1210,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -311,8 +320,8 @@
 	"version": "1.0",
 	"image": "images-1.png",
 	"format": "RGBA8888",
-	"size": {"w":1814,"h":1816},
+	"size": {"w":1814,"h":1922},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:bf7a33feb389b10b14f96b628911e6ed:321b038faa971a2d0a6a50d9b65fe60e:4b437caca69fd16d5f6bf05828e98a30$"
+	"smartupdate": "$TexturePacker:SmartUpdate:cfb3240462009c6b9123c77edaeeda02:bc3133292ce586437bf6f7b04516f3aa:4b437caca69fd16d5f6bf05828e98a30$"
 }
 }
