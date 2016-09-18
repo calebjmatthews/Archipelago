@@ -184,17 +184,20 @@ class ActionBar extends SideBar {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
 				// Development buttons
-				if (cButton < currPlayer.hand.length) {
+				if ((cButton < currPlayer.hand.length) && 
+						(this.buttonArray[cButton].enabled)) {
 					applyDevEffect(currPlayer.hand[cButton]);
 				}
 
 				// Build button
-				else if (cButton === currPlayer.hand.length) {
+				else if ((cButton === currPlayer.hand.length) && 
+						(this.buttonArray[cButton].enabled)) {
 					glbState = buySetup;
 				}
 
 				// Pass button
-				else if (cButton === (currPlayer.hand.length+1)) {
+				else if ((cButton === (currPlayer.hand.length+1)) && 
+						(this.buttonArray[cButton].enabled)) {
 					currPlayer.actions--;
 					let ahSpot = currPlayer.actionHistory.length;
 					currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
@@ -202,7 +205,8 @@ class ActionBar extends SideBar {
 				}
 
 				// Finish button
-				else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
+				else if ((cButton === (currPlayer.hand.length + 3 + this.numActives)) && 
+						(this.buttonArray[cButton].enabled)) {
 					glbState = cleanup;
 				}
 

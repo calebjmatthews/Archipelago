@@ -1784,19 +1784,23 @@ var ActionBar = (function (_super) {
         for (var cButton = 0; cButton < (currPlayer.hand.length + 3 + this.numActives + 1); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Development buttons
-                if (cButton < currPlayer.hand.length) {
+                if ((cButton < currPlayer.hand.length) &&
+                    (this.buttonArray[cButton].enabled)) {
                     applyDevEffect(currPlayer.hand[cButton]);
                 }
-                else if (cButton === currPlayer.hand.length) {
+                else if ((cButton === currPlayer.hand.length) &&
+                    (this.buttonArray[cButton].enabled)) {
                     glbState = buySetup;
                 }
-                else if (cButton === (currPlayer.hand.length + 1)) {
+                else if ((cButton === (currPlayer.hand.length + 1)) &&
+                    (this.buttonArray[cButton].enabled)) {
                     currPlayer.actions--;
                     var ahSpot = currPlayer.actionHistory.length;
                     currPlayer.actionHistory[ahSpot] = new ArcHistory("pass");
                     glbState = activeSetup;
                 }
-                else if (cButton === (currPlayer.hand.length + 3 + this.numActives)) {
+                else if ((cButton === (currPlayer.hand.length + 3 + this.numActives)) &&
+                    (this.buttonArray[cButton].enabled)) {
                     glbState = cleanup;
                 }
                 else {
