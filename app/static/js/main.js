@@ -1731,6 +1731,7 @@ var ActionBar = (function (_super) {
         this.buttonArray = [];
     };
     ActionBar.prototype.hoverOverBar = function () {
+        var inAnyButton = false;
         for (var cButton = 0; cButton < this.buttonArray.length; cButton++) {
             if (this.buttonArray[cButton].type === "active") {
                 if (this.buttonArray[cButton].inActiveHex([pointer.x, pointer.y])) {
@@ -1751,10 +1752,30 @@ var ActionBar = (function (_super) {
                     else {
                         this.buttonArray[cButton].sprBg.alpha = 0.2;
                     }
+                    if ((this.buttonArray[cButton].type === "development") &&
+                        (currHovDescCard === null)) {
+                        inAnyButton = true;
+                        currHovDescCard = new DescCard([pointer.x, pointer.y], develArray[this.buttonArray[cButton].id]);
+                    }
+                    else if ((this.buttonArray[cButton].type === "development") &&
+                        (currHovDescCard != null)) {
+                        inAnyButton = true;
+                        if (currHovDescCard.devel.id === this.buttonArray[cButton].id) {
+                            continue;
+                        }
+                        else {
+                            currHovDescCard.selfDestruct();
+                        }
+                    }
                 }
                 else {
                     this.buttonArray[cButton].sprBg.alpha = 0;
                 }
+            }
+        }
+        if (!inAnyButton) {
+            if (currHovDescCard != null) {
+                currHovDescCard.selfDestruct();
             }
         }
     };
@@ -2688,6 +2709,9 @@ var BuyBar = (function (_super) {
                     inAnyButton = true;
                     if (this.buttonArray[cButton].enabled) {
                         this.buttonArray[cButton].sprBg.alpha = 0.6;
+                    }
+                    else {
+                        this.buttonArray[cButton].sprBg.alpha = 0.2;
                     }
                     if ((this.buttonArray[cButton].type === "choice") &&
                         (currHovDescCard === null)) {

@@ -137,6 +137,7 @@ class BuyBar extends SideBar {
 					if (this.buttonArray[cButton].enabled) {
 						this.buttonArray[cButton].sprBg.alpha = 0.6;
 					}
+					else { this.buttonArray[cButton].sprBg.alpha = 0.2; }
 
 					if ((this.buttonArray[cButton].type === "choice") && 
 						  (currHovDescCard === null)) {
