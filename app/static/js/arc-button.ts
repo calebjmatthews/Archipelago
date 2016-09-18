@@ -96,6 +96,17 @@ class ArcButton {
 			{font: "16px sans-serif", fill: "white"});
 		this.txtLabel.position.set(location[0], location[1]);
 		stage.addChild(this.txtLabel);
+
+		// Shrink the development's name so that it fits into the button
+		let shrinkValue = 0;
+		if (setText.length > 10) {
+			shrinkValue = Math.round((setText.length - 9) / 2);
+			this.txtLabel.style.font = (15 - shrinkValue) + "px sans-serif";
+			this.txtLabel.position.set = (location[0], (location[1] + shrinkValue));
+		}
+		else {
+			this.txtLabel.style.font = "15px sans-serif";
+		}
 	}
 
 	displayLscpButton() {
