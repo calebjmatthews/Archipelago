@@ -2,8 +2,8 @@
 
 function onImageLoad() {
 	// Fill sprite reference with texture info
-	sprMed = loader.resources["static/img/images-0.json"].textures;
-	let spr2 = loader.resources["static/img/images-1.json"].textures;
+	sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
+	let spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
 	for (var key in spr2) {
 		sprMed[key] = spr2[key];
 	}
@@ -137,7 +137,16 @@ function active() {
 
 // Choosing a development as a target for another development's effect
 function selDevel() {
+	// Click event handling
+	pointer.press = () => {
+		if ((pointer.x) < (renderer.width-200)) { selDevelClick([pointer.x, pointer.y]); }
+		else { glbSideBar.clickBar([pointer.x, pointer.y]); }
+	}
+	// Hover event handling
+	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
+	else { glbSideBar.hoverOverBar(); }
 
+	applyDevEffect(glbActingDev);
 }
 
 // Prepare the logic/visuals for development purchasing
@@ -164,9 +173,9 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	let selTerritory = null;
-	if (glbMonth === 0) { glbBuildSel = eDEVEL.BaseCamp; }
+	if (glbMonth === 0) { glbTileSel = eDEVEL.BaseCamp; }
 	else { selTerritory = currPlayer.territory; }
-	let tDevel = develArray[glbBuildSel];
+	let tDevel = develArray[glbTileSel];
 
 	if (glbTileSelArray != []) {
 		glbTileSelArray = currLand.getSel(selTerritory, tDevel.lscpRequired);

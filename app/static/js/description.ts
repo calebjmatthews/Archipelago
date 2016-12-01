@@ -31,23 +31,23 @@ class DescCard {
 		else if (tDevel.color === eDCLR.Red) { sprName="redcard.png"; }
 		else if (tDevel.color === eDCLR.Violet) { sprName="violetcard.png"; }
 		else { console.log("Error, unexpected dev color value."); }
-		this.tArray[0] = new Sprite(sprMed[sprName]);
+		this.tArray[0] = new PIXI.Sprite(sprMed[sprName]);
 		this.tArray[0].position.set(dPosition[0], dPosition[1]);
 		this.tArray[0].scale.set(0.65, 0.65);
 
 		// Development name
-		this.tArray.push(new Text(tDevel.name, {font: "24px sans-serif", fill: "black"}));
+		this.tArray.push(new PIXI.Text(tDevel.name, {font: "24px sans-serif", fill: "black"}));
 		this.tArray[this.tArray.length-1].position.set((dPosition[0] + 28), 
 			(dPosition[1] + 38));
 
 		// Background tile 
-		this.tArray.push(new Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]));
+		this.tArray.push(new PIXI.Sprite(sprMed[lscpArray[tDevel.lscpRequired[0]].sprID]));
 		this.tArray[this.tArray.length-1].scale.set(0.5, 0.5);
 		this.tArray[this.tArray.length-1].position.set((dPosition[0] + 93), 
 			(dPosition[1] + 181));
 
 		// Development sprite
-		this.tArray.push(new Sprite(sprMed[tDevel.sprID[0]]));
+		this.tArray.push(new PIXI.Sprite(sprMed[tDevel.sprID[0]]));
 		this.tArray[this.tArray.length-1].scale.set(0.5, 0.5);
 		this.tArray[this.tArray.length-1].position.set((dPosition[0] + 93), 
 			(dPosition[1] + 107));
@@ -56,7 +56,7 @@ class DescCard {
 		let expDesc = [];
 		expDesc = this.expandDescription(tDevel);
 		for (let tExpD = 0; tExpD < expDesc.length; tExpD++) {
-			this.tArray.push(new Text(expDesc[tExpD], 
+			this.tArray.push(new PIXI.Text(expDesc[tExpD], 
 				{font: "16px sans-serif", fill: "black"}));
 			this.tArray[this.tArray.length-1].position.set((dPosition[0] + 28), 
 				(dPosition[1] + 298 + (tExpD * 20)));
@@ -64,14 +64,14 @@ class DescCard {
 
 		// Development cost
 		let expCost = this.expandCost(tDevel);
-		this.tArray.push(new Text(expCost, {font: "16px sans-serif", fill: "black"}));
+		this.tArray.push(new PIXI.Text(expCost, {font: "16px sans-serif", fill: "black"}));
 		this.tArray[this.tArray.length-1].position.set((dPosition[0] + 28), 
 			(dPosition[1] + 475));
 
 		// Development required tiles
 		let tLscpReq = tDevel.lscpRequired;
 		for (let tLReq = 0; tLReq < tLscpReq.length; tLReq++) {
-			this.tArray.push(new Sprite(sprMed[lscpArray[tLscpReq[tLReq]].tinyID]));
+			this.tArray.push(new PIXI.Sprite(sprMed[lscpArray[tLscpReq[tLReq]].tinyID]));
 			this.tArray[this.tArray.length-1].position.set(((dPosition[0] + 255) - 
 				(tLReq * 32)), (dPosition[1] + 475));
 		}

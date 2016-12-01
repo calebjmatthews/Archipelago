@@ -7,9 +7,9 @@ class Land {
 	lShape: number;
 	lClimate: number;
 	tileArray: Tile[];
-	spriteArray: Sprite[];
-	sprBorderArray: Sprite[];
-	sprDevArray: Sprite[];
+	spriteArray: PIXI.Sprite[];
+	sprBorderArray: PIXI.Sprite[];
+	sprDevArray: PIXI.Sprite[];
 	devSelection: DevSet;
 
 	constructor(sentSettings: [number, number, number]) {
@@ -307,7 +307,7 @@ class Land {
 				if (arraySpot != null) {
 					// Add landscape sprite
 					let tTile = lTiles[arraySpot];
-					let tSprite = new Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
+					let tSprite = new PIXI.Sprite(sprMed[lscpArray[tTile.landscape].sprID]);
 					tSprite.scale.set(tTile.scale, tTile.scale);
 
 					let sPos = hexToPoint([currX, currY]);
@@ -317,7 +317,7 @@ class Land {
 					landSprites[arraySpot] = tSprite;
 
 					// Add border sprite
-					let tBSprite = new Sprite(sprMed["whiteborder.png"]);
+					let tBSprite = new PIXI.Sprite(sprMed["whiteborder.png"]);
 					tBSprite.scale.set(tTile.scale, tTile.scale);
 
 					tBSprite.position.set(sPos[0], sPos[1]);
@@ -338,13 +338,13 @@ class Land {
 					let tDevSpr = null;
 					// If there is no development for this tile, insert an empty hex as placeholder
 					if (tTile.development === undefined) {
-						tDevSpr = new Sprite(sprMed["tallblank.png"]);
+						tDevSpr = new PIXI.Sprite(sprMed["tallblank.png"]);
 					}
 					else if (tTile.development === null) {
-						tDevSpr = new Sprite(sprMed["tallblank.png"]);
+						tDevSpr = new PIXI.Sprite(sprMed["tallblank.png"]);
 					}
 					else {
-						tDevSpr = new Sprite(sprMed[develArray[tTile.development].sprID[0]]);
+						tDevSpr = new PIXI.Sprite(sprMed[develArray[tTile.development].sprID[0]]);
 					}
 					tDevSpr.scale.set(tTile.scale, tTile.scale);
 					let sdPos = hexToPoint([currX, currY]);

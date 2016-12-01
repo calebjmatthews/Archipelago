@@ -90,8 +90,9 @@ function buildClick(corPoint) {
 }
 
 function subtractPrice() {
-	let tDev: Development = develArray[glbBuildSel];
+	let tDev: Development = develArray[glbTileSel];
 	let rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
+	let rNameArray = ["Food", "Material", "Treasure"];
 	for (let iii = 0; iii < rArray.length; iii++) {
 		let tResource = rArray[iii];
 		if ((tResource === eCOST.Food) || 
@@ -99,6 +100,8 @@ function subtractPrice() {
 			  (tResource === eCOST.Treasure)) {
 			if (tDev.cost[tResource] != undefined) {
 				currPlayer.giveResource(tResource, (-1 * tDev.cost[tResource]));
+				glbVeNumArray[glbVeNumIncrement] = new veNumber(glbVeNumIncrement, 
+					(-1 * tDev.cost[tResource]), rNameArray[tResource]);
 			}
 		}
 	}
@@ -117,6 +120,24 @@ function activeClick(corPoint) {
 			if (clkTile.development != null) {
 				if (currDescCard != null) { currDescCard.selfDestruct(); }
 				currDescCard = new DescCard(corPoint, develArray[clkTile.development]);
+			}
+		}
+	}
+}
+
+function selDevelClick(corPoint) {
+	if (currDescCard != null) { currDescCard.selfDestruct(); }
+
+	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
+
+	let clkAxial = pointToHex(clkPoint);
+	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+
+	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
+		if (clkTile != undefined) {
+			if (clkTile.development != null) {
+				if (currDescCard != null) { currDescCard.selfDestruct(); }
+				
 			}
 		}
 	}

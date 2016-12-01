@@ -1,7 +1,7 @@
 /// <reference path="references.ts" />
 
 class BuyButton extends ArcButton {
-	txtCost: Text[] = [];
+	txtCost: PIXI.Text[] = [];
 
 	constructor(setType: string, setId: number, setOtherName: string) {
 		super(setType, setId, setOtherName);
@@ -13,7 +13,7 @@ class BuyButton extends ArcButton {
 		let tDev = develArray[this.id];
 
 		// Display a sprite of the landscape required by this development
-		this.sprFirst = new Sprite(
+		this.sprFirst = new PIXI.Sprite(
 			sprMed[lscpArray[develArray[this.id].lscpRequired[0]].sprID]);
 		this.sprFirst.scale.set(0.2, 0.2);
 		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
@@ -34,7 +34,7 @@ class BuyButton extends ArcButton {
 			let setFill = null;
 			if (tDev.checkCost(tResource[iii])) { setFill = "white"; }
 			else { setFill = "red"; }
-			this.txtCost[iii] = new Text(setText, {font: "13px sans-serif", fill: setFill});
+			this.txtCost[iii] = new PIXI.Text(setText, {font: "13px sans-serif", fill: setFill});
 			this.txtCost[iii].position.set(
 				(this.bounds[0][0] + glbBPadding + 70 + (iii * 30)), 
 				(this.bounds[0][1] + glbBPadding + 25));
@@ -43,7 +43,7 @@ class BuyButton extends ArcButton {
 
 		// Display the first development in the array above the landscape tile, 30 pixels
 		//  higher to account for the extra height of development sprites
-		this.sprSecond = new Sprite(sprMed[develArray[this.id].sprID[0]]);
+		this.sprSecond = new PIXI.Sprite(sprMed[develArray[this.id].sprID[0]]);
 		this.sprSecond.scale.set(0.2, 0.2);
 		this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), 
 			                          (this.bounds[0][1] + glbBPadding - 22));
@@ -54,7 +54,7 @@ class BuyButton extends ArcButton {
 		if (tDev.name.length > 10) {
 			shrinkValue = Math.round((tDev.name.length - 9) / 2);
 			this.txtLabel.style.font = (15 - shrinkValue) + "px sans-serif";
-			this.txtLabel.position.set = ((this.bounds[0][0] + 70 + glbBPadding), 
+			this.txtLabel.position.set((this.bounds[0][0] + 70 + glbBPadding), 
 						(this.bounds[0][1] + glbBPadding + shrinkValue));
 		}
 		else {

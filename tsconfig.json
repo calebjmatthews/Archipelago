@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "amd",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "noImplicitAny": false,
+    "outFile": "app/static/js/main.js"
+  },
+  "files": [
+    "app/static/js/references.ts",
+    "typings/index.d.ts"
+  ],
+  "include": [
+    "app/static/js/*"
+  ],
+  "exclude": ["typings"]
+}

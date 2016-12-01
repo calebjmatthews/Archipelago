@@ -1,24 +1,36 @@
 /// <reference path="references.ts" />
 
-function applyDevEffect(tileID: number, undoing: boolean = false) {
-	beforeEffect();
-	let tDev = develArray[currLand.tileArray[tileID].development];
+function applyDevEffect(tileId: number, undoing: boolean = false) {
+	let tDev = develArray[currLand.tileArray[tileId].development];
 	let resultArray = considerPlayerEffects(tDev);
-	if (requirementCheck(tileID, undoing)) {
+	if (requirementCheck(tileId, undoing)) {
+		beforeEffect(tileId, undoing);
+		if (!undoing) {
+			// Add the card to the history array
+			let ahSpot = currPlayer.actionHistory.length;
+			currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+			currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
+		}
+		else {
+			// Remove the undone card from the history array
+			let ahSpot = currPlayer.actionHistory.length - 1;
+			currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
+		}
+		applyRequirement(tileId, undoing);
 		for (let cResult = 0; cResult < glbNumRes; cResult++) {
 			if (tDev.result[cResult] != undefined) {
 				applySingleEffect(resultArray, cResult, undoing);
 			}
 		}
-		applyRequirement(tileID, undoing);
-		afterEffect(tileID, undoing);
+		afterEffect(tileId, undoing);
 	}
 	else {
 		glbState = activeSetup;
 	}
 }
 
-function beforeEffect() {
+function beforeEffect(tileId: number, undoing: boolean) {
+	glbActingDev = tileId;
 	glbSideBar.removeBar();
 }
 
@@ -47,38 +59,41 @@ function requirementCheck(tileId: number, undoing: boolean) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	if (tDev.requirement === []) { return true; }
 	if (undoing) { return true; }
-	else {
-		let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material, 
-			eREQ.Ship, eREQ.Treasure];
-		for (let cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {
-			let cReq = reqArray[cReqSpot];
-			if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
-			}
-			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.ownedDevs === []) { return false; }
-			}
-			else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.food < tDev.requirement[cReq]) { return false; }
-			}
-			else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.material < tDev.requirement[cReq]) { return false; }
-			}
-			else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.ships < tDev.requirement[cReq]) { return false; }
-			}
-			else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
-				if (currPlayer.treasure < tDev.requirement[cReq]) { return false; }
-			}
-			else { console.log("Error: unexpected dev requirement value."); }
+	// else {
+	// 	let ahSpot = currPlayer.actionHistory.length;
+	// 	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
+	// 	currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
+	// }
+	let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material, 
+		eREQ.Ship, eREQ.Treasure];
+	for (let cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {
+		let cReq = reqArray[cReqSpot];
+		if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
 		}
-		return true;
+		else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.ownedDevs.length === 0) { return false; }
+		}
+		else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.food < tDev.requirement[cReq]) { return false; }
+		}
+		else if ((cReq === eREQ.Material) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.material < tDev.requirement[cReq]) { return false; }
+		}
+		else if ((cReq === eREQ.Ship) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.ships < tDev.requirement[cReq]) { return false; }
+		}
+		else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
+			if (currPlayer.treasure < tDev.requirement[cReq]) { return false; }
+		}
 	}
+	return true;
 }
 
 function applySingleEffect(resultArray: number[], cResult: number, undoing: boolean) {
 	let undModify = 1;
 	if (undoing) { undModify = -1; }
+
 	if (cResult === eRES.Active) {
 		for (let iii = 0; iii < resultArray[eRES.Active]; iii++) {
 			currPlayer.actions += (1 * undModify);
@@ -123,7 +138,7 @@ function applyRequirement(tileId: number, undoing: boolean) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	let undModify = 1;
 	if (undoing) { undModify = -1; }
-	if (tDev.requirement === []) { return; }
+	if (tDev.requirement.length === 0) { return; }
 	else {
 		let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, 
 			eREQ.Ship, eREQ.Treasure];
@@ -134,7 +149,9 @@ function applyRequirement(tileId: number, undoing: boolean) {
 				// glbState = selActive
 			}
 			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-				// glbState = selDevel
+				glbTileSelArray = currPlayer.territory;
+				glbState = selDevel;
+
 			}
 			else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
 				currPlayer.food -= (tDev.requirement[cReq] * undModify);
@@ -148,31 +165,22 @@ function applyRequirement(tileId: number, undoing: boolean) {
 			else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
 				currPlayer.treasure -= (tDev.requirement[cReq] * undModify);
 			}
-			else { console.log("Error: unexpected dev requirement value."); }
+			else { console.log("Error: unexpected dev requirement value: " + cReq); }
 		}
 	}
 }
 
-function afterEffect(tileID: number, undoing: boolean) {
+function afterEffect(tileId: number, undoing: boolean) {
 	let undModify = 1;
 	if (undoing) { undModify = -1; }
 
 	// Account for spent card
 	currPlayer.actions += (-1 * undModify);
-	if (!undoing) {
-		let ahSpot = currPlayer.actionHistory.length;
-		currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-		currPlayer.actionHistory[ahSpot].recordDevAction(tileID);
-	}
-	else {
-		// Remove the undone card from the array
-		let ahSpot = currPlayer.actionHistory.length - 1;
-		currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
-	}
+	glbActingDev = null;
 
 	// Update display
 	updatePlayerBar();
-	currPlayer.removeCard(tileID);
+	currPlayer.removeCard(tileId);
 	glbSideBar.formBar();
 	
 }

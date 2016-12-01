@@ -16,8 +16,9 @@ var glbNumRes = 8;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbEditBarSel = null;
-var glbBuildSel = null;
+var glbTileSel = null;
 var glbTileSelArray = [];
+var glbActingDev = null;
 var glbSideBar = null;
 
 // Set global button constants
@@ -27,6 +28,15 @@ let glbBHeight = 30;
 
 // Initiate visual effect variables
 var glbPulseArray = [];
+var glbVeNumArray: veNumber[] = [];
+var glbVeNumIncrement = 0;
+
+// Currently active gameplay parameters
+let currLand = null;
+let currPlayer: Player = null;
+let cPlayerArray: Player[] = [];
+let currDescCard = null;
+let currHovDescCard = null;
 
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }

@@ -20,13 +20,13 @@ class ArcButton {
 	// Whether or not the button is able to be clicked, has a graphical effect
 	enabled: boolean = true;
 	// Sprite for the initially invisible button background
-	sprBg: Sprite;
+	sprBg: any;
 	// Sprite for the first layer of the button's visual
-	sprFirst: Sprite;
+	sprFirst: PIXI.Sprite;
 	// Sprite for a second layer, applied on top of the first
-	sprSecond: Sprite;
+	sprSecond: PIXI.Sprite;
 	// The button's text label
-	txtLabel: Text;
+	txtLabel: PIXI.Text;
 
 	constructor(setType: string, setId: number, setOtherName: string) {
 		this.type = setType;
@@ -52,7 +52,7 @@ class ArcButton {
 		this.formStandardBounds(setOrigin);
 
 		// Initially invisible background for hovering/selecting effects
-		this.sprBg = new Graphics();
+		this.sprBg = new PIXI.Graphics();
 		this.sprBg.beginFill(0xFFFFFF);
 		this.sprBg.drawRect(0, 0, (this.bWidth + (glbBPadding*2)), 
 			                        (this.bHeight+ (glbBPadding*2)));
@@ -84,7 +84,7 @@ class ArcButton {
 
 	displayLscpLayer(lscpId: number) {
 		// Display the landscape tile in question
-		this.sprFirst = new Sprite(sprMed[lscpArray[lscpId].sprID]);
+		this.sprFirst = new PIXI.Sprite(sprMed[lscpArray[lscpId].sprID]);
 		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
 			                         (this.bounds[0][1] + glbBPadding));
 		this.sprFirst.scale.set(0.2, 0.2);
@@ -92,7 +92,7 @@ class ArcButton {
 	}
 
 	displayTextLayer(setText: string, location: number[]) {
-		this.txtLabel = new Text(setText, 
+		this.txtLabel = new PIXI.Text(setText, 
 			{font: "16px sans-serif", fill: "white"});
 		this.txtLabel.position.set(location[0], location[1]);
 		stage.addChild(this.txtLabel);
@@ -101,8 +101,8 @@ class ArcButton {
 		let shrinkValue = 0;
 		if (setText.length > 10) {
 			shrinkValue = Math.round((setText.length - 9) / 2);
-			this.txtLabel.style.font = (15 - shrinkValue) + "px sans-serif";
-			this.txtLabel.position.set = (location[0], (location[1] + shrinkValue));
+			this.txtLabel.style.font = ((15 - shrinkValue) + "px sans-serif");
+			this.txtLabel.position.set(location[0], (location[1] + shrinkValue));
 		}
 		else {
 			this.txtLabel.style.font = "15px sans-serif";
@@ -123,7 +123,7 @@ class ArcButton {
 
 		// Display the first development in the array above the landscape tile, 30 pixels
 		//  higher to account for the extra height of development sprites
-		this.sprSecond = new Sprite(sprMed[develArray[this.id].sprID[0]]);
+		this.sprSecond = new PIXI.Sprite(sprMed[develArray[this.id].sprID[0]]);
 		this.sprSecond.scale.set(0.2, 0.2);
 		this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), 
 			                          (this.bounds[0][1] + glbBPadding - 30));
@@ -133,10 +133,10 @@ class ArcButton {
 	displayPageButton() {
 		this.sprFirst = null;
 		if (this.id === 0) {
-			this.sprFirst = new Sprite(sprMed["uparrow.png"]);
+			this.sprFirst = new PIXI.Sprite(sprMed["uparrow.png"]);
 		}
 		else if (this.id === 1) {
-			this.sprFirst = new Sprite(sprMed["downarrow.png"]);
+			this.sprFirst = new PIXI.Sprite(sprMed["downarrow.png"]);
 		}
 		
 		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 

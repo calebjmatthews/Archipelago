@@ -19,7 +19,7 @@ class ActionButton extends ArcButton {
 		this.displayButton(setOrigin);
 
 		// Display the black outline
-		this.sprFirst = new Sprite(sprMed["hex.png"]);
+		this.sprFirst = new PIXI.Sprite(sprMed["hex.png"]);
 		this.sprFirst.position.set((this.bounds[0][0] + glbBPadding), 
 			                         (this.bounds[0][1] + glbBPadding));
 		this.sprFirst.scale.set(0.2, 0.2);
@@ -29,7 +29,7 @@ class ActionButton extends ArcButton {
 		let sprOAName = "";
 		if (this.otherName === "Build") { sprOAName = "build.png"; }
 		else if (this.otherName === "Pass") { sprOAName = "pass.png"; }
-		this.sprSecond = new Sprite(sprMed[sprOAName]);
+		this.sprSecond = new PIXI.Sprite(sprMed[sprOAName]);
 		this.sprSecond.scale.set(0.2, 0.2);
 		this.sprSecond.position.set((this.bounds[0][0] + glbBPadding), 
 			                          (this.bounds[0][1] + glbBPadding - 30));
@@ -49,7 +49,7 @@ class ActionButton extends ArcButton {
 		this.formStandardBounds(setOrigin);
 		let setText = ("Actions: " + currPlayer.actions + "/" + 
 			(currPlayer.actions + currPlayer.actionHistory.length));
-		this.txtLabel = new Text(setText, 
+		this.txtLabel = new PIXI.Text(setText, 
 			{font: "18px sans-serif", fill: "white"});
 		this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
 		stage.addChild(this.txtLabel);
@@ -58,7 +58,7 @@ class ActionButton extends ArcButton {
 	displayActiveSlot(setOrigin: number[]) {
 		this.formHexBounds(setOrigin);
 		// Display the white background
-		this.sprBg = new Sprite(sprMed["whitehex.png"]);
+		this.sprBg = new PIXI.Sprite(sprMed["whitehex.png"]);
 		this.sprBg.scale.set(0.2, 0.2);
 		// Subtract hex height from sprite to correct for tallness
 		this.sprBg.position.set(this.bounds[0][0], (this.bounds[0][1] - glbHHeight));
@@ -68,13 +68,13 @@ class ActionButton extends ArcButton {
 			if (currPlayer.actionHistory[this.id].type === "development") {
 				let tileId = currPlayer.actionHistory[this.id].id;
 				let tSprName = develArray[currLand.tileArray[tileId].development].sprID[0];
-				this.sprSecond = new Sprite(sprMed[tSprName]);	
+				this.sprSecond = new PIXI.Sprite(sprMed[tSprName]);	
 			}
 			else if ((currPlayer.actionHistory[this.id].type === "build")) {
-				this.sprSecond = new Sprite(sprMed["build.png"]);
+				this.sprSecond = new PIXI.Sprite(sprMed["build.png"]);
 			}
 			else if ((currPlayer.actionHistory[this.id].type === "pass")) {
-				this.sprSecond = new Sprite(sprMed["pass.png"]);
+				this.sprSecond = new PIXI.Sprite(sprMed["pass.png"]);
 			}
 			this.sprSecond.scale.set(0.2, 0.2);
 			this.sprSecond.position.set(this.bounds[0][0], (this.bounds[0][1] - 30));

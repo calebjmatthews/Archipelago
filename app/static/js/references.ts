@@ -20,4 +20,5 @@
 /// <reference path="buy-bar.ts" />
 /// <reference path="buy-button.ts" />
 /// <reference path="arc-history.ts" />
+/// <reference path="ve-number.ts" />
 /// <reference path="state.ts" />

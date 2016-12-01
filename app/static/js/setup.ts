@@ -1,18 +1,8 @@
 /// <reference path="references.ts" />
 
 // Set up pixi.js
-	// PIXI Aliases
-	var Container = PIXI.Container,
-	    autoDetectRenderer = PIXI.autoDetectRenderer,
-	    loader = PIXI.loader,
-	    resources = PIXI.loader.resources,
-	    Sprite = PIXI.Sprite,
-	    TextureCache = PIXI.utils.TextureCache,
-	    Graphics = PIXI.Graphics,
-	    Text = PIXI.Text;
-
 	// Create renderer
-	var renderer = autoDetectRenderer();
+	var renderer = PIXI.autoDetectRenderer(800, 600);
 	renderer.backgroundColor = 0x061639;
 	renderer.view.style.position = "absolute";
 	renderer.view.style.display = "block";
@@ -21,14 +11,14 @@
 
 	// Apply renderer
 	document.body.appendChild(renderer.view);
-	var stage = new Container();
+	var stage = new PIXI.Container();
 
 	// Edit origin to be renderer specific
 	glbOrigin[0] = ((renderer.width - 200) / 2);
 	glbOrigin[1] = (renderer.height / 2);
 
 	// Load sprite atlases
-	loader
+	PIXI.loader
 		.add("static/img/images-0.json")
 		.add("static/img/images-1.json")
 		.load(onImageLoad);
@@ -43,18 +33,15 @@ var pointer = null;
 // Initiate game values (to be obsoleted)
 let littleLand = new Land([Math.floor(Math.random() * 3), eSHAPE.Round, 
 	(Math.floor(Math.random() * 7))]);
-let currLand = littleLand;
-let cPlayerArray: Player[] = [];
+currLand = littleLand;
 cPlayerArray[0] = new Player(); cPlayerArray[0].playerOrder = 0;
 cPlayerArray[1] = new Player(); cPlayerArray[1].playerOrder = 1;
-let currPlayer = cPlayerArray[0];
-let currDescCard = null;
-let currHovDescCard = null;
+currPlayer = cPlayerArray[0];
 
 let plrMsg = null;
 function formPlayerBar() {
 	// Create blank background for player bar
-	var plrBG = new Graphics();
+	var plrBG = new PIXI.Graphics();
 	plrBG.beginFill(0x000000);
 	plrBG.drawRect(0, 0, (renderer.width - 200), 20);
 	plrBG.alpha = 0.8;
@@ -64,7 +51,7 @@ function formPlayerBar() {
 
 	let plrMsgContent = "Empty.";
 
-	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
+	plrMsg = new PIXI.Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
 	plrMsg.position.set(3, 1);
 	stage.addChild(plrMsg);
 	updatePlayerBar();
@@ -80,7 +67,7 @@ function updatePlayerBar() {
 			" T-" + cPlayerArray[tPlr].treasure);
 	}
 
-	plrMsg = new Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
+	plrMsg = new PIXI.Text(plrMsgContent, {font: "13px sans-serif", fill: "white"});
 	plrMsg.position.set(3, 1);
 	stage.addChild(plrMsg);
 }

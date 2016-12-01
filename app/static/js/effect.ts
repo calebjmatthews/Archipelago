@@ -22,14 +22,23 @@ function vePulse(selTiles) {
 	}
 }
 
+// Clears any tint from hexagon tiles
 function veClearTint(selTiles) {
 	for (var tTileID = 0; tTileID < selTiles.length; tTileID++) {
 		currLand.spriteArray[selTiles[tTileID]].tint = rgbToHclr([255, 255, 255]);
 	}
 }
 
+// Perform all visual effects each frame
 function veAllEffects() {
 	if (glbPulseArray != []) {
 		vePulse(glbPulseArray);
+	}
+	if (glbVeNumArray != []) {
+		for (let tVeNum = 0; tVeNum < glbVeNumIncrement; tVeNum++) {
+			if (glbVeNumArray[tVeNum] != null) {
+				glbVeNumArray[tVeNum].ageVeNumber;
+			}
+		}
 	}
 }
