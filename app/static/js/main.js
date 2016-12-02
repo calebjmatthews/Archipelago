@@ -2484,6 +2484,19 @@ function applyDevEffect(tileId, undoing) {
                 applySingleEffect(resultArray, cResult, undoing);
             }
         }
+        // setType: string, setLitResource: number[], setPosition: number[]
+        var tPosition = hexToPoint([currLand.tileArray[tileId].axialRow,
+            currLand.tileArray[tileId].axialCol]);
+        tPosition[0] += (glbHWidth / 2);
+        tPosition[0] -= 12.5;
+        tPosition[1] += (glbHHeight / 2);
+        tPosition[1] -= 12.5;
+        if (tDev.requirement.length > 0) {
+            glbVeRscArray.push(new veResourceletChain("Requirement", tDev.requirement, tPosition));
+        }
+        if (tDev.result.length > 0) {
+            glbVeRscArray.push(new veResourceletChain("Result", tDev.result, tPosition));
+        }
         afterEffect(tileId, undoing);
     }
     else {
@@ -2515,7 +2528,7 @@ function considerPlayerEffects(tDev) {
 }
 function requirementCheck(tileId, undoing) {
     var tDev = develArray[currLand.tileArray[tileId].development];
-    if (tDev.requirement === []) {
+    if (tDev.requirement.length === 0) {
         return true;
     }
     if (undoing) {

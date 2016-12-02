@@ -1,7 +1,7 @@
 /// <reference path="references.ts" />
 
 function applyDevEffect(tileId: number, undoing: boolean = false) {
-	let tDev = develArray[currLand.tileArray[tileId].development];
+	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	let resultArray = considerPlayerEffects(tDev);
 	if (requirementCheck(tileId, undoing)) {
 		beforeEffect(tileId, undoing);
@@ -21,6 +21,19 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 			if (tDev.result[cResult] != undefined) {
 				applySingleEffect(resultArray, cResult, undoing);
 			}
+		}
+		// setType: string, setLitResource: number[], setPosition: number[]
+		let tPosition = hexToPoint([currLand.tileArray[tileId].axialRow, 
+			currLand.tileArray[tileId].axialCol]);
+		tPosition[0] += (glbHWidth / 2); tPosition[0] -= 12.5;
+		tPosition[1] += (glbHHeight / 2); tPosition[1] -= 12.5;
+
+		if (tDev.requirement.length > 0) {
+			glbVeRscArray.push(new veResourceletChain("Requirement", 
+				tDev.requirement, tPosition));
+		}
+		if (tDev.result.length > 0) {
+			glbVeRscArray.push(new veResourceletChain("Result", tDev.result, tPosition));
 		}
 		afterEffect(tileId, undoing);
 	}
@@ -57,7 +70,7 @@ function considerPlayerEffects(tDev: Development) {
 
 function requirementCheck(tileId: number, undoing: boolean) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
-	if (tDev.requirement === []) { return true; }
+	if (tDev.requirement.length === 0) { return true; }
 	if (undoing) { return true; }
 	let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material, 
 		eREQ.Ship, eREQ.Treasure];
