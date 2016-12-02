@@ -173,9 +173,9 @@ function buy() {
 // Set up the graphical/logical backing for the building state
 function buildSetup() {
 	let selTerritory = null;
-	if (glbMonth === 0) { glbTileSel = eDEVEL.BaseCamp; }
+	if (glbMonth === 0) { glbDevelSel = eDEVEL.BaseCamp; }
 	else { selTerritory = currPlayer.territory; }
-	let tDevel = develArray[glbTileSel];
+	let tDevel = develArray[glbDevelSel];
 
 	if (glbTileSelArray != []) {
 		glbTileSelArray = currLand.getSel(selTerritory, tDevel.lscpRequired);

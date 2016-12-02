@@ -50,7 +50,7 @@ class Player {
 
 	addTerritory(tTileID) {
 		let tTile = currLand.tileArray[tTileID];
-		tTile.development = glbTileSel;
+		tTile.development = glbDevelSel;
 		tTile.ownedBy = currPlayer.playerID;
 		currPlayer.ownedDevs.push(tTile.development);
 		currPlayer.discard.push(tTileID);

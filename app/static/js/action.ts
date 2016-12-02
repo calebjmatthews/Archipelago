@@ -72,7 +72,7 @@ function buildClick(corPoint) {
 				}
 				else {
 					let ahSpot = currPlayer.actionHistory.length;
-					subtractPrice();
+					subtractPrice(clkTileID);
 					updatePlayerBar();
 					currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
 					currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
@@ -89,8 +89,8 @@ function buildClick(corPoint) {
 	}
 }
 
-function subtractPrice() {
-	let tDev: Development = develArray[glbTileSel];
+function subtractPrice(clkTileID: number) {
+	let tDev: Development = develArray[glbDevelSel];
 	let rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
 	let rNameArray = ["Food", "Material", "Treasure"];
 	for (let iii = 0; iii < rArray.length; iii++) {
@@ -100,11 +100,15 @@ function subtractPrice() {
 			  (tResource === eCOST.Treasure)) {
 			if (tDev.cost[tResource] != undefined) {
 				currPlayer.giveResource(tResource, (-1 * tDev.cost[tResource]));
-				glbVeNumArray[glbVeNumIncrement] = new veNumber(glbVeNumIncrement, 
-					(-1 * tDev.cost[tResource]), rNameArray[tResource]);
+				
 			}
 		}
 	}
+	let tPosition = hexToPoint([currLand.tileArray[clkTileID].axialRow, 
+			currLand.tileArray[clkTileID].axialCol]);
+	tPosition[0] += (glbHWidth / 2); tPosition[0] -= 12.5;
+	tPosition[1] += (glbHHeight / 2); tPosition[1] -= 12.5;
+	glbVeRscArray.push(new veResourceletChain("Build", tDev.cost, tPosition));
 }
 
 function activeClick(corPoint) {

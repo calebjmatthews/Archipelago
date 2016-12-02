@@ -16,8 +16,9 @@ var glbNumRes = 8;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbEditBarSel = null;
-var glbTileSel = null;
 var glbTileSelArray = [];
+var glbDevelSel = null;
+
 var glbActingDev = null;
 var glbSideBar = null;
 
@@ -28,11 +29,11 @@ let glbBHeight = 30;
 
 // Initiate visual effect variables
 var glbPulseArray = [];
-var glbVeNumArray: veNumber[] = [];
-var glbVeNumIncrement = 0;
+var glbVeRscArray: veResourceletChain[] = [];
+var glbVeRscIncrement = 0;
 
 // Currently active gameplay parameters
-let currLand = null;
+let currLand: Land = null;
 let currPlayer: Player = null;
 let cPlayerArray: Player[] = [];
 let currDescCard = null;
@@ -58,13 +59,13 @@ enum eDEVEL { Jungle, Freshwater, Cave, BaseCamp, FireCrew, LaborPort, SeaSidePa
 	TradeHarbor, AuctionHouse, EnvoyHarbor, RicePaddy, BoarRanch, HuntingCamp, 
 	SmokeHouse, PeachOrchard, Woodcutters, SilverMine, StoneQuarry, CharcoalFurnace, 
 	CobaltMine, WorkerVillage, TeaHouse, Demolition, ShepherdVillage, Town, 
-	MerchantShip, VentureShip, WorkmanShip, OpulentVessel, AbundantVessel, SteadyVessel };
+	MerchantShip, VentureShip, WorkmanShip, OpulentVessel, AbundantVessel, SteadyVessel }
 
 // Enumerates development color options
 enum eDCLR { Black, Blue, Green, Orange, Red, Violet }
 
 // Enumerates development costs
-enum eCOST { Food, Material, Treasure, DestroyBlue, DestroyGreen, DestroyOrange }
+enum eCOST { Food, Material, Treasure, Ship, DestroyBlue, DestroyGreen, DestroyOrange }
 
 // Enumerates the requirement of development effects
 enum eREQ { Food, Material, Treasure, Ship, Active, Destroy }

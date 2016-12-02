@@ -59,11 +59,6 @@ function requirementCheck(tileId: number, undoing: boolean) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	if (tDev.requirement === []) { return true; }
 	if (undoing) { return true; }
-	// else {
-	// 	let ahSpot = currPlayer.actionHistory.length;
-	// 	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-	// 	currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
-	// }
 	let reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material, 
 		eREQ.Ship, eREQ.Treasure];
 	for (let cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {

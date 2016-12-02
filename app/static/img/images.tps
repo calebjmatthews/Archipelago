@@ -193,7 +193,6 @@
             <key type="filename">basecamp.png</key>
             <key type="filename">blackcard.png</key>
             <key type="filename">bluecard.png</key>
-            <key type="filename">bluecard.psd</key>
             <key type="filename">boarranch.png</key>
             <key type="filename">build.png</key>
             <key type="filename">cave1.png</key>
@@ -204,6 +203,7 @@
             <key type="filename">downarrow.png</key>
             <key type="filename">envoyharbor.png</key>
             <key type="filename">firecrew.png</key>
+            <key type="filename">foodicon.png</key>
             <key type="filename">forested.png</key>
             <key type="filename">freshwater1.png</key>
             <key type="filename">grassy.png</key>
@@ -212,6 +212,7 @@
             <key type="filename">huntingcamp.png</key>
             <key type="filename">jungle1.png</key>
             <key type="filename">laborport.png</key>
+            <key type="filename">materialicon.png</key>
             <key type="filename">merchantship.png</key>
             <key type="filename">opulentvessel.png</key>
             <key type="filename">orangecard.png</key>
@@ -239,6 +240,7 @@
             <key type="filename">tinyshore.png</key>
             <key type="filename">town.png</key>
             <key type="filename">tradeharbor.png</key>
+            <key type="filename">treasureicon.png</key>
             <key type="filename">uparrow.png</key>
             <key type="filename">ventureship.png</key>
             <key type="filename">violetcard.png</key>
@@ -303,7 +305,6 @@
             <filename>greencard.png</filename>
             <filename>blackcard.png</filename>
             <filename>bluecard.png</filename>
-            <filename>bluecard.psd</filename>
             <filename>whitehex3.png</filename>
             <filename>whitehex2.png</filename>
             <filename>tinydesert.png</filename>
@@ -317,6 +318,9 @@
             <filename>uparrow.png</filename>
             <filename>downarrow.png</filename>
             <filename>whiteborder.png</filename>
+            <filename>foodicon.png</filename>
+            <filename>treasureicon.png</filename>
+            <filename>materialicon.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

@@ -20,8 +20,8 @@ var glbNumRes = 8;
 var glbLscpCeil = 0.225;
 var glbMonth = 0;
 var glbEditBarSel = null;
-var glbTileSel = null;
 var glbTileSelArray = [];
+var glbDevelSel = null;
 var glbActingDev = null;
 var glbSideBar = null;
 // Set global button constants
@@ -30,8 +30,8 @@ var glbBWidth = 160;
 var glbBHeight = 30;
 // Initiate visual effect variables
 var glbPulseArray = [];
-var glbVeNumArray = [];
-var glbVeNumIncrement = 0;
+var glbVeRscArray = [];
+var glbVeRscIncrement = 0;
 // Currently active gameplay parameters
 var currLand = null;
 var currPlayer = null;
@@ -122,7 +122,6 @@ var eDEVEL;
     eDEVEL[eDEVEL["AbundantVessel"] = 29] = "AbundantVessel";
     eDEVEL[eDEVEL["SteadyVessel"] = 30] = "SteadyVessel";
 })(eDEVEL || (eDEVEL = {}));
-;
 // Enumerates development color options
 var eDCLR;
 (function (eDCLR) {
@@ -139,9 +138,10 @@ var eCOST;
     eCOST[eCOST["Food"] = 0] = "Food";
     eCOST[eCOST["Material"] = 1] = "Material";
     eCOST[eCOST["Treasure"] = 2] = "Treasure";
-    eCOST[eCOST["DestroyBlue"] = 3] = "DestroyBlue";
-    eCOST[eCOST["DestroyGreen"] = 4] = "DestroyGreen";
-    eCOST[eCOST["DestroyOrange"] = 5] = "DestroyOrange";
+    eCOST[eCOST["Ship"] = 3] = "Ship";
+    eCOST[eCOST["DestroyBlue"] = 4] = "DestroyBlue";
+    eCOST[eCOST["DestroyGreen"] = 5] = "DestroyGreen";
+    eCOST[eCOST["DestroyOrange"] = 6] = "DestroyOrange";
 })(eCOST || (eCOST = {}));
 // Enumerates the requirement of development effects
 var eREQ;
@@ -429,7 +429,7 @@ var Player = (function () {
     };
     Player.prototype.addTerritory = function (tTileID) {
         var tTile = currLand.tileArray[tTileID];
-        tTile.development = glbTileSel;
+        tTile.development = glbDevelSel;
         tTile.ownedBy = currPlayer.playerID;
         currPlayer.ownedDevs.push(tTile.development);
         currPlayer.discard.push(tTileID);
@@ -1054,8 +1054,8 @@ develArray[eDEVEL.BaseCamp].result[eRES.Food] = 1;
 develArray[eDEVEL.BaseCamp].result[eRES.Material] = 1;
 develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], "Result: Destroy Development, +1 Active");
 develArray[eDEVEL.FireCrew].cost = [];
-develArray[eDEVEL.FireCrew].cost[eCOST.Food] = 2;
-develArray[eDEVEL.FireCrew].cost[eCOST.Material] = 2;
+develArray[eDEVEL.FireCrew].cost[eCOST.Food] = 1;
+develArray[eDEVEL.FireCrew].cost[eCOST.Material] = 1;
 develArray[eDEVEL.FireCrew].requirement = [];
 develArray[eDEVEL.FireCrew].result = [];
 develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
@@ -1103,156 +1103,172 @@ develArray[eDEVEL.EnvoyHarbor].requirement[eREQ.Treasure] = 1;
 develArray[eDEVEL.EnvoyHarbor].result = [];
 develArray[eDEVEL.EnvoyHarbor].result[eRES.Food] = 2;
 develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 1;
-develArray[eDEVEL.RicePaddy] = new Development(eDEVEL.RicePaddy, ["ricepaddy.png"], "Rice Paddy", eDCLR.Green, [eLSCP.Grassy], ("Result: +1 Food"));
+develArray[eDEVEL.RicePaddy] = new Development(eDEVEL.RicePaddy, ["ricepaddy.png"], "Garden", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Food"));
 develArray[eDEVEL.RicePaddy].cost = [];
 develArray[eDEVEL.RicePaddy].cost[eCOST.Material] = 1;
 develArray[eDEVEL.RicePaddy].requirement = [];
 develArray[eDEVEL.RicePaddy].result = [];
 develArray[eDEVEL.RicePaddy].result[eRES.Food] = 1;
-develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +3 Food"));
+develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Result: +6 Food, -1 Food for each surrounding development"));
 develArray[eDEVEL.BoarRanch].cost = [];
-develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 1;
-develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 1;
+develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
+develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
 develArray[eDEVEL.BoarRanch].requirement = [];
-develArray[eDEVEL.BoarRanch].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.BoarRanch].result = [];
-develArray[eDEVEL.BoarRanch].result[eRES.Food] = 3;
-develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, ["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Forested], ("Result: +1 Food, +1 Active"));
+develArray[eDEVEL.BoarRanch].result[eRES.Food] = 6;
+develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, ["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Food, +1 Active"));
 develArray[eDEVEL.HuntingCamp].cost = [];
-develArray[eDEVEL.HuntingCamp].cost[eCOST.Material] = 2;
+develArray[eDEVEL.HuntingCamp].cost[eCOST.Food] = 2;
+develArray[eDEVEL.HuntingCamp].cost[eCOST.Material] = 3;
 develArray[eDEVEL.HuntingCamp].requirement = [];
 develArray[eDEVEL.HuntingCamp].result = [];
 develArray[eDEVEL.HuntingCamp].result[eRES.Food] = 1;
 develArray[eDEVEL.HuntingCamp].result[eRES.Active] = 1;
-develArray[eDEVEL.SmokeHouse] = new Development(eDEVEL.SmokeHouse, ["smokehouse.png"], "Smoke House", eDCLR.Green, [eLSCP.Grassy], ("Requires: 1 Material,; Result: +3 Food"));
+develArray[eDEVEL.SmokeHouse] = new Development(eDEVEL.SmokeHouse, ["smokehouse.png"], "Smoke House", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Requires: 1 Material,; Result: +4 Food"));
 develArray[eDEVEL.SmokeHouse].cost = [];
-develArray[eDEVEL.SmokeHouse].cost[eCOST.Material] = 2;
+develArray[eDEVEL.SmokeHouse].cost[eCOST.Food] = 1;
+develArray[eDEVEL.SmokeHouse].cost[eCOST.Material] = 4;
 develArray[eDEVEL.SmokeHouse].requirement = [];
 develArray[eDEVEL.SmokeHouse].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.SmokeHouse].result = [];
-develArray[eDEVEL.SmokeHouse].result[eRES.Food] = 3;
-develArray[eDEVEL.PeachOrchard] = new Development(eDEVEL.PeachOrchard, ["peachorchard.png"], "Peach Orchard", eDCLR.Green, [eLSCP.Grassy], ("Result: +2 Food"));
+develArray[eDEVEL.SmokeHouse].result[eRES.Food] = 4;
+develArray[eDEVEL.PeachOrchard] = new Development(eDEVEL.PeachOrchard, ["peachorchard.png"], "Peach Orchard", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Requires: 2 Material,; Result: +1 Food, +1 Treasure"));
 develArray[eDEVEL.PeachOrchard].cost = [];
-develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = 2;
+develArray[eDEVEL.PeachOrchard].cost[eCOST.Food] = 3;
+develArray[eDEVEL.PeachOrchard].cost[eCOST.Material] = 4;
 develArray[eDEVEL.PeachOrchard].requirement = [];
+develArray[eDEVEL.PeachOrchard].requirement[eREQ.Material] = 2;
 develArray[eDEVEL.PeachOrchard].result = [];
-develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 2;
-develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["woodcutters.png"], "Woodcutters", eDCLR.Orange, [eLSCP.Forested], ("Result: +1 Material"));
+develArray[eDEVEL.PeachOrchard].result[eRES.Food] = 1;
+develArray[eDEVEL.PeachOrchard].result[eRES.Treasure] = 1;
+develArray[eDEVEL.Woodcutters] = new Development(eDEVEL.Woodcutters, ["woodcutters.png"], "Grove", eDCLR.Orange, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Material"));
 develArray[eDEVEL.Woodcutters].cost = [];
+develArray[eDEVEL.Woodcutters].cost[eCOST.Food] = 1;
 develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = 1;
 develArray[eDEVEL.Woodcutters].requirement = [];
 develArray[eDEVEL.Woodcutters].result = [];
 develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
-develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 2 Food,; Result: +1 Treasure"));
+develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 3 Food,; Result: +2 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
-develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 2;
+develArray[eDEVEL.SilverMine].cost[eCOST.Food] = 2;
+develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 4;
 develArray[eDEVEL.SilverMine].requirement = [];
-develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 2;
+develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 3;
 develArray[eDEVEL.SilverMine].result = [];
-develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 1;
-develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, ["stonequarry.png"], "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 1 Food,; Result: +3 Material"));
+develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 2;
+develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, ["stonequarry.png"], "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 2 Food,; Result: +5 Material"));
 develArray[eDEVEL.StoneQuarry].cost = [];
-develArray[eDEVEL.StoneQuarry].cost[eCOST.Material] = 2;
+develArray[eDEVEL.StoneQuarry].cost[eCOST.Food] = 2;
+develArray[eDEVEL.StoneQuarry].cost[eCOST.Material] = 3;
 develArray[eDEVEL.StoneQuarry].requirement = [];
-develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = 1;
+develArray[eDEVEL.StoneQuarry].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.StoneQuarry].result = [];
-develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 3;
-develArray[eDEVEL.CharcoalFurnace] = new Development(eDEVEL.CharcoalFurnace, ["charcoalfurnace.png"], "Charcoal Furnace", eDCLR.Orange, [eLSCP.Forested], ("Result: +2 Material"));
+develArray[eDEVEL.StoneQuarry].result[eRES.Material] = 5;
+develArray[eDEVEL.CharcoalFurnace] = new Development(eDEVEL.CharcoalFurnace, ["charcoalfurnace.png"], "Charcoal Furnace", eDCLR.Orange, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Material, +2 additional Material if bordering a Green development"));
 develArray[eDEVEL.CharcoalFurnace].cost = [];
+develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Food] = 1;
 develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = 2;
 develArray[eDEVEL.CharcoalFurnace].requirement = [];
-develArray[eDEVEL.CharcoalFurnace].requirement[eREQ.Material] = 1;
 develArray[eDEVEL.CharcoalFurnace].result = [];
 develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
-develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, ["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], ("Result: +1 Treasure"));
+develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, ["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], ("Result: +1 Material, +1 Treasure"));
 develArray[eDEVEL.CobaltMine].cost = [];
-develArray[eDEVEL.CobaltMine].cost[eCOST.Material] = 4;
+develArray[eDEVEL.CobaltMine].cost[eCOST.Food] = 1;
+develArray[eDEVEL.CobaltMine].cost[eCOST.Material] = 6;
 develArray[eDEVEL.CobaltMine].requirement = [];
 develArray[eDEVEL.CobaltMine].result = [];
+develArray[eDEVEL.CobaltMine].result[eRES.Material] = 1;
 develArray[eDEVEL.CobaltMine].result[eRES.Treasure] = 1;
-develArray[eDEVEL.WorkerVillage] = new Development(eDEVEL.WorkerVillage, ["workervillage.png"], "Worker Village", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food,; Result: +2 Active"));
+develArray[eDEVEL.WorkerVillage] = new Development(eDEVEL.WorkerVillage, ["workervillage.png"], "Hamlet", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food,; Result: +2 Active"));
 develArray[eDEVEL.WorkerVillage].cost = [];
-develArray[eDEVEL.WorkerVillage].cost[eCOST.Material] = 1;
+develArray[eDEVEL.WorkerVillage].cost[eCOST.Food] = 1;
+develArray[eDEVEL.WorkerVillage].cost[eCOST.Material] = 2;
 develArray[eDEVEL.WorkerVillage].requirement = [];
 develArray[eDEVEL.WorkerVillage].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.WorkerVillage].result = [];
 develArray[eDEVEL.WorkerVillage].result[eRES.Active] = 2;
-develArray[eDEVEL.TeaHouse] = new Development(eDEVEL.TeaHouse, ["teahouse.png"], "Tea House", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 1 Food,; Result: For the rest of the month, all Red developments give " +
+develArray[eDEVEL.TeaHouse] = new Development(eDEVEL.TeaHouse, ["teahouse.png"], "Tea House", eDCLR.Red, [eLSCP.Forested, eLSCP.Grassy], ("Requires: 1 Food,; Result: For the rest of the month, all Red developments give " +
     "an additional +1 Active"));
 develArray[eDEVEL.TeaHouse].cost = [];
-develArray[eDEVEL.TeaHouse].cost[eCOST.Material] = 1;
+develArray[eDEVEL.TeaHouse].cost[eCOST.Food] = 2;
+develArray[eDEVEL.TeaHouse].cost[eCOST.Material] = 2;
 develArray[eDEVEL.TeaHouse].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.TeaHouse].requirement = [];
 develArray[eDEVEL.TeaHouse].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.TeaHouse].result = [];
 develArray[eDEVEL.TeaHouse].result[eRES.RedActive] = 1;
-develArray[eDEVEL.Demolition] = new Development(eDEVEL.Demolition, ["demolition.png"], "Demolition", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: Destroy 1 Development,; Result: +1 Material"));
+develArray[eDEVEL.Demolition] = new Development(eDEVEL.Demolition, ["demolition.png"], "Demolition", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: Destroy 1 Development,; Result: +2 Material"));
 develArray[eDEVEL.Demolition].cost = [];
+develArray[eDEVEL.Demolition].cost[eCOST.Food] = 1;
 develArray[eDEVEL.Demolition].cost[eCOST.Material] = 2;
 develArray[eDEVEL.Demolition].requirement = [];
 develArray[eDEVEL.Demolition].requirement[eREQ.Destroy] = 1;
 develArray[eDEVEL.Demolition].result = [];
-develArray[eDEVEL.Demolition].result[eRES.Material] = 1;
+develArray[eDEVEL.Demolition].result[eRES.Material] = 2;
 develArray[eDEVEL.ShepherdVillage] = new Development(eDEVEL.ShepherdVillage, ["shepherdvillage.png"], "Shepherd Village", eDCLR.Red, [eLSCP.Grassy], ("Requires: 1 Food,; Result: +2 Active, +1 Material"));
 develArray[eDEVEL.ShepherdVillage].cost = [];
-develArray[eDEVEL.ShepherdVillage].cost[eCOST.Food] = 1;
-develArray[eDEVEL.ShepherdVillage].cost[eCOST.Material] = 2;
+develArray[eDEVEL.ShepherdVillage].cost[eCOST.Food] = 3;
+develArray[eDEVEL.ShepherdVillage].cost[eCOST.Material] = 3;
 develArray[eDEVEL.ShepherdVillage].requirement = [];
 develArray[eDEVEL.ShepherdVillage].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].result = [];
 develArray[eDEVEL.ShepherdVillage].result[eRES.Active] = 2;
 develArray[eDEVEL.ShepherdVillage].result[eRES.Material] = 1;
-develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,; Result: +3 Active"));
+develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,;"
+    + "Result: +1 Active for every two surrounding developments, rounded up"));
 develArray[eDEVEL.Town].cost = [];
-develArray[eDEVEL.Town].cost[eCOST.Material] = 3;
+develArray[eDEVEL.Town].cost[eCOST.Food] = 3;
+develArray[eDEVEL.Town].cost[eCOST.Material] = 4;
 develArray[eDEVEL.Town].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.Town].requirement = [];
 develArray[eDEVEL.Town].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.Town].result = [];
 develArray[eDEVEL.Town].result[eRES.Active] = 3;
-develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Blue Development to build this,; Result: +1 Ship"));
+develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Blue Development to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
-develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = 2;
-develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 1;
-develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 1;
+develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 3;
+develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = 3;
+develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 2;
+develArray[eDEVEL.MerchantShip].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.MerchantShip].requirement = [];
 develArray[eDEVEL.MerchantShip].result = [];
-develArray[eDEVEL.MerchantShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Green Development to build this,; Result: +1 Ship"));
+develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Green Development to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
-develArray[eDEVEL.VentureShip].cost[eCOST.Food] = 4;
-develArray[eDEVEL.VentureShip].cost[eCOST.Material] = 1;
-develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 1;
+develArray[eDEVEL.VentureShip].cost[eCOST.Food] = 6;
+develArray[eDEVEL.VentureShip].cost[eCOST.Material] = 2;
+develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 2;
+develArray[eDEVEL.VentureShip].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.VentureShip].requirement = [];
 develArray[eDEVEL.VentureShip].result = [];
-develArray[eDEVEL.VentureShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 1 Orange Development to build this,; Result: +1 Ship"));
+develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Orange Development to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
+develArray[eDEVEL.WorkmanShip].cost[eCOST.Food] = 3;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = 4;
-develArray[eDEVEL.WorkmanShip].cost[eCOST.DestroyOrange] = 1;
+develArray[eDEVEL.WorkmanShip].cost[eCOST.DestroyOrange] = 2;
+develArray[eDEVEL.WorkmanShip].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.WorkmanShip].requirement = [];
 develArray[eDEVEL.WorkmanShip].result = [];
-develArray[eDEVEL.WorkmanShip].result[eRES.Ship] = 1;
-develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel, ["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
+develArray[eDEVEL.OpulentVessel] = new Development(eDEVEL.OpulentVessel, ["opulentvessel.png"], "Opulent Vessel", eDCLR.Violet, [eLSCP.Sea], ("Upon Building: +1 Ship"));
 develArray[eDEVEL.OpulentVessel].cost = [];
-develArray[eDEVEL.OpulentVessel].cost[eCOST.Treasure] = 3;
-develArray[eDEVEL.OpulentVessel].cost[eCOST.Material] = 2;
+develArray[eDEVEL.OpulentVessel].cost[eCOST.Treasure] = 5;
+develArray[eDEVEL.OpulentVessel].cost[eCOST.Material] = 5;
+develArray[eDEVEL.OpulentVessel].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.OpulentVessel].requirement = [];
 develArray[eDEVEL.OpulentVessel].result = [];
-develArray[eDEVEL.OpulentVessel].result[eRES.Ship] = 1;
-develArray[eDEVEL.AbundantVessel] = new Development(eDEVEL.AbundantVessel, ["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
+develArray[eDEVEL.AbundantVessel] = new Development(eDEVEL.AbundantVessel, ["abundantvessel.png"], "Abundant Vessel", eDCLR.Violet, [eLSCP.Sea], ("Upon Building: +1 Ship"));
 develArray[eDEVEL.AbundantVessel].cost = [];
-develArray[eDEVEL.AbundantVessel].cost[eCOST.Food] = 6;
-develArray[eDEVEL.AbundantVessel].cost[eCOST.Material] = 2;
+develArray[eDEVEL.AbundantVessel].cost[eCOST.Food] = 9;
+develArray[eDEVEL.AbundantVessel].cost[eCOST.Material] = 4;
+develArray[eDEVEL.AbundantVessel].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.AbundantVessel].requirement = [];
 develArray[eDEVEL.AbundantVessel].result = [];
-develArray[eDEVEL.AbundantVessel].result[eRES.Ship] = 1;
-develArray[eDEVEL.SteadyVessel] = new Development(eDEVEL.SteadyVessel, ["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, [eLSCP.Sea], ("Result: +1 Ship"));
+develArray[eDEVEL.SteadyVessel] = new Development(eDEVEL.SteadyVessel, ["steadyvessel.png"], "Steady Vessel", eDCLR.Violet, [eLSCP.Sea], ("Upon Building: +1 Ship"));
 develArray[eDEVEL.SteadyVessel].cost = [];
-develArray[eDEVEL.SteadyVessel].cost[eCOST.Material] = 7;
+develArray[eDEVEL.SteadyVessel].cost[eCOST.Food] = 6;
+develArray[eDEVEL.SteadyVessel].cost[eCOST.Material] = 6;
+develArray[eDEVEL.SteadyVessel].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.SteadyVessel].requirement = [];
 develArray[eDEVEL.SteadyVessel].result = [];
-develArray[eDEVEL.SteadyVessel].result[eRES.Ship] = 1;
 /// <reference path="references.ts" />
 // Set up pixi.js
 // Create renderer
@@ -2144,7 +2160,7 @@ function buildClick(corPoint) {
                 }
                 else {
                     var ahSpot = currPlayer.actionHistory.length;
-                    subtractPrice();
+                    subtractPrice(clkTileID);
                     updatePlayerBar();
                     currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
                     currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
@@ -2161,8 +2177,8 @@ function buildClick(corPoint) {
         }
     }
 }
-function subtractPrice() {
-    var tDev = develArray[glbTileSel];
+function subtractPrice(clkTileID) {
+    var tDev = develArray[glbDevelSel];
     var rArray = [eCOST.Food, eCOST.Material, eCOST.Treasure];
     var rNameArray = ["Food", "Material", "Treasure"];
     for (var iii = 0; iii < rArray.length; iii++) {
@@ -2172,10 +2188,16 @@ function subtractPrice() {
             (tResource === eCOST.Treasure)) {
             if (tDev.cost[tResource] != undefined) {
                 currPlayer.giveResource(tResource, (-1 * tDev.cost[tResource]));
-                glbVeNumArray[glbVeNumIncrement] = new veNumber(glbVeNumIncrement, (-1 * tDev.cost[tResource]), rNameArray[tResource]);
             }
         }
     }
+    var tPosition = hexToPoint([currLand.tileArray[clkTileID].axialRow,
+        currLand.tileArray[clkTileID].axialCol]);
+    tPosition[0] += (glbHWidth / 2);
+    tPosition[0] -= 12.5;
+    tPosition[1] += (glbHHeight / 2);
+    tPosition[1] -= 12.5;
+    glbVeRscArray.push(new veResourceletChain("Build", tDev.cost, tPosition));
 }
 function activeClick(corPoint) {
     if (currDescCard != null) {
@@ -2430,10 +2452,10 @@ function veAllEffects() {
     if (glbPulseArray != []) {
         vePulse(glbPulseArray);
     }
-    if (glbVeNumArray != []) {
-        for (var tVeNum = 0; tVeNum < glbVeNumIncrement; tVeNum++) {
-            if (glbVeNumArray[tVeNum] != null) {
-                glbVeNumArray[tVeNum].ageVeNumber;
+    if (glbVeRscArray.length > 0) {
+        for (var tVeNum = 0; tVeNum < glbVeRscIncrement; tVeNum++) {
+            if (glbVeRscArray[tVeNum] != null) {
+                glbVeRscArray[tVeNum].ageVeRscChain();
             }
         }
     }
@@ -2499,11 +2521,6 @@ function requirementCheck(tileId, undoing) {
     if (undoing) {
         return true;
     }
-    // else {
-    // 	let ahSpot = currPlayer.actionHistory.length;
-    // 	currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
-    // 	currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
-    // }
     var reqArray = [eREQ.Active, eREQ.Destroy, eREQ.Food, eREQ.Material, eREQ.Material,
         eREQ.Ship, eREQ.Treasure];
     for (var cReqSpot = 0; cReqSpot < tDev.requirement.length; cReqSpot++) {
@@ -2727,7 +2744,7 @@ var BuyBar = (function (_super) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
                 // Landscape / Development buttons
                 if (cButton < currLand.devSelection.dSet.length) {
-                    glbTileSel = this.buttonArray[cButton].id;
+                    glbDevelSel = this.buttonArray[cButton].id;
                     glbState = buildSetup;
                 }
                 else if (cButton === currLand.devSelection.dSet.length) {
@@ -2891,66 +2908,174 @@ var ArcHistory = (function () {
     return ArcHistory;
 }());
 /// <reference path="references.ts" />
-var veNumber = (function () {
-    function veNumber(setId, setNumber, setType) {
+// Resourcelet is my name for a particle-like visual effect which denotes gaining or
+//  losing a resource
+var veResourcelet = (function () {
+    function veResourcelet(setId, setParentId, setType, setNegative, setResource, setInitPosition, setVelocity, setAge) {
+        // The direction the effect should move, typically based on its origin
+        this.velocity = [];
         this.id = setId;
-        this.litNumber = setNumber;
-        var setString = "";
-        var setColor = "";
-        if (setNumber >= 0) {
-            setColor = "green";
+        this.parentId = setParentId;
+        this.negative = setNegative;
+        this.velocity = setVelocity;
+        var imagePath;
+        var tEnum;
+        var tTint;
+        if (setType === "Build") {
+            tEnum = eCOST;
+            if (!this.negative) {
+                tTint = rgbToHclr([163, 11, 11]);
+            }
+            else {
+                tTint = rgbToHclr([32, 132, 11]);
+            }
         }
-        else if (setNumber < 0) {
-            setColor = "red";
+        else if (setType === "Requirement") {
+            tEnum = eREQ;
+            if (!this.negative) {
+                tTint = rgbToHclr([163, 11, 11]);
+            }
+            else {
+                tTint = rgbToHclr([32, 132, 11]);
+            }
         }
-        if (setType === "Food") {
-            setString = setNumber + "F";
-        }
-        else if (setType === "Material") {
-            setString = setNumber + "M";
-        }
-        else if (setType === "Treasure") {
-            setString = setNumber + "T";
-        }
-        else if (setType === "Ship") {
-            setString = setNumber + "S";
+        else if (setType === "Result") {
+            tEnum = eRES;
+            if (!this.negative) {
+                tTint = rgbToHclr([32, 132, 11]);
+            }
+            else {
+                tTint = rgbToHclr([163, 11, 11]);
+            }
         }
         else {
-            setString = setNumber + "";
+            console.log("Error: unexpected resourcelet type.");
         }
-        this.sprNumber = new PIXI.Text(setString, { font: "20px sans-serif", fill: setColor, dropShadow: true });
+        if (setResource === tEnum.Food) {
+            imagePath = "foodicon.png";
+        }
+        else if (setResource === tEnum.Material) {
+            imagePath = "materialicon.png";
+        }
+        else if (setResource === tEnum.Treasure) {
+            imagePath = "treasureicon.png";
+        }
+        this.sprRsc = new PIXI.Sprite(sprMed[imagePath]);
+        stage.addChild(this.sprRsc);
+        this.sprRsc.scale.set(0.5, 0.5);
+        this.sprRsc.position.set(setInitPosition[0], setInitPosition[1]);
+        this.sprRsc.alpha = 0.1;
+        this.sprRsc.tint = tTint;
+        this.age = setAge;
     }
-    // Move and decrease opacity as time goes on
-    veNumber.prototype.ageVeNumber = function () {
-        var xDir = 0;
-        var yDir = 0;
-        if (this.veDirection === "up") {
-            yDir = -1;
+    veResourcelet.prototype.ageVeRsc = function () {
+        // After negative age has finished, become visible
+        if (this.age === 0) {
+            this.sprRsc.alpha = 1;
         }
-        else if (this.veDirection === "right") {
-            xDir = 1;
+        // Move and decrease opacity/velocity as time goes on
+        if (this.age > 0) {
+            this.sprRsc.position.set((this.sprRsc.x + this.velocity[0]), (this.sprRsc.y + this.velocity[1]));
+            this.velocity[0] *= 0.99;
+            this.velocity[1] *= 0.99;
         }
-        else if (this.veDirection === "down") {
-            yDir = 1;
+        if (this.age > 50) {
+            this.sprRsc.alpha -= .01;
         }
-        else if (this.veDirection === "left") {
-            xDir = -1;
-        }
-        var velocity = 0.1;
-        this.sprNumber.x += (velocity * xDir);
-        this.sprNumber.y += (velocity * yDir);
-        if (this.veAge > 50) {
-            this.sprNumber.alpha -= .01;
-        }
-        if (this.veAge > 150) {
+        // Self destruct when no longer visible
+        if (this.age > 150) {
             this.selfDestruct();
         }
+        this.age++;
     };
-    veNumber.prototype.selfDestruct = function () {
-        stage.removeChild(glbVeNumArray[this.id].sprNumber);
-        glbVeNumArray[this.id] = null;
+    veResourcelet.prototype.selfDestruct = function () {
+        stage.removeChild(this.sprRsc);
+        glbVeRscArray[this.parentId].childArray[this.id] = null;
     };
-    return veNumber;
+    return veResourcelet;
+}());
+/// <reference path="references.ts" />
+// Resourcelet is my name for a particle-like visual effect which denotes gaining or
+//  losing a resource
+var veResourceletChain = (function () {
+    function veResourceletChain(setType, setLitResource, setPosition) {
+        // An array of child resourcelets
+        this.childArray = [];
+        // An array of the total literal resource gain/loss being applied
+        this.litResource = [];
+        // The x,y position the effects should eminate from
+        this.position = [];
+        this.id = glbVeRscIncrement;
+        glbVeRscIncrement++;
+        this.type = setType;
+        this.litResource = setLitResource;
+        this.position = setPosition;
+        this.formChain();
+    }
+    veResourceletChain.prototype.randVelocity = function () {
+        var xVelocity = 0;
+        var yVelocity = 0;
+        xVelocity = (Math.random() * 2) - 1;
+        yVelocity = Math.sin(Math.acos(xVelocity));
+        if (Math.random() < 0.5) {
+            yVelocity *= -1;
+        }
+        // Velocity multiplier
+        var vm = 1.5;
+        return [(xVelocity * vm), (yVelocity * vm)];
+    };
+    veResourceletChain.prototype.formChain = function () {
+        for (var tRscType = 0; tRscType < this.litResource.length; tRscType++) {
+            var rscTypeVal = this.litResource[tRscType];
+            if (rscTypeVal != undefined) {
+                var tEnum = void 0;
+                if (this.type === "Build") {
+                    tEnum = eCOST;
+                }
+                else if (this.type === "Requirement") {
+                    tEnum = eREQ;
+                }
+                else if (this.type === "Result") {
+                    tEnum = eRES;
+                }
+                else {
+                    console.log("Error: unexpected resourcelet type.");
+                }
+                if ((tRscType === tEnum.Food) || (tRscType === tEnum.Material) ||
+                    (tRscType === tEnum.Treasure)) {
+                    this.formResourceletSet(tRscType, rscTypeVal);
+                }
+            }
+        }
+    };
+    veResourceletChain.prototype.formResourceletSet = function (tRscType, rscTypeVal) {
+        for (var eachRsc = 0; eachRsc < Math.abs(rscTypeVal); eachRsc++) {
+            var isNegative = false;
+            if (rscTypeVal < 0) {
+                isNegative = true;
+            }
+            var childAge = -(this.childArray.length * 5);
+            var childId = this.childArray.length;
+            this.childArray.push(new veResourcelet(childId, this.id, this.type, isNegative, tRscType, this.position, this.randVelocity(), childAge));
+        }
+    };
+    veResourceletChain.prototype.ageVeRscChain = function () {
+        var noChildren = true;
+        for (var tChild = 0; tChild < this.childArray.length; tChild++) {
+            var childVal = this.childArray[tChild];
+            if (childVal != undefined) {
+                if (childVal != null) {
+                    childVal.ageVeRsc();
+                    noChildren = false;
+                }
+            }
+        }
+        // if (noChildren) { this.selfDestruct(); }
+    };
+    veResourceletChain.prototype.selfDestruct = function () {
+        glbVeRscArray[this.id] = null;
+    };
+    return veResourceletChain;
 }());
 /// <reference path="references.ts" />
 function onImageLoad() {
@@ -3144,12 +3269,12 @@ function buy() {
 function buildSetup() {
     var selTerritory = null;
     if (glbMonth === 0) {
-        glbTileSel = eDEVEL.BaseCamp;
+        glbDevelSel = eDEVEL.BaseCamp;
     }
     else {
         selTerritory = currPlayer.territory;
     }
-    var tDevel = develArray[glbTileSel];
+    var tDevel = develArray[glbDevelSel];
     if (glbTileSelArray != []) {
         glbTileSelArray = currLand.getSel(selTerritory, tDevel.lscpRequired);
         glbPulseArray = glbTileSelArray;
@@ -3213,5 +3338,6 @@ function cleanup() {
 /// <reference path="buy-bar.ts" />
 /// <reference path="buy-button.ts" />
 /// <reference path="arc-history.ts" />
-/// <reference path="ve-number.ts" />
+/// <reference path="ve-resourcelet.ts" />
+/// <reference path="ve-resourcelet-chain.ts" />
 /// <reference path="state.ts" /> 

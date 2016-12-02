@@ -34,10 +34,10 @@ function veAllEffects() {
 	if (glbPulseArray != []) {
 		vePulse(glbPulseArray);
 	}
-	if (glbVeNumArray != []) {
-		for (let tVeNum = 0; tVeNum < glbVeNumIncrement; tVeNum++) {
-			if (glbVeNumArray[tVeNum] != null) {
-				glbVeNumArray[tVeNum].ageVeNumber;
+	if (glbVeRscArray.length > 0) {
+		for (let tVeNum = 0; tVeNum < glbVeRscIncrement; tVeNum++) {
+			if (glbVeRscArray[tVeNum] != null) {
+				glbVeRscArray[tVeNum].ageVeRscChain();
 			}
 		}
 	}
