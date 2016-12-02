@@ -107,7 +107,7 @@ class BuyBar extends SideBar {
 		for (let cButton = 0; cButton < (currLand.devSelection.dSet.length + 1); cButton++) {
 			if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
 
-				// Landscape / Development buttons
+				// Development buttons
 				if (cButton < currLand.devSelection.dSet.length) {
 					glbDevelSel = this.buttonArray[cButton].id;
 					glbState = buildSetup;

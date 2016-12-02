@@ -2756,7 +2756,7 @@ var BuyBar = (function (_super) {
         this.baseClickBar();
         for (var cButton = 0; cButton < (currLand.devSelection.dSet.length + 1); cButton++) {
             if (this.buttonArray[cButton].withinButton([pointer.x, pointer.y])) {
-                // Landscape / Development buttons
+                // Development buttons
                 if (cButton < currLand.devSelection.dSet.length) {
                     glbDevelSel = this.buttonArray[cButton].id;
                     glbState = buildSetup;
@@ -3286,7 +3286,10 @@ function buildSetup() {
         glbDevelSel = eDEVEL.BaseCamp;
     }
     else {
-        selTerritory = currPlayer.territory;
+        // Violet developments can be build regardless of player territory
+        if (develArray[glbDevelSel].color != eDCLR.Violet) {
+            selTerritory = currPlayer.territory;
+        }
     }
     var tDevel = develArray[glbDevelSel];
     if (glbTileSelArray != []) {

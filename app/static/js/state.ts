@@ -174,7 +174,12 @@ function buy() {
 function buildSetup() {
 	let selTerritory = null;
 	if (glbMonth === 0) { glbDevelSel = eDEVEL.BaseCamp; }
-	else { selTerritory = currPlayer.territory; }
+	else {
+		// Violet developments can be build regardless of player territory
+		if (develArray[glbDevelSel].color != eDCLR.Violet) {
+			selTerritory = currPlayer.territory;
+		}
+	}
 	let tDevel = develArray[glbDevelSel];
 
 	if (glbTileSelArray != []) {
