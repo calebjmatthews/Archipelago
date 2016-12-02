@@ -449,6 +449,7 @@ var Player = (function () {
                         tNTile.ownedBy = currPlayer.playerID;
                         currPlayer.ownedDevs.push(tNTile.development);
                         currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+                        tNTile.reDrawTile();
                     }
                 }
             }

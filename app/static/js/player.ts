@@ -70,6 +70,7 @@ class Player {
 						tNTile.ownedBy = currPlayer.playerID;
 						currPlayer.ownedDevs.push(tNTile.development);
 						currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+						tNTile.reDrawTile();
 					}
 				}
 			}
