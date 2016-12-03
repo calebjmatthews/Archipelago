@@ -105,18 +105,20 @@ develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
 
 develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, 
 	["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], 
-	("Requires: 2 Treasure,; Result: +3 Treasure"));
+	("Requires: 2 Treasure,; Result: +1 Food, +1 Material, +3 Treasure"));
 develArray[eDEVEL.AuctionHouse].cost = [];
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = 3;
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.AuctionHouse].requirement = [];
 develArray[eDEVEL.AuctionHouse].requirement[eREQ.Treasure] = 2;
 develArray[eDEVEL.AuctionHouse].result = [];
+develArray[eDEVEL.AuctionHouse].result[eRES.Food] = 1;
+develArray[eDEVEL.AuctionHouse].result[eRES.Material] = 1;
 develArray[eDEVEL.AuctionHouse].result[eRES.Treasure] = 3;
 
 develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, 
 	["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], 
-	("Requires: 1 Treasure,; Result: +2 Food, +1 Material"));
+	("Requires: 1 Treasure,; Result: +2 Food, +2 Material"));
 develArray[eDEVEL.EnvoyHarbor].cost = [];
 develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Food] = 2;
 develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Material] = 2;
@@ -125,7 +127,7 @@ develArray[eDEVEL.EnvoyHarbor].requirement = [];
 develArray[eDEVEL.EnvoyHarbor].requirement[eREQ.Treasure] = 1;
 develArray[eDEVEL.EnvoyHarbor].result = [];
 develArray[eDEVEL.EnvoyHarbor].result[eRES.Food] = 2;
-develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 1;
+develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 2;
 
 develArray[eDEVEL.RicePaddy] = new Development(eDEVEL.RicePaddy, 
 	["ricepaddy.png"], "Garden", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], 
@@ -144,7 +146,7 @@ develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
 develArray[eDEVEL.BoarRanch].requirement = [];
 develArray[eDEVEL.BoarRanch].result = [];
-develArray[eDEVEL.BoarRanch].result[eRES.Food] = 6;
+develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 6;
 
 develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, 
 	["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], 
@@ -221,7 +223,8 @@ develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Food] = 1;
 develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = 2;
 develArray[eDEVEL.CharcoalFurnace].requirement = [];
 develArray[eDEVEL.CharcoalFurnace].result = [];
-develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
+develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 1;
+develArray[eDEVEL.CharcoalFurnace].result[eRES.MaterialGreenDev] = 2;
 
 develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, 
 	["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], 
@@ -287,8 +290,9 @@ develArray[eDEVEL.ShepherdVillage].result[eRES.Material] = 1;
 develArray[eDEVEL.Town] = new Development(eDEVEL.Town, 
 	["town.png"], "Town", eDCLR.Red, 
 	[eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], 
-	("Requires: 2 Food,;" 
-		+ "Result: +1 Active for every two surrounding developments, rounded up"));
+	("Requires: 2 Food,; " 
+		+ "Result: +1 Active and +1 Material for every two surrounding developments, " + 
+		" rounded up"));
 develArray[eDEVEL.Town].cost = [];
 develArray[eDEVEL.Town].cost[eCOST.Food] = 3;
 develArray[eDEVEL.Town].cost[eCOST.Material] = 4;
@@ -296,7 +300,8 @@ develArray[eDEVEL.Town].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.Town].requirement = [];
 develArray[eDEVEL.Town].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.Town].result = [];
-develArray[eDEVEL.Town].result[eRES.Active] = 3;
+develArray[eDEVEL.Town].result[eRES.MaterialMultNeighbor] = 0.5;
+develArray[eDEVEL.Town].result[eRES.ActiveMultNeighbor] = 0.5;
 
 develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, 
 	["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], 

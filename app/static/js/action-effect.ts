@@ -3,6 +3,7 @@
 function applyDevEffect(tileId: number, undoing: boolean = false) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	let resultArray = considerPlayerEffects(tDev);
+	resultArray = calculateComplexResults(tileId, resultArray);
 	if (requirementCheck(tileId, undoing)) {
 		beforeEffect(tileId, undoing);
 		if (!undoing) {
@@ -22,7 +23,8 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 				applySingleEffect(resultArray, cResult, undoing);
 			}
 		}
-		// setType: string, setLitResource: number[], setPosition: number[]
+
+		// Create visual effect for requirement / result
 		let tPosition = hexToPoint([currLand.tileArray[tileId].axialRow, 
 			currLand.tileArray[tileId].axialCol]);
 		tPosition[0] += (glbHWidth / 2); tPosition[0] -= 12.5;
@@ -32,9 +34,10 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 			glbVeRscArray.push(new veResourceletChain("Requirement", 
 				tDev.requirement, tPosition));
 		}
-		if (tDev.result.length > 0) {
-			glbVeRscArray.push(new veResourceletChain("Result", tDev.result, tPosition));
+		if (resultArray.length > 0) {
+			glbVeRscArray.push(new veResourceletChain("Result", resultArray, tPosition));
 		}
+
 		afterEffect(tileId, undoing);
 	}
 	else {
@@ -68,6 +71,109 @@ function considerPlayerEffects(tDev: Development) {
 	return resultArray;
 }
 
+function calculateComplexResults(tileId: number, resultArray: number[]) {
+	for (let cResult = 0; cResult < resultArray.length; cResult++) {
+		if ((cResult === eRES.FoodLessNeighbor) 
+				&& (resultArray[eRES.FoodLessNeighbor] != undefined)) {
+			let qtyFood = resultArray[eRES.FoodLessNeighbor];
+
+			// Build an array of the tiles of each neighbor
+			let neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+			let neighborArray: Tile[] = [];
+			for (let iii = 0; iii < neighborCoordArray.length; iii++) {
+				neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+			}
+
+			// Subtract one food for each neighboring tile that has a development
+			for (let tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+				let neighborVal: Tile = neighborArray[tNeighbor];
+				if (neighborVal.development != null) { qtyFood--; }
+			}
+
+			if (qtyFood < 0) { qtyFood = 0; }
+			if (resultArray[eRES.Food] === undefined) { resultArray[eRES.Food] = 0; }
+			resultArray[eRES.Food] += qtyFood;
+			resultArray[eRES.FoodLessNeighbor] = 0;
+		}
+
+		else if ((cResult === eRES.ActiveMultNeighbor) 
+				&& (resultArray[eRES.ActiveMultNeighbor] != undefined)) {
+			let actMult = resultArray[eRES.ActiveMultNeighbor];
+			let qtyAct = 0;
+
+			// Build an array of the tiles of each neighbor
+			let neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+			let neighborArray: Tile[] = [];
+			for (let iii = 0; iii < neighborCoordArray.length; iii++) {
+				neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+			}
+
+			// Add one for each neighboring tile that has a development
+			for (let tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+				let neighborVal: Tile = neighborArray[tNeighbor];
+				if (neighborVal.development != null) { qtyAct++; }
+			}
+
+			if (resultArray[eRES.Active] === undefined) { resultArray[eRES.Active] = 0; }
+			resultArray[eRES.Active] += Math.ceil(qtyAct * actMult);
+			resultArray[eRES.ActiveMultNeighbor] = 0;
+		}
+
+		else if ((cResult === eRES.MaterialMultNeighbor)
+				&& (resultArray[eRES.MaterialMultNeighbor] != undefined)) {
+			let matMult = resultArray[eRES.MaterialMultNeighbor];
+			let qtyMat = 0;
+
+			// Build an array of the tiles of each neighbor
+			let neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+			let neighborArray: Tile[] = [];
+			for (let iii = 0; iii < neighborCoordArray.length; iii++) {
+				neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+			}
+
+			// Add one for each neighboring tile that has a development
+			for (let tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+				let neighborVal: Tile = neighborArray[tNeighbor];
+				if (neighborVal.development != null) { qtyMat++; }
+			}
+
+			if (resultArray[eRES.Material] === undefined) { resultArray[eRES.Material] = 0; }
+			resultArray[eRES.Material] += Math.ceil(qtyMat * matMult);
+			resultArray[eRES.MaterialMultNeighbor] = 0;
+		}
+
+		else if ((cResult === eRES.MaterialGreenDev)
+				&& (resultArray[eRES.MaterialGreenDev] != undefined)) {
+			let hasGNeighbor: boolean = false;
+			
+			// Build an array of the tiles of each neighbor
+			let neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+			let neighborArray: Tile[] = [];
+			for (let iii = 0; iii < neighborCoordArray.length; iii++) {
+				neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+			}
+
+			// Add one for each neighboring tile that has a development
+			for (let tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+				let neighborVal: Tile = neighborArray[tNeighbor];
+				if (neighborVal.development != null) {
+					if (develArray[neighborVal.development].color === eDCLR.Green) {
+						hasGNeighbor = true;
+						break;
+					}
+				}
+			}
+
+			if (hasGNeighbor) {
+				if (resultArray[eRES.Material] === undefined) { resultArray[eRES.Material] = 0; }
+				resultArray[eRES.Material] += resultArray[eRES.MaterialGreenDev];
+				resultArray[eRES.MaterialGreenDev] = 0;
+			}
+		}
+	}
+	return resultArray;
+}
+
 function requirementCheck(tileId: number, undoing: boolean) {
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	if (tDev.requirement.length === 0) { return true; }
@@ -80,7 +186,7 @@ function requirementCheck(tileId: number, undoing: boolean) {
 			if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
 		}
 		else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-			if (currPlayer.ownedDevs.length === 0) { return false; }
+			if (currPlayer.ownedDevs.length < 3) { return false; }
 		}
 		else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
 			if (currPlayer.food < tDev.requirement[cReq]) { return false; }
@@ -98,7 +204,8 @@ function requirementCheck(tileId: number, undoing: boolean) {
 	return true;
 }
 
-function applySingleEffect(resultArray: number[], cResult: number, undoing: boolean) {
+function applySingleEffect(resultArray: number[], cResult: number, 
+	undoing: boolean) {
 	let undModify = 1;
 	if (undoing) { undModify = -1; }
 
@@ -109,17 +216,6 @@ function applySingleEffect(resultArray: number[], cResult: number, undoing: bool
 		}
 	}
 
-	else if (cResult === eRES.BlueTreasure) {
-		currPlayer.activeEffects[eRES.BlueTreasure] += 
-			(resultArray[eRES.BlueTreasure] * undModify);
-	}
-
-	else if (cResult === eRES.Destroy) {
-		currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
-		// Changes game state in order to select a development for destruction
-		glbState = selDevel;
-	}
-
 	else if (cResult === eRES.Food) {
 		currPlayer.food += (resultArray[eRES.Food] * undModify);
 	}
@@ -128,17 +224,28 @@ function applySingleEffect(resultArray: number[], cResult: number, undoing: bool
 		currPlayer.material += (resultArray[eRES.Material] * undModify);
 	}
 
-	else if (cResult === eRES.RedActive) {
-		currPlayer.activeEffects[eRES.RedActive] += 
-			(resultArray[eRES.RedActive] * undModify);
+	else if (cResult === eRES.Treasure) {
+		currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
 	}
 
 	else if (cResult === eRES.Ship) {
 		currPlayer.ships += (resultArray[eRES.Ship] * undModify);
 	}
 
-	else if (cResult === eRES.Treasure) {
-		currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
+	else if (cResult === eRES.BlueTreasure) {
+		currPlayer.activeEffects[eRES.BlueTreasure] += 
+			(resultArray[eRES.BlueTreasure] * undModify);
+	}
+
+	else if (cResult === eRES.RedActive) {
+		currPlayer.activeEffects[eRES.RedActive] += 
+			(resultArray[eRES.RedActive] * undModify);
+	}
+
+	else if (cResult === eRES.Destroy) {
+		currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
+		// Changes game state in order to select a development for destruction
+		glbState = selDevel;
 	}
 }
 

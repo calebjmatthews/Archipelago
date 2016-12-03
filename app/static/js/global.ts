@@ -71,7 +71,8 @@ enum eCOST { Food, Material, Treasure, Ship, DestroyBlue, DestroyGreen, DestroyO
 enum eREQ { Food, Material, Treasure, Ship, Active, Destroy }
 
 // Enumerates the result of development effects
-enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedActive }
+enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedActive,
+	FoodLessNeighbor, MaterialMultNeighbor, ActiveMultNeighbor, MaterialGreenDev }
 
 // ~~~~ General purpose functions ~~~~
 	function rgbToHclr(rgb: number[]) {

@@ -164,6 +164,10 @@ var eRES;
     eRES[eRES["Destroy"] = 5] = "Destroy";
     eRES[eRES["BlueTreasure"] = 6] = "BlueTreasure";
     eRES[eRES["RedActive"] = 7] = "RedActive";
+    eRES[eRES["FoodLessNeighbor"] = 8] = "FoodLessNeighbor";
+    eRES[eRES["MaterialMultNeighbor"] = 9] = "MaterialMultNeighbor";
+    eRES[eRES["ActiveMultNeighbor"] = 10] = "ActiveMultNeighbor";
+    eRES[eRES["MaterialGreenDev"] = 11] = "MaterialGreenDev";
 })(eRES || (eRES = {}));
 // ~~~~ General purpose functions ~~~~
 function rgbToHclr(rgb) {
@@ -1094,7 +1098,7 @@ develArray[eDEVEL.AuctionHouse].requirement = [];
 develArray[eDEVEL.AuctionHouse].requirement[eREQ.Treasure] = 2;
 develArray[eDEVEL.AuctionHouse].result = [];
 develArray[eDEVEL.AuctionHouse].result[eRES.Treasure] = 3;
-develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, ["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure,; Result: +2 Food, +1 Material"));
+develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, ["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure,; Result: +2 Food, +2 Material"));
 develArray[eDEVEL.EnvoyHarbor].cost = [];
 develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Food] = 2;
 develArray[eDEVEL.EnvoyHarbor].cost[eCOST.Material] = 2;
@@ -1103,7 +1107,7 @@ develArray[eDEVEL.EnvoyHarbor].requirement = [];
 develArray[eDEVEL.EnvoyHarbor].requirement[eREQ.Treasure] = 1;
 develArray[eDEVEL.EnvoyHarbor].result = [];
 develArray[eDEVEL.EnvoyHarbor].result[eRES.Food] = 2;
-develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 1;
+develArray[eDEVEL.EnvoyHarbor].result[eRES.Material] = 2;
 develArray[eDEVEL.RicePaddy] = new Development(eDEVEL.RicePaddy, ["ricepaddy.png"], "Garden", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Food"));
 develArray[eDEVEL.RicePaddy].cost = [];
 develArray[eDEVEL.RicePaddy].cost[eCOST.Material] = 1;
@@ -1116,7 +1120,7 @@ develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
 develArray[eDEVEL.BoarRanch].requirement = [];
 develArray[eDEVEL.BoarRanch].result = [];
-develArray[eDEVEL.BoarRanch].result[eRES.Food] = 6;
+develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 6;
 develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, ["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Food, +1 Active"));
 develArray[eDEVEL.HuntingCamp].cost = [];
 develArray[eDEVEL.HuntingCamp].cost[eCOST.Food] = 2;
@@ -1171,7 +1175,8 @@ develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Food] = 1;
 develArray[eDEVEL.CharcoalFurnace].cost[eCOST.Material] = 2;
 develArray[eDEVEL.CharcoalFurnace].requirement = [];
 develArray[eDEVEL.CharcoalFurnace].result = [];
-develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 3;
+develArray[eDEVEL.CharcoalFurnace].result[eRES.Material] = 1;
+develArray[eDEVEL.CharcoalFurnace].result[eRES.MaterialGreenDev] = 2;
 develArray[eDEVEL.CobaltMine] = new Development(eDEVEL.CobaltMine, ["cobaltmine.png"], "Cobalt Mine", eDCLR.Orange, [eLSCP.Rocky], ("Result: +1 Material, +1 Treasure"));
 develArray[eDEVEL.CobaltMine].cost = [];
 develArray[eDEVEL.CobaltMine].cost[eCOST.Food] = 1;
@@ -1216,7 +1221,8 @@ develArray[eDEVEL.ShepherdVillage].result = [];
 develArray[eDEVEL.ShepherdVillage].result[eRES.Active] = 2;
 develArray[eDEVEL.ShepherdVillage].result[eRES.Material] = 1;
 develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,;"
-    + "Result: +1 Active for every two surrounding developments, rounded up"));
+    + "Result: +1 Active and +1 Material for every two surrounding developments, " +
+    " rounded up"));
 develArray[eDEVEL.Town].cost = [];
 develArray[eDEVEL.Town].cost[eCOST.Food] = 3;
 develArray[eDEVEL.Town].cost[eCOST.Material] = 4;
@@ -1224,7 +1230,8 @@ develArray[eDEVEL.Town].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.Town].requirement = [];
 develArray[eDEVEL.Town].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.Town].result = [];
-develArray[eDEVEL.Town].result[eRES.Active] = 3;
+develArray[eDEVEL.Town].result[eRES.MaterialMultNeighbor] = 0.5;
+develArray[eDEVEL.Town].result[eRES.ActiveMultNeighbor] = 0.5;
 develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Blue Development to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 3;
@@ -2466,6 +2473,7 @@ function applyDevEffect(tileId, undoing) {
     if (undoing === void 0) { undoing = false; }
     var tDev = develArray[currLand.tileArray[tileId].development];
     var resultArray = considerPlayerEffects(tDev);
+    resultArray = calculateComplexResults(tileId, resultArray);
     if (requirementCheck(tileId, undoing)) {
         beforeEffect(tileId, undoing);
         if (!undoing) {
@@ -2485,7 +2493,7 @@ function applyDevEffect(tileId, undoing) {
                 applySingleEffect(resultArray, cResult, undoing);
             }
         }
-        // setType: string, setLitResource: number[], setPosition: number[]
+        // Create visual effect for requirement / result
         var tPosition = hexToPoint([currLand.tileArray[tileId].axialRow,
             currLand.tileArray[tileId].axialCol]);
         tPosition[0] += (glbHWidth / 2);
@@ -2495,8 +2503,8 @@ function applyDevEffect(tileId, undoing) {
         if (tDev.requirement.length > 0) {
             glbVeRscArray.push(new veResourceletChain("Requirement", tDev.requirement, tPosition));
         }
-        if (tDev.result.length > 0) {
-            glbVeRscArray.push(new veResourceletChain("Result", tDev.result, tPosition));
+        if (resultArray.length > 0) {
+            glbVeRscArray.push(new veResourceletChain("Result", resultArray, tPosition));
         }
         afterEffect(tileId, undoing);
     }
@@ -2527,6 +2535,109 @@ function considerPlayerEffects(tDev) {
     }
     return resultArray;
 }
+function calculateComplexResults(tileId, resultArray) {
+    for (var cResult = 0; cResult < resultArray.length; cResult++) {
+        if ((cResult === eRES.FoodLessNeighbor)
+            && (resultArray[eRES.FoodLessNeighbor] != undefined)) {
+            var qtyFood = resultArray[eRES.FoodLessNeighbor];
+            // Build an array of the tiles of each neighbor
+            var neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+            var neighborArray = [];
+            for (var iii = 0; iii < neighborCoordArray.length; iii++) {
+                neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+            }
+            // Subtract one food for each neighboring tile that has a development
+            for (var tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+                var neighborVal = neighborArray[tNeighbor];
+                if (neighborVal.development != null) {
+                    qtyFood--;
+                }
+            }
+            if (qtyFood < 0) {
+                qtyFood = 0;
+            }
+            if (resultArray[eRES.Food] === undefined) {
+                resultArray[eRES.Food] = 0;
+            }
+            resultArray[eRES.Food] += qtyFood;
+            resultArray[eRES.FoodLessNeighbor] = 0;
+        }
+        else if ((cResult === eRES.ActiveMultNeighbor)
+            && (resultArray[eRES.ActiveMultNeighbor] != undefined)) {
+            var actMult = resultArray[eRES.ActiveMultNeighbor];
+            var qtyAct = 0;
+            // Build an array of the tiles of each neighbor
+            var neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+            var neighborArray = [];
+            for (var iii = 0; iii < neighborCoordArray.length; iii++) {
+                neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+            }
+            // Add one for each neighboring tile that has a development
+            for (var tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+                var neighborVal = neighborArray[tNeighbor];
+                if (neighborVal.development != null) {
+                    qtyAct++;
+                }
+            }
+            if (resultArray[eRES.Active] === undefined) {
+                resultArray[eRES.Active] = 0;
+            }
+            resultArray[eRES.Active] += Math.ceil(qtyAct * actMult);
+            resultArray[eRES.ActiveMultNeighbor] = 0;
+        }
+        else if ((cResult === eRES.MaterialMultNeighbor)
+            && (resultArray[eRES.MaterialMultNeighbor] != undefined)) {
+            var matMult = resultArray[eRES.MaterialMultNeighbor];
+            var qtyMat = 0;
+            // Build an array of the tiles of each neighbor
+            var neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+            var neighborArray = [];
+            for (var iii = 0; iii < neighborCoordArray.length; iii++) {
+                neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+            }
+            // Add one for each neighboring tile that has a development
+            for (var tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+                var neighborVal = neighborArray[tNeighbor];
+                if (neighborVal.development != null) {
+                    qtyMat++;
+                }
+            }
+            if (resultArray[eRES.Material] === undefined) {
+                resultArray[eRES.Material] = 0;
+            }
+            resultArray[eRES.Material] += Math.ceil(qtyMat * matMult);
+            resultArray[eRES.MaterialMultNeighbor] = 0;
+        }
+        else if ((cResult === eRES.MaterialGreenDev)
+            && (resultArray[eRES.MaterialGreenDev] != undefined)) {
+            var hasGNeighbor = false;
+            // Build an array of the tiles of each neighbor
+            var neighborCoordArray = currLand.tileArray[tileId].getNeighbors();
+            var neighborArray = [];
+            for (var iii = 0; iii < neighborCoordArray.length; iii++) {
+                neighborArray.push(currLand.tileArray[currLand.getID(neighborCoordArray[iii])]);
+            }
+            // Add one for each neighboring tile that has a development
+            for (var tNeighbor = 0; tNeighbor < neighborArray.length; tNeighbor++) {
+                var neighborVal = neighborArray[tNeighbor];
+                if (neighborVal.development != null) {
+                    if (develArray[neighborVal.development].color === eDCLR.Green) {
+                        hasGNeighbor = true;
+                        break;
+                    }
+                }
+            }
+            if (hasGNeighbor) {
+                if (resultArray[eRES.Material] === undefined) {
+                    resultArray[eRES.Material] = 0;
+                }
+                resultArray[eRES.Material] += resultArray[eRES.MaterialGreenDev];
+                resultArray[eRES.MaterialGreenDev] = 0;
+            }
+        }
+    }
+    return resultArray;
+}
 function requirementCheck(tileId, undoing) {
     var tDev = develArray[currLand.tileArray[tileId].development];
     if (tDev.requirement.length === 0) {
@@ -2545,7 +2656,7 @@ function requirementCheck(tileId, undoing) {
             }
         }
         else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-            if (currPlayer.ownedDevs.length === 0) {
+            if (currPlayer.ownedDevs.length < 3) {
                 return false;
             }
         }
@@ -2583,30 +2694,30 @@ function applySingleEffect(resultArray, cResult, undoing) {
             currPlayer.drawContainer();
         }
     }
-    else if (cResult === eRES.BlueTreasure) {
-        currPlayer.activeEffects[eRES.BlueTreasure] +=
-            (resultArray[eRES.BlueTreasure] * undModify);
-    }
-    else if (cResult === eRES.Destroy) {
-        currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
-        // Changes game state in order to select a development for destruction
-        glbState = selDevel;
-    }
     else if (cResult === eRES.Food) {
         currPlayer.food += (resultArray[eRES.Food] * undModify);
     }
     else if (cResult === eRES.Material) {
         currPlayer.material += (resultArray[eRES.Material] * undModify);
     }
-    else if (cResult === eRES.RedActive) {
-        currPlayer.activeEffects[eRES.RedActive] +=
-            (resultArray[eRES.RedActive] * undModify);
+    else if (cResult === eRES.Treasure) {
+        currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
     }
     else if (cResult === eRES.Ship) {
         currPlayer.ships += (resultArray[eRES.Ship] * undModify);
     }
-    else if (cResult === eRES.Treasure) {
-        currPlayer.treasure += (resultArray[eRES.Treasure] * undModify);
+    else if (cResult === eRES.BlueTreasure) {
+        currPlayer.activeEffects[eRES.BlueTreasure] +=
+            (resultArray[eRES.BlueTreasure] * undModify);
+    }
+    else if (cResult === eRES.RedActive) {
+        currPlayer.activeEffects[eRES.RedActive] +=
+            (resultArray[eRES.RedActive] * undModify);
+    }
+    else if (cResult === eRES.Destroy) {
+        currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
+        // Changes game state in order to select a development for destruction
+        glbState = selDevel;
     }
 }
 function applyRequirement(tileId, undoing) {
