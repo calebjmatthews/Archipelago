@@ -39,7 +39,6 @@ var cPlayerArray = [];
 var currDescCard = null;
 var currHovDescCard = null;
 var currPlayerBar = null;
-var currResProcess = [];
 var currReqProcess = [];
 // Enumerates the convention of how hex direction is ordered within this program
 var eHEXD;
@@ -164,13 +163,12 @@ var eRES;
     eRES[eRES["Treasure"] = 2] = "Treasure";
     eRES[eRES["Ship"] = 3] = "Ship";
     eRES[eRES["Active"] = 4] = "Active";
-    eRES[eRES["Destroy"] = 5] = "Destroy";
-    eRES[eRES["BlueTreasure"] = 6] = "BlueTreasure";
-    eRES[eRES["RedActive"] = 7] = "RedActive";
-    eRES[eRES["FoodLessNeighbor"] = 8] = "FoodLessNeighbor";
-    eRES[eRES["MaterialMultNeighbor"] = 9] = "MaterialMultNeighbor";
-    eRES[eRES["ActiveMultNeighbor"] = 10] = "ActiveMultNeighbor";
-    eRES[eRES["MaterialGreenDev"] = 11] = "MaterialGreenDev";
+    eRES[eRES["BlueTreasure"] = 5] = "BlueTreasure";
+    eRES[eRES["RedActive"] = 6] = "RedActive";
+    eRES[eRES["FoodLessNeighbor"] = 7] = "FoodLessNeighbor";
+    eRES[eRES["MaterialMultNeighbor"] = 8] = "MaterialMultNeighbor";
+    eRES[eRES["ActiveMultNeighbor"] = 9] = "ActiveMultNeighbor";
+    eRES[eRES["MaterialGreenDev"] = 10] = "MaterialGreenDev";
 })(eRES || (eRES = {}));
 // ~~~~ General purpose functions ~~~~
 function rgbToHclr(rgb) {
@@ -464,7 +462,7 @@ var Player = (function () {
                     if ((develArray[tNTile.development].color === eDCLR.Black) &&
                         (tNTile.ownedBy === null)) {
                         tNTile.ownedBy = currPlayer.playerID;
-                        this.ownedTiles.push(neighbors[cNeigh]);
+                        this.ownedTiles.push(currLand.getID(neighbors[cNeigh]));
                         currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
                         this.addNeighboringTerritory(currLand.getID(neighbors[cNeigh]));
                         tNTile.reDrawTile();
@@ -1171,13 +1169,14 @@ develArray[eDEVEL.BaseCamp].requirement = [];
 develArray[eDEVEL.BaseCamp].result = [];
 develArray[eDEVEL.BaseCamp].result[eRES.Food] = 1;
 develArray[eDEVEL.BaseCamp].result[eRES.Material] = 1;
-develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], "Result: Destroy Development, +1 Active");
+develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], "Fire Crew", eDCLR.Blue, [eLSCP.Shore], ("Requires: Destroy 1 Development,; " +
+    "Result: +1 Active"));
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Food] = 1;
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = 1;
 develArray[eDEVEL.FireCrew].requirement = [];
+develArray[eDEVEL.FireCrew].requirement[eREQ.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result = [];
-develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result[eRES.Active] = 1;
 develArray[eDEVEL.LaborPort] = new Development(eDEVEL.LaborPort, ["laborport.png"], "Labor Port", eDCLR.Blue, [eLSCP.Shore], "Requires: 1 Treasure,; Result: +3 Actives");
 develArray[eDEVEL.LaborPort].cost = [];
@@ -1230,7 +1229,7 @@ develArray[eDEVEL.RicePaddy].cost[eCOST.Material] = 1;
 develArray[eDEVEL.RicePaddy].requirement = [];
 develArray[eDEVEL.RicePaddy].result = [];
 develArray[eDEVEL.RicePaddy].result[eRES.Food] = 1;
-develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Result: +6 Food, -1 Food for each surrounding development"));
+develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, ["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], ("Result: +5 Food, -1 Food for each surrounding development"));
 develArray[eDEVEL.BoarRanch].cost = [];
 develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
@@ -2405,25 +2404,6 @@ function selDevelClick(corPoint) {
                         glbState = activeSetup;
                     }
                 }
-                else if ((currResProcess[eRES.Destroy] > 0)
-                    && (inArr(glbTileSelArray, clkTileId))) {
-                    // Destroy the selected development
-                    currPlayer.destroyTerritory(clkTileId);
-                    clkTile.reDrawTile();
-                    currResProcess[eRES.Destroy]--;
-                    if (currReqProcess[eRES.Destroy] > 0) {
-                        veClearTint(glbPulseArray);
-                        glbTileSelArray = [];
-                        glbPulseArray = [];
-                        glbState = selDevelSetup;
-                    }
-                    else {
-                        veClearTint(glbPulseArray);
-                        glbTileSelArray = [];
-                        glbPulseArray = [];
-                        glbState = activeSetup;
-                    }
-                }
             }
         }
     }
@@ -2906,15 +2886,6 @@ function applySingleEffect(tileId, resultArray, cResult, undoing) {
         currPlayer.activeEffects[eRES.RedActive] +=
             (resultArray[eRES.RedActive] * undModify);
     }
-    else if (cResult === eRES.Destroy) {
-        // Changes game state in order to select a development for destruction
-        if (currResProcess[eRES.Destroy] === undefined) {
-            currResProcess[eRES.Destroy] = resultArray[eRES.Destroy];
-        }
-        if (currResProcess[eRES.Destroy] > 0) {
-            glbState = selDevelSetup;
-        }
-    }
 }
 function applyRequirement(tileId, undoing) {
     var tDev = develArray[currLand.tileArray[tileId].development];
@@ -2935,10 +2906,10 @@ function applyRequirement(tileId, undoing) {
             }
             else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
                 // Changes game state in order to select a development for destruction
-                if (currResProcess[eREQ.Destroy] === undefined) {
-                    currResProcess[eREQ.Destroy] = tDev.requirement[eRES.Destroy];
+                if (currReqProcess[eREQ.Destroy] === undefined) {
+                    currReqProcess[eREQ.Destroy] = tDev.requirement[eREQ.Destroy];
                 }
-                if (currResProcess[eREQ.Destroy] > 0) {
+                if (currReqProcess[eREQ.Destroy] > 0) {
                     glbState = selDevelSetup;
                 }
             }
@@ -3550,21 +3521,11 @@ function active() {
 }
 // Logical backing for selecting a development effect's target
 function selDevelSetup() {
-    if (currResProcess[eRES.Destroy] > 0) {
+    if (currReqProcess[eREQ.Destroy] > 0) {
         var availableTiles = [];
-        for (var cTile = 0; cTile < currPlayer.territory.length; cTile++) {
-            if (currPlayer.territory[cTile] != glbActingTileId) {
-                availableTiles.push(currPlayer.territory[cTile]);
-            }
-        }
-        glbTileSelArray = availableTiles;
-        glbPulseArray = glbTileSelArray;
-    }
-    else if (currReqProcess[eREQ.Destroy] > 0) {
-        var availableTiles = [];
-        for (var cTile = 0; cTile < currPlayer.territory.length; cTile++) {
-            if (currPlayer.territory[cTile] != glbActingTileId) {
-                availableTiles.push(currPlayer.territory[cTile]);
+        for (var cTile = 0; cTile < currPlayer.ownedTiles.length; cTile++) {
+            if (currPlayer.ownedTiles[cTile] != glbActingTileId) {
+                availableTiles.push(currPlayer.ownedTiles[cTile]);
             }
         }
         glbTileSelArray = availableTiles;
@@ -3591,7 +3552,7 @@ function selDevel() {
         glbSideBar.hoverOverBar();
     }
     // If done destroying, move on to applying the rest of the development's effect
-    if ((currReqProcess[eREQ.Destroy] === 0) || (currResProcess[eRES.Destroy] === 0)) {
+    if (currReqProcess[eREQ.Destroy] === 0) {
         applyDevEffect(glbActingTileId);
     }
 }

@@ -69,7 +69,7 @@ class Player {
 					if ((develArray[tNTile.development].color === eDCLR.Black) && 
 						(tNTile.ownedBy === null)) {
 						tNTile.ownedBy = currPlayer.playerID;
-						this.ownedTiles.push(neighbors[cNeigh]);
+						this.ownedTiles.push(currLand.getID(neighbors[cNeigh]));
 						currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
 						this.addNeighboringTerritory(currLand.getID(neighbors[cNeigh]));
 						tNTile.reDrawTile();

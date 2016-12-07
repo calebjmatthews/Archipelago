@@ -148,9 +148,9 @@ function active() {
 function selDevelSetup() {
 	if (currReqProcess[eREQ.Destroy] > 0) {
 		let availableTiles: number[] = [];
-		for (let cTile = 0; cTile < currPlayer.territory.length; cTile++) {
-			if (currPlayer.territory[cTile] != glbActingTileId) {
-				availableTiles.push(currPlayer.territory[cTile]);
+		for (let cTile = 0; cTile < currPlayer.ownedTiles.length; cTile++) {
+			if (currPlayer.ownedTiles[cTile] != glbActingTileId) {
+				availableTiles.push(currPlayer.ownedTiles[cTile]);
 			}
 		}
 		glbTileSelArray = availableTiles;

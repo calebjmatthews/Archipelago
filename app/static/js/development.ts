@@ -141,7 +141,7 @@ develArray[eDEVEL.RicePaddy].result[eRES.Food] = 1;
 
 develArray[eDEVEL.BoarRanch] = new Development(eDEVEL.BoarRanch, 
 	["boarranch.png"], "Boar Ranch", eDCLR.Green, [eLSCP.Grassy], 
-	("Result: +6 Food, -1 Food for each surrounding development"));
+	("Result: +5 Food, -1 Food for each surrounding development"));
 develArray[eDEVEL.BoarRanch].cost = [];
 develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;

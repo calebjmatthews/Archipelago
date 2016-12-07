@@ -39,7 +39,6 @@ let cPlayerArray: Player[] = [];
 let currDescCard = null;
 let currHovDescCard = null;
 let currPlayerBar: PlayerBar = null;
-let currResProcess: number[] = [];
 let currReqProcess: number[] = [];
 
 // Enumerates the convention of how hex direction is ordered within this program
