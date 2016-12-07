@@ -1,57 +1,5 @@
 /// <reference path="references.ts" />
 
-function onImageLoad() {
-	// Fill sprite reference with texture info
-	sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
-	let spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
-	let spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
-	for (var key in spr2) {
-		sprMed[key] = spr2[key];
-	}
-	for (var key in spr3) {
-		sprMed[key] = spr3[key];
-	}
-
-	// Draw parchment background
-	let backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
-	backgroundParchment.position.set(0, 0);
-	stage.addChild(backgroundParchment);
-
-	// Create the Tink instance
-	tb = new Tink(PIXI, renderer.view);
-	pointer = tb.makePointer();
-
-	// This code runs when the texture atlas has loaded
-	currLand.generateLand();
-	currLand.displayLand();
-	currLand.devSelection = new DevSet();
-	currLand.devSelection.genDevSelection();
-
-	currPlayerBar = new PlayerBar();
-	glbSideBar = new SideBar();
-	glbSideBar.formBacking();
-	glbState = editSetup;
-	
-	// Start the game loop
-	gameLoop();
-}
-
-function gameLoop() {
-
-	requestAnimationFrame(gameLoop);
-
-	// Update Tink
-	tb.update();
-
-	// Process any visual effects
-	veAllEffects();
-
-	// Utilize the current game state
-	glbState();
-
-	renderer.render(stage);
-}
-
 function editSetup() {
 	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	glbSideBar = new EditBar();
@@ -146,6 +94,7 @@ function active() {
 
 // Logical backing for selecting a development effect's target
 function selDevelSetup() {
+	if (glbSideBar.buttonArray.length != 0) { glbSideBar.removeBar(); }
 	if (currReqProcess[eREQ.Destroy] > 0) {
 		let availableTiles: number[] = [];
 		for (let cTile = 0; cTile < currPlayer.ownedTiles.length; cTile++) {
@@ -170,11 +119,6 @@ function selDevel() {
 	// Hover event handling
 	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
 	else { glbSideBar.hoverOverBar(); }
-
-	// If done destroying, move on to applying the rest of the development's effect
-	if (currReqProcess[eREQ.Destroy] === 0) {
-		applyDevEffect(glbActingTileId);
-	}
 }
 
 // Prepare the logic/visuals for development purchasing
@@ -228,7 +172,9 @@ function buildSetup() {
 function build() {
 	// Click event handling
 	pointer.tap = () => {
-		buildClick([pointer.x, pointer.y]);
+		if (glbState === build) {
+			buildClick([pointer.x, pointer.y]);
+		}
 	}
 
 	// Hover event handling

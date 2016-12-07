@@ -306,7 +306,7 @@ develArray[eDEVEL.Town].result[eRES.ActiveMultNeighbor] = 0.5;
 
 develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, 
 	["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], 
-	("Requires: Destroy 2 Blue Development to build this,; Upon Building: +1 Ship"));
+	("Requires: Destroy 2 Blue Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 3;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = 3;
@@ -317,7 +317,7 @@ develArray[eDEVEL.MerchantShip].result = [];
 
 develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, 
 	["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], 
-	("Requires: Destroy 2 Green Development to build this,; Upon Building: +1 Ship"));
+	("Requires: Destroy 2 Green Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = 6;
 develArray[eDEVEL.VentureShip].cost[eCOST.Material] = 2;
@@ -328,7 +328,7 @@ develArray[eDEVEL.VentureShip].result = [];
 
 develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, 
 	["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], 
-	("Requires: Destroy 2 Orange Development to build this,; Upon Building: +1 Ship"));
+	("Requires: Destroy 2 Orange Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Food] = 3;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = 4;

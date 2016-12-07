@@ -87,6 +87,9 @@ class Tile extends Hex {
 			tBSprite.alpha = 1;
 			tBSprite.tint = rgbToHclr(cPlayerArray[this.ownedBy].color);
 		}
+		else {
+			tBSprite.alpha = 0;
+		}
 		if (this.development != null) {
 			tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
 		}

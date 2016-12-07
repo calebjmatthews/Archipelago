@@ -55,3 +55,55 @@ function paintLscp(clkTile) {
 		console.log("Error, unexpected glbPainting value.");
 	}
 }
+
+function onImageLoad() {
+	// Fill sprite reference with texture info
+	sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
+	let spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
+	let spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
+	for (var key in spr2) {
+		sprMed[key] = spr2[key];
+	}
+	for (var key in spr3) {
+		sprMed[key] = spr3[key];
+	}
+
+	// Draw parchment background
+	let backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
+	backgroundParchment.position.set(0, 0);
+	stage.addChild(backgroundParchment);
+
+	// Create the Tink instance
+	tb = new Tink(PIXI, renderer.view);
+	pointer = tb.makePointer();
+
+	// This code runs when the texture atlas has loaded
+	currLand.generateLand();
+	currLand.displayLand();
+	currLand.devSelection = new DevSet();
+	currLand.devSelection.genDevSelection();
+
+	currPlayerBar = new PlayerBar();
+	glbSideBar = new SideBar();
+	glbSideBar.formBacking();
+	glbState = editSetup;
+	
+	// Start the game loop
+	gameLoop();
+}
+
+function gameLoop() {
+
+	requestAnimationFrame(gameLoop);
+
+	// Update Tink
+	tb.update();
+
+	// Process any visual effects
+	veAllEffects();
+
+	// Utilize the current game state
+	glbState();
+
+	renderer.render(stage);
+}

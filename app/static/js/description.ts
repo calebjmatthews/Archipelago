@@ -6,6 +6,7 @@ class DescCard {
 	tArray: any[] = [];
 
 	constructor(givenPoint: number[], givenDevel: Development) {
+		if (givenDevel === undefined) { return; }
 		this.clkPoint = givenPoint;
 		this.devel = givenDevel;
 

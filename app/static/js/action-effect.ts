@@ -1,24 +1,32 @@
 /// <reference path="references.ts" />
 
 function applyDevEffect(tileId: number, undoing: boolean = false) {
-	glbActingTileId = tileId;
 	let tDev: Development = develArray[currLand.tileArray[tileId].development];
 	let resultArray = considerPlayerEffects(tDev);
 	resultArray = calculateComplexResults(tileId, resultArray);
 	if (requirementCheck(tileId, undoing)) {
-		beforeEffect(tileId, undoing);
-		if (!undoing) {
+		if (currReqProcess[eREQ.Destroy] != 0) {
+			beforeEffect(tileId, undoing);
+		}
+		if ((!undoing) && (currReqProcess[eREQ.Destroy] != 0)) {
 			// Add the card to the history array
 			let ahSpot = currPlayer.actionHistory.length;
 			currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
 			currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
 		}
-		else {
+		else if (undoing) {
 			// Remove the undone card from the history array
 			let ahSpot = currPlayer.actionHistory.length - 1;
 			currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
 		}
 		applyRequirement(tileId, undoing);
+
+		if (currReqProcess[eREQ.Destroy] != undefined) {
+			if (currReqProcess[eREQ.Destroy] > 0) {
+				return;
+			}
+		}
+
 		for (let cResult = 0; cResult < glbNumRes; cResult++) {
 			if (tDev.result[cResult] != undefined) {
 				applySingleEffect(tileId, resultArray, cResult, undoing);
@@ -40,6 +48,7 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 		}
 
 		afterEffect(tileId, undoing);
+		
 	}
 	else {
 		glbState = activeSetup;
@@ -187,7 +196,8 @@ function requirementCheck(tileId: number, undoing: boolean) {
 			if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
 		}
 		else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-			if (currPlayer.territory.length < 3) { return false; }
+			if ((currPlayer.territory.length < 3) 
+				&& (currReqProcess[eREQ.Destroy] != 0)) { return false; }
 		}
 		else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
 			if (currPlayer.food < tDev.requirement[cReq]) { return false; }
@@ -262,7 +272,6 @@ function applyRequirement(tileId: number, undoing: boolean) {
 			let cReq = reqArray[cReqSpot];
 			if ((cReq === eREQ.Active) && (tDev.requirement[cReq] != undefined)) {
 				currPlayer.actions -= (tDev.requirement[cReq] * undModify);
-				// glbState = selActive
 			}
 			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
 				// Changes game state in order to select a development for destruction
@@ -296,10 +305,12 @@ function afterEffect(tileId: number, undoing: boolean) {
 	// Account for spent card
 	currPlayer.actions += (-1 * undModify);
 	glbActingTileId = null;
+	currPlayer.removeCard(tileId);
+	currReqProcess = [];
 
 	// Update display
 	currPlayerBar.updatePlayerBar();
-	currPlayer.removeCard(tileId);
+	
 	glbSideBar.formBar();
 	
 }

@@ -146,7 +146,6 @@ function selDevelClick(corPoint) {
 					&& (inArr(glbTileSelArray, clkTileId))) {
 					// Destroy the selected development
 					currPlayer.destroyTerritory(clkTileId);
-					clkTile.reDrawTile();
 					currReqProcess[eREQ.Destroy]--;
 					if (currReqProcess[eREQ.Destroy] > 0) {
 						veClearTint(glbPulseArray);
@@ -156,6 +155,7 @@ function selDevelClick(corPoint) {
 					else {
 						veClearTint(glbPulseArray);
 						glbTileSelArray = []; glbPulseArray = [];
+						applyDevEffect(glbActingTileId);
 						glbState = activeSetup;
 					}
 				}

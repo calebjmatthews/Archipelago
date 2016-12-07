@@ -375,6 +375,9 @@ var Tile = (function (_super) {
             tBSprite.alpha = 1;
             tBSprite.tint = rgbToHclr(cPlayerArray[this.ownedBy].color);
         }
+        else {
+            tBSprite.alpha = 0;
+        }
         if (this.development != null) {
             tDevSpr.texture = sprMed[develArray[this.development].sprID[0]];
         }
@@ -496,7 +499,8 @@ var Player = (function () {
         for (var tId = 0; tId < neighIdArray.length; tId++) {
             var tNeigh = currLand.tileArray[tId];
             if (tNeigh.development != null) {
-                if (develArray[tNeigh.development].color === eDCLR.Black) {
+                if ((develArray[tNeigh.development].color === eDCLR.Black)
+                    && (tNeigh.ownedBy === this.playerID)) {
                     if (!this.checkConnected(tId)) {
                         this.remTerritory(tId);
                     }
@@ -509,8 +513,6 @@ var Player = (function () {
         // Remove the development's card from its current location
         if (this.findDev(tTileId) === "hand") {
             this.hand = exclMem(this.hand, tTileId);
-            glbSideBar.removeBar();
-            glbSideBar.formBar();
         }
         else if (this.findDev(tTileId) === "discard") {
             this.discard = exclMem(this.discard, tTileId);
@@ -1347,7 +1349,7 @@ develArray[eDEVEL.Town].requirement[eREQ.Food] = 2;
 develArray[eDEVEL.Town].result = [];
 develArray[eDEVEL.Town].result[eRES.MaterialMultNeighbor] = 0.5;
 develArray[eDEVEL.Town].result[eRES.ActiveMultNeighbor] = 0.5;
-develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Blue Development to build this,; Upon Building: +1 Ship"));
+develArray[eDEVEL.MerchantShip] = new Development(eDEVEL.MerchantShip, ["merchantship.png"], "Merchant Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Blue Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.MerchantShip].cost = [];
 develArray[eDEVEL.MerchantShip].cost[eCOST.Material] = 3;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Treasure] = 3;
@@ -1355,7 +1357,7 @@ develArray[eDEVEL.MerchantShip].cost[eCOST.DestroyBlue] = 2;
 develArray[eDEVEL.MerchantShip].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.MerchantShip].requirement = [];
 develArray[eDEVEL.MerchantShip].result = [];
-develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Green Development to build this,; Upon Building: +1 Ship"));
+develArray[eDEVEL.VentureShip] = new Development(eDEVEL.VentureShip, ["ventureship.png"], "Venture Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Green Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.VentureShip].cost = [];
 develArray[eDEVEL.VentureShip].cost[eCOST.Food] = 6;
 develArray[eDEVEL.VentureShip].cost[eCOST.Material] = 2;
@@ -1363,7 +1365,7 @@ develArray[eDEVEL.VentureShip].cost[eCOST.DestroyGreen] = 2;
 develArray[eDEVEL.VentureShip].cost[eCOST.Ship] = -1;
 develArray[eDEVEL.VentureShip].requirement = [];
 develArray[eDEVEL.VentureShip].result = [];
-develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Orange Development to build this,; Upon Building: +1 Ship"));
+develArray[eDEVEL.WorkmanShip] = new Development(eDEVEL.WorkmanShip, ["workmanship.png"], "Workman Ship", eDCLR.Violet, [eLSCP.Sea], ("Requires: Destroy 2 Orange Developments to build this,; Upon Building: +1 Ship"));
 develArray[eDEVEL.WorkmanShip].cost = [];
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Food] = 3;
 develArray[eDEVEL.WorkmanShip].cost[eCOST.Material] = 4;
@@ -1441,6 +1443,46 @@ function paintLscp(clkTile) {
     else {
         console.log("Error, unexpected glbPainting value.");
     }
+}
+function onImageLoad() {
+    // Fill sprite reference with texture info
+    sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
+    var spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
+    var spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
+    for (var key in spr2) {
+        sprMed[key] = spr2[key];
+    }
+    for (var key in spr3) {
+        sprMed[key] = spr3[key];
+    }
+    // Draw parchment background
+    var backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
+    backgroundParchment.position.set(0, 0);
+    stage.addChild(backgroundParchment);
+    // Create the Tink instance
+    tb = new Tink(PIXI, renderer.view);
+    pointer = tb.makePointer();
+    // This code runs when the texture atlas has loaded
+    currLand.generateLand();
+    currLand.displayLand();
+    currLand.devSelection = new DevSet();
+    currLand.devSelection.genDevSelection();
+    currPlayerBar = new PlayerBar();
+    glbSideBar = new SideBar();
+    glbSideBar.formBacking();
+    glbState = editSetup;
+    // Start the game loop
+    gameLoop();
+}
+function gameLoop() {
+    requestAnimationFrame(gameLoop);
+    // Update Tink
+    tb.update();
+    // Process any visual effects
+    veAllEffects();
+    // Utilize the current game state
+    glbState();
+    renderer.render(stage);
 }
 /// <reference path="references.ts" />
 var PlayerBar = (function () {
@@ -2389,7 +2431,6 @@ function selDevelClick(corPoint) {
                     && (inArr(glbTileSelArray, clkTileId))) {
                     // Destroy the selected development
                     currPlayer.destroyTerritory(clkTileId);
-                    clkTile.reDrawTile();
                     currReqProcess[eREQ.Destroy]--;
                     if (currReqProcess[eREQ.Destroy] > 0) {
                         veClearTint(glbPulseArray);
@@ -2401,6 +2442,7 @@ function selDevelClick(corPoint) {
                         veClearTint(glbPulseArray);
                         glbTileSelArray = [];
                         glbPulseArray = [];
+                        applyDevEffect(glbActingTileId);
                         glbState = activeSetup;
                     }
                 }
@@ -2440,6 +2482,9 @@ var DescCard = (function () {
         this.clkPoint = [];
         this.devel = null;
         this.tArray = [];
+        if (givenDevel === undefined) {
+            return;
+        }
         this.clkPoint = givenPoint;
         this.devel = givenDevel;
         var dPosition = [];
@@ -2641,19 +2686,26 @@ function applyDevEffect(tileId, undoing) {
     var resultArray = considerPlayerEffects(tDev);
     resultArray = calculateComplexResults(tileId, resultArray);
     if (requirementCheck(tileId, undoing)) {
-        beforeEffect(tileId, undoing);
-        if (!undoing) {
+        if (currReqProcess[eREQ.Destroy] != 0) {
+            beforeEffect(tileId, undoing);
+        }
+        if ((!undoing) && (currReqProcess[eREQ.Destroy] != 0)) {
             // Add the card to the history array
             var ahSpot = currPlayer.actionHistory.length;
             currPlayer.actionHistory[ahSpot] = new ArcHistory("development");
             currPlayer.actionHistory[ahSpot].recordDevAction(tileId);
         }
-        else {
+        else if (undoing) {
             // Remove the undone card from the history array
             var ahSpot = currPlayer.actionHistory.length - 1;
             currPlayer.actionHistory = currPlayer.actionHistory.slice(0, ahSpot);
         }
         applyRequirement(tileId, undoing);
+        if (currReqProcess[eREQ.Destroy] != undefined) {
+            if (currReqProcess[eREQ.Destroy] > 0) {
+                return;
+            }
+        }
         for (var cResult = 0; cResult < glbNumRes; cResult++) {
             if (tDev.result[cResult] != undefined) {
                 applySingleEffect(tileId, resultArray, cResult, undoing);
@@ -2822,7 +2874,8 @@ function requirementCheck(tileId, undoing) {
             }
         }
         else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-            if (currPlayer.territory.length < 3) {
+            if ((currPlayer.territory.length < 3)
+                && (currReqProcess[eREQ.Destroy] != 0)) {
                 return false;
             }
         }
@@ -2936,9 +2989,10 @@ function afterEffect(tileId, undoing) {
     // Account for spent card
     currPlayer.actions += (-1 * undModify);
     glbActingTileId = null;
+    currPlayer.removeCard(tileId);
+    currReqProcess = [];
     // Update display
     currPlayerBar.updatePlayerBar();
-    currPlayer.removeCard(tileId);
     glbSideBar.formBar();
 }
 /// <reference path="references.ts" />
@@ -3372,46 +3426,6 @@ var veResourceletChain = (function () {
     return veResourceletChain;
 }());
 /// <reference path="references.ts" />
-function onImageLoad() {
-    // Fill sprite reference with texture info
-    sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
-    var spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
-    var spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
-    for (var key in spr2) {
-        sprMed[key] = spr2[key];
-    }
-    for (var key in spr3) {
-        sprMed[key] = spr3[key];
-    }
-    // Draw parchment background
-    var backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
-    backgroundParchment.position.set(0, 0);
-    stage.addChild(backgroundParchment);
-    // Create the Tink instance
-    tb = new Tink(PIXI, renderer.view);
-    pointer = tb.makePointer();
-    // This code runs when the texture atlas has loaded
-    currLand.generateLand();
-    currLand.displayLand();
-    currLand.devSelection = new DevSet();
-    currLand.devSelection.genDevSelection();
-    currPlayerBar = new PlayerBar();
-    glbSideBar = new SideBar();
-    glbSideBar.formBacking();
-    glbState = editSetup;
-    // Start the game loop
-    gameLoop();
-}
-function gameLoop() {
-    requestAnimationFrame(gameLoop);
-    // Update Tink
-    tb.update();
-    // Process any visual effects
-    veAllEffects();
-    // Utilize the current game state
-    glbState();
-    renderer.render(stage);
-}
 function editSetup() {
     if (glbSideBar.buttonArray.length != 0) {
         glbSideBar.removeBar();
@@ -3521,6 +3535,9 @@ function active() {
 }
 // Logical backing for selecting a development effect's target
 function selDevelSetup() {
+    if (glbSideBar.buttonArray.length != 0) {
+        glbSideBar.removeBar();
+    }
     if (currReqProcess[eREQ.Destroy] > 0) {
         var availableTiles = [];
         for (var cTile = 0; cTile < currPlayer.ownedTiles.length; cTile++) {
@@ -3550,10 +3567,6 @@ function selDevel() {
     }
     else {
         glbSideBar.hoverOverBar();
-    }
-    // If done destroying, move on to applying the rest of the development's effect
-    if (currReqProcess[eREQ.Destroy] === 0) {
-        applyDevEffect(glbActingTileId);
     }
 }
 // Prepare the logic/visuals for development purchasing
@@ -3614,7 +3627,9 @@ function buildSetup() {
 function build() {
     // Click event handling
     pointer.tap = function () {
-        buildClick([pointer.x, pointer.y]);
+        if (glbState === build) {
+            buildClick([pointer.x, pointer.y]);
+        }
     };
     // Hover event handling
     if (pointer.x < (renderer.width - 200)) {

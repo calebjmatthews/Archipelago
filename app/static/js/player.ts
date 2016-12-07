@@ -109,7 +109,8 @@ class Player {
 		for (let tId = 0; tId < neighIdArray.length; tId++) {
 			let tNeigh = currLand.tileArray[tId];
 			if (tNeigh.development != null) {
-				if (develArray[tNeigh.development].color === eDCLR.Black) {
+				if ((develArray[tNeigh.development].color === eDCLR.Black)
+					&& (tNeigh.ownedBy === this.playerID)) {
 					if (!this.checkConnected(tId)) {
 						this.remTerritory(tId);
 					}
@@ -124,8 +125,8 @@ class Player {
 		// Remove the development's card from its current location
 		if (this.findDev(tTileId) === "hand") {
 			this.hand = exclMem(this.hand, tTileId);
-			glbSideBar.removeBar();
-			glbSideBar.formBar();
+			// glbSideBar.removeBar();
+			// glbSideBar.formBar();
 		}
 		else if (this.findDev(tTileId) === "discard") {
 			this.discard = exclMem(this.discard, tTileId);
