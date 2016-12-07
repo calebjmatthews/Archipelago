@@ -14,12 +14,8 @@ class SideBar {
 
 	// Create the black background that exists for all sidebars
 	formBacking() {
-		var designBG = new PIXI.Graphics();
-		designBG.beginFill(0x000000);
-		designBG.drawRect(0, 0, 200, (renderer.height));
-		designBG.endFill();
-		designBG.x = renderer.width-200;
-		designBG.y = 0;
+		let designBG = new PIXI.Sprite(sprMed["sidebar.png"]);
+		designBG.position.set((renderer.width - 200), 0);
 		stage.addChild(designBG);
 	}
 

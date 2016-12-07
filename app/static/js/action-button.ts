@@ -50,7 +50,7 @@ class ActionButton extends ArcButton {
 		let setText = ("Actions: " + currPlayer.actions + "/" + 
 			(currPlayer.actions + currPlayer.actionHistory.length));
 		this.txtLabel = new PIXI.Text(setText, 
-			{font: "18px sans-serif", fill: "white"});
+			{font: "18px sans-serif", fill: "black"});
 		this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
 		stage.addChild(this.txtLabel);
 	}

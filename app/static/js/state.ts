@@ -4,9 +4,18 @@ function onImageLoad() {
 	// Fill sprite reference with texture info
 	sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
 	let spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
+	let spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
 	for (var key in spr2) {
 		sprMed[key] = spr2[key];
 	}
+	for (var key in spr3) {
+		sprMed[key] = spr3[key];
+	}
+
+	// Draw parchment background
+	let backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
+	backgroundParchment.position.set(0, 0);
+	stage.addChild(backgroundParchment);
 
 	// Create the Tink instance
 	tb = new Tink(PIXI, renderer.view);
@@ -18,7 +27,7 @@ function onImageLoad() {
 	currLand.devSelection = new DevSet();
 	currLand.devSelection.genDevSelection();
 
-	formPlayerBar();
+	currPlayerBar = new PlayerBar();
 	glbSideBar = new SideBar();
 	glbSideBar.formBacking();
 	glbState = editSetup;
@@ -89,7 +98,7 @@ function editStateClick() {
 // Applies prior to every game round
 function monthSetup() {
 	glbMonth++;
-	updatePlayerBar();
+	currPlayerBar.updatePlayerBar();
 	// Months should begin with Player 2, and plrMonSetup switches the current player
 	//  Therefore, set the current player to Player 1 here
 	currPlayer = cPlayerArray[0];
@@ -135,6 +144,32 @@ function active() {
 	else { glbSideBar.hoverOverBar(); }
 }
 
+// Logical backing for selecting a development effect's target
+function selDevelSetup() {
+	if (currResProcess[eRES.Destroy] > 0) {
+		let availableTiles: number[] = [];
+		for (let cTile = 0; cTile < currPlayer.territory.length; cTile++) {
+			if (currPlayer.territory[cTile] != glbActingTileId) {
+				availableTiles.push(currPlayer.territory[cTile]);
+			}
+		}
+		glbTileSelArray = availableTiles;
+		glbPulseArray = glbTileSelArray;
+	}
+	else if (currReqProcess[eREQ.Destroy] > 0) {
+		let availableTiles: number[] = [];
+		for (let cTile = 0; cTile < currPlayer.territory.length; cTile++) {
+			if (currPlayer.territory[cTile] != glbActingTileId) {
+				availableTiles.push(currPlayer.territory[cTile]);
+			}
+		}
+		glbTileSelArray = availableTiles;
+		glbPulseArray = glbTileSelArray;
+	}
+
+	glbState = selDevel;
+}
+
 // Choosing a development as a target for another development's effect
 function selDevel() {
 	// Click event handling
@@ -146,7 +181,10 @@ function selDevel() {
 	if (pointer.x < (renderer.width - 200)) { hoverTile([pointer.x, pointer.y]); }
 	else { glbSideBar.hoverOverBar(); }
 
-	applyDevEffect(glbActingDev);
+	// If done destroying, move on to applying the rest of the development's effect
+	if ((currReqProcess[eREQ.Destroy] === 0) || (currResProcess[eRES.Destroy] === 0)) {
+		applyDevEffect(glbActingTileId);
+	}
 }
 
 // Prepare the logic/visuals for development purchasing

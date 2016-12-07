@@ -73,7 +73,7 @@ function buildClick(corPoint) {
 				else {
 					let ahSpot = currPlayer.actionHistory.length;
 					subtractPrice(clkTileID);
-					updatePlayerBar();
+					currPlayerBar.updatePlayerBar();
 					currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
 					currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
 					currPlayer.actions--;
@@ -135,13 +135,47 @@ function selDevelClick(corPoint) {
 	let clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
 
 	let clkAxial = pointToHex(clkPoint);
-	let clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+	let clkTileId = currLand.getID(clkAxial);
+	let clkTile = currLand.tileArray[clkTileId];
 
 	if ((clkAxial != undefined) && ((clkPoint[0]+glbOrigin[0]) < (renderer.width-200))) {
 		if (clkTile != undefined) {
 			if (clkTile.development != null) {
 				if (currDescCard != null) { currDescCard.selfDestruct(); }
-				
+				if ((currReqProcess[eREQ.Destroy] > 0) 
+					&& (inArr(glbTileSelArray, clkTileId))) {
+					// Destroy the selected development
+					currPlayer.destroyTerritory(clkTileId);
+					clkTile.reDrawTile();
+					currReqProcess[eREQ.Destroy]--;
+					if (currReqProcess[eREQ.Destroy] > 0) {
+						veClearTint(glbPulseArray);
+						glbTileSelArray = []; glbPulseArray = [];
+						glbState = selDevelSetup;
+					}
+					else {
+						veClearTint(glbPulseArray);
+						glbTileSelArray = []; glbPulseArray = [];
+						glbState = activeSetup;
+					}
+				}
+				else if ((currResProcess[eRES.Destroy] > 0) 
+					&& (inArr(glbTileSelArray, clkTileId))) {
+					// Destroy the selected development
+					currPlayer.destroyTerritory(clkTileId);
+					clkTile.reDrawTile();
+					currResProcess[eRES.Destroy]--;
+					if (currReqProcess[eRES.Destroy] > 0) {
+						veClearTint(glbPulseArray);
+						glbTileSelArray = []; glbPulseArray = [];
+						glbState = selDevelSetup;
+					}
+					else {
+						veClearTint(glbPulseArray);
+						glbTileSelArray = []; glbPulseArray = [];
+						glbState = activeSetup;
+					}
+				}
 			}
 		}
 	}

@@ -20,7 +20,7 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 		applyRequirement(tileId, undoing);
 		for (let cResult = 0; cResult < glbNumRes; cResult++) {
 			if (tDev.result[cResult] != undefined) {
-				applySingleEffect(resultArray, cResult, undoing);
+				applySingleEffect(tileId, resultArray, cResult, undoing);
 			}
 		}
 
@@ -46,7 +46,7 @@ function applyDevEffect(tileId: number, undoing: boolean = false) {
 }
 
 function beforeEffect(tileId: number, undoing: boolean) {
-	glbActingDev = tileId;
+	glbActingTileId = tileId;
 	glbSideBar.removeBar();
 }
 
@@ -186,7 +186,7 @@ function requirementCheck(tileId: number, undoing: boolean) {
 			if (currPlayer.actions < tDev.requirement[cReq]) { return false; }
 		}
 		else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-			if (currPlayer.ownedDevs.length < 3) { return false; }
+			if (currPlayer.territory.length < 3) { return false; }
 		}
 		else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
 			if (currPlayer.food < tDev.requirement[cReq]) { return false; }
@@ -204,7 +204,7 @@ function requirementCheck(tileId: number, undoing: boolean) {
 	return true;
 }
 
-function applySingleEffect(resultArray: number[], cResult: number, 
+function applySingleEffect(tileId: number, resultArray: number[], cResult: number, 
 	undoing: boolean) {
 	let undModify = 1;
 	if (undoing) { undModify = -1; }
@@ -233,19 +233,29 @@ function applySingleEffect(resultArray: number[], cResult: number,
 	}
 
 	else if (cResult === eRES.BlueTreasure) {
+		if (currPlayer.activeEffects[eRES.BlueTreasure] === undefined) {
+			currPlayer.activeEffects[eRES.BlueTreasure] = 0;
+		}
 		currPlayer.activeEffects[eRES.BlueTreasure] += 
 			(resultArray[eRES.BlueTreasure] * undModify);
 	}
 
 	else if (cResult === eRES.RedActive) {
+		if (currPlayer.activeEffects[eRES.RedActive] === undefined) {
+			currPlayer.activeEffects[eRES.RedActive] = 0;
+		}
 		currPlayer.activeEffects[eRES.RedActive] += 
 			(resultArray[eRES.RedActive] * undModify);
 	}
 
 	else if (cResult === eRES.Destroy) {
-		currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
 		// Changes game state in order to select a development for destruction
-		glbState = selDevel;
+		if (currResProcess[eRES.Destroy] === undefined) {
+			currResProcess[eRES.Destroy] = resultArray[eRES.Destroy];
+		}
+		if (currResProcess[eRES.Destroy] > 0) {
+			glbState = selDevelSetup;
+		}
 	}
 }
 
@@ -264,9 +274,13 @@ function applyRequirement(tileId: number, undoing: boolean) {
 				// glbState = selActive
 			}
 			else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-				glbTileSelArray = currPlayer.territory;
-				glbState = selDevel;
-
+				// Changes game state in order to select a development for destruction
+				if (currResProcess[eREQ.Destroy] === undefined) {
+					currResProcess[eREQ.Destroy] = tDev.requirement[eRES.Destroy];
+				}
+				if (currResProcess[eREQ.Destroy] > 0) {
+					glbState = selDevelSetup;
+				}
 			}
 			else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
 				currPlayer.food -= (tDev.requirement[cReq] * undModify);
@@ -280,7 +294,6 @@ function applyRequirement(tileId: number, undoing: boolean) {
 			else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
 				currPlayer.treasure -= (tDev.requirement[cReq] * undModify);
 			}
-			else { console.log("Error: unexpected dev requirement value: " + cReq); }
 		}
 	}
 }
@@ -291,10 +304,10 @@ function afterEffect(tileId: number, undoing: boolean) {
 
 	// Account for spent card
 	currPlayer.actions += (-1 * undModify);
-	glbActingDev = null;
+	glbActingTileId = null;
 
 	// Update display
-	updatePlayerBar();
+	currPlayerBar.updatePlayerBar();
 	currPlayer.removeCard(tileId);
 	glbSideBar.formBar();
 	

@@ -29,7 +29,7 @@ class Development {
 	}
 }
 
-var develArray = [];
+var develArray: Development[] = [];
 
 develArray[eDEVEL.Jungle] = new Development(eDEVEL.Jungle, 
 	["jungle1.png", "jungle2.png"], 
@@ -146,7 +146,7 @@ develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
 develArray[eDEVEL.BoarRanch].requirement = [];
 develArray[eDEVEL.BoarRanch].result = [];
-develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 6;
+develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 5;
 
 develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, 
 	["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], 

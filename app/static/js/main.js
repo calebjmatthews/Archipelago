@@ -22,7 +22,7 @@ var glbMonth = 0;
 var glbEditBarSel = null;
 var glbTileSelArray = [];
 var glbDevelSel = null;
-var glbActingDev = null;
+var glbActingTileId = null;
 var glbSideBar = null;
 // Set global button constants
 var glbBPadding = 3;
@@ -38,6 +38,9 @@ var currPlayer = null;
 var cPlayerArray = [];
 var currDescCard = null;
 var currHovDescCard = null;
+var currPlayerBar = null;
+var currResProcess = [];
+var currReqProcess = [];
 // Enumerates the convention of how hex direction is ordered within this program
 var eHEXD;
 (function (eHEXD) {
@@ -194,6 +197,15 @@ function inArr(array, query) {
         }
     }
     return false;
+}
+function exclMem(array, member) {
+    var newArray = [];
+    for (var iii = 0; iii < array.length; iii++) {
+        if (array[iii] != member) {
+            newArray.push(array[iii]);
+        }
+    }
+    return newArray;
 }
 // ~~~~ Hex functions ~~~~
 function hexToCube(tHex) {
@@ -385,7 +397,7 @@ var Player = (function () {
         this.treasure = 0;
         this.ships = 0;
         this.territory = [];
-        this.ownedDevs = [];
+        this.ownedTiles = [];
         this.deck = [];
         this.hand = [];
         this.inPlay = [];
@@ -397,10 +409,10 @@ var Player = (function () {
         this.playerID = playerIncrement;
         playerIncrement++;
         if (this.playerID === 0) {
-            this.color = [255, 0, 0];
+            this.color = [242, 58, 48];
         }
         else if (this.playerID === 1) {
-            this.color = [0, 0, 255];
+            this.color = [66, 134, 244];
         }
     }
     Player.prototype.getResource = function (resource) {
@@ -431,16 +443,17 @@ var Player = (function () {
             console.log("Error: Unexpected resource request to Player.");
         }
     };
-    Player.prototype.addTerritory = function (tTileID) {
-        var tTile = currLand.tileArray[tTileID];
+    Player.prototype.addTerritory = function (tTileId) {
+        var tTile = currLand.tileArray[tTileId];
         tTile.development = glbDevelSel;
         tTile.ownedBy = currPlayer.playerID;
-        currPlayer.ownedDevs.push(tTile.development);
-        currPlayer.discard.push(tTileID);
-        if (!(inArr(this.territory, tTileID))) {
-            this.territory.push(tTileID);
+        currPlayer.ownedTiles.push(tTileId);
+        currPlayer.discard.push(tTileId);
+        if (!(inArr(this.territory, tTileId))) {
+            this.territory.push(tTileId);
         }
         var neighbors = tTile.getNeighbors();
+        this.addNeighboringTerritory(tTileId);
         for (var cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
             if (!(inArr(this.territory, neighbors[cNeigh]))) {
                 this.territory.push(currLand.getID(neighbors[cNeigh]));
@@ -451,13 +464,114 @@ var Player = (function () {
                     if ((develArray[tNTile.development].color === eDCLR.Black) &&
                         (tNTile.ownedBy === null)) {
                         tNTile.ownedBy = currPlayer.playerID;
-                        currPlayer.ownedDevs.push(tNTile.development);
+                        this.ownedTiles.push(neighbors[cNeigh]);
                         currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+                        this.addNeighboringTerritory(currLand.getID(neighbors[cNeigh]));
                         tNTile.reDrawTile();
                     }
                 }
             }
         }
+    };
+    Player.prototype.addNeighboringTerritory = function (tTileId) {
+        var neighbors = currLand.tileArray[tTileId].getNeighbors();
+        for (var cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+            if (!(inArr(this.territory, neighbors[cNeigh]))) {
+                this.territory.push(currLand.getID(neighbors[cNeigh]));
+            }
+        }
+    };
+    Player.prototype.destroyTerritory = function (tTileId) {
+        var tTile = currLand.tileArray[tTileId];
+        this.remTerritory(tTileId);
+        this.trash.push(tTile.development);
+        // Remove properties from the tile
+        tTile.development = null;
+        tTile.reDrawTile();
+        // If black developments have become disconnected, remove them from the player's
+        //  control
+        var neighCoordArray = tTile.getNeighbors();
+        var neighIdArray = [];
+        for (var iii = 0; iii < neighCoordArray.length; iii++) {
+            neighIdArray.push(currLand.getID(neighCoordArray[iii]));
+        }
+        for (var tId = 0; tId < neighIdArray.length; tId++) {
+            var tNeigh = currLand.tileArray[tId];
+            if (tNeigh.development != null) {
+                if (develArray[tNeigh.development].color === eDCLR.Black) {
+                    if (!this.checkConnected(tId)) {
+                        this.remTerritory(tId);
+                    }
+                }
+            }
+        }
+    };
+    Player.prototype.remTerritory = function (tTileId) {
+        var tTile = currLand.tileArray[tTileId];
+        // Remove the development's card from its current location
+        if (this.findDev(tTileId) === "hand") {
+            this.hand = exclMem(this.hand, tTileId);
+            glbSideBar.removeBar();
+            glbSideBar.formBar();
+        }
+        else if (this.findDev(tTileId) === "discard") {
+            this.discard = exclMem(this.discard, tTileId);
+        }
+        else if (this.findDev(tTileId) === "deck") {
+            this.deck = exclMem(this.deck, tTileId);
+        }
+        else {
+            console.log("Unexpected destroyed card location.");
+        }
+        // Rebuild the player's owned tiles, excluding the removed tile
+        if (inArr(this.ownedTiles, tTileId)) {
+            this.ownedTiles = exclMem(this.ownedTiles, tTileId);
+        }
+        // Remove any now unconnected tiles from the player's territory
+        var neighCoordArray = tTile.getNeighbors();
+        for (var iii = 0; iii < neighCoordArray.length; iii++) {
+            var neighborId = currLand.getID(neighCoordArray[iii]);
+            var neighbor = currLand.tileArray[neighborId];
+            if (neighbor.ownedBy != this.playerID) {
+                if (!this.checkConnected(neighborId)) {
+                    if (inArr(this.territory, tTileId)) {
+                        this.territory = exclMem(this.territory, neighborId);
+                    }
+                }
+            }
+        }
+        // Remove properties from the tile
+        tTile.ownedBy = null;
+    };
+    Player.prototype.findDev = function (tTileId) {
+        if (inArr(this.hand, tTileId)) {
+            return "hand";
+        }
+        else if (inArr(this.discard, tTileId)) {
+            return "discard";
+        }
+        else if (inArr(this.deck, tTileId)) {
+            return "deck";
+        }
+        else {
+            return "unfound";
+        }
+    };
+    // Check whether this development is disconnected from any other developments
+    //  controlled by the player
+    Player.prototype.checkConnected = function (tileId) {
+        var neighCoordArray = currLand.tileArray[tileId].getNeighbors();
+        var neighIdArray = [];
+        for (var iii = 0; iii < neighCoordArray.length; iii++) {
+            neighIdArray.push(currLand.getID(neighCoordArray[iii]));
+        }
+        for (var tId = 0; tId < neighIdArray.length; tId++) {
+            var tNeigh = currLand.tileArray[neighIdArray[tId]];
+            if ((tNeigh.development != null) && (tNeigh.ownedBy === this.playerID)) {
+                return true;
+            }
+        }
+        return false;
     };
     Player.prototype.shuffleDeck = function () {
         if (this.deck.length === 0) {
@@ -1090,13 +1204,15 @@ develArray[eDEVEL.TradeHarbor].cost[eCOST.Material] = 3;
 develArray[eDEVEL.TradeHarbor].requirement = [];
 develArray[eDEVEL.TradeHarbor].result = [];
 develArray[eDEVEL.TradeHarbor].result[eRES.Treasure] = 1;
-develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: 2 Treasure,; Result: +3 Treasure"));
+develArray[eDEVEL.AuctionHouse] = new Development(eDEVEL.AuctionHouse, ["auctionhouse.png"], "Auction House", eDCLR.Blue, [eLSCP.Shore], ("Requires: 2 Treasure,; Result: +1 Food, +1 Material, +3 Treasure"));
 develArray[eDEVEL.AuctionHouse].cost = [];
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Material] = 3;
 develArray[eDEVEL.AuctionHouse].cost[eCOST.Treasure] = 1;
 develArray[eDEVEL.AuctionHouse].requirement = [];
 develArray[eDEVEL.AuctionHouse].requirement[eREQ.Treasure] = 2;
 develArray[eDEVEL.AuctionHouse].result = [];
+develArray[eDEVEL.AuctionHouse].result[eRES.Food] = 1;
+develArray[eDEVEL.AuctionHouse].result[eRES.Material] = 1;
 develArray[eDEVEL.AuctionHouse].result[eRES.Treasure] = 3;
 develArray[eDEVEL.EnvoyHarbor] = new Development(eDEVEL.EnvoyHarbor, ["envoyharbor.png"], "Envoy Harbor", eDCLR.Blue, [eLSCP.Shore], ("Requires: 1 Treasure,; Result: +2 Food, +2 Material"));
 develArray[eDEVEL.EnvoyHarbor].cost = [];
@@ -1120,7 +1236,7 @@ develArray[eDEVEL.BoarRanch].cost[eCOST.Food] = 2;
 develArray[eDEVEL.BoarRanch].cost[eCOST.Material] = 2;
 develArray[eDEVEL.BoarRanch].requirement = [];
 develArray[eDEVEL.BoarRanch].result = [];
-develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 6;
+develArray[eDEVEL.BoarRanch].result[eRES.FoodLessNeighbor] = 5;
 develArray[eDEVEL.HuntingCamp] = new Development(eDEVEL.HuntingCamp, ["huntingcamp.png"], "Hunting Camp", eDCLR.Green, [eLSCP.Grassy, eLSCP.Forested], ("Result: +1 Food, +1 Active"));
 develArray[eDEVEL.HuntingCamp].cost = [];
 develArray[eDEVEL.HuntingCamp].cost[eCOST.Food] = 2;
@@ -1220,7 +1336,7 @@ develArray[eDEVEL.ShepherdVillage].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.ShepherdVillage].result = [];
 develArray[eDEVEL.ShepherdVillage].result[eRES.Active] = 2;
 develArray[eDEVEL.ShepherdVillage].result[eRES.Material] = 1;
-develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,;"
+develArray[eDEVEL.Town] = new Development(eDEVEL.Town, ["town.png"], "Town", eDCLR.Red, [eLSCP.Desert, eLSCP.Forested, eLSCP.Grassy, eLSCP.Rocky, eLSCP.Shore], ("Requires: 2 Food,; "
     + "Result: +1 Active and +1 Material for every two surrounding developments, " +
     " rounded up"));
 develArray[eDEVEL.Town].cost = [];
@@ -1291,11 +1407,12 @@ document.body.appendChild(renderer.view);
 var stage = new PIXI.Container();
 // Edit origin to be renderer specific
 glbOrigin[0] = ((renderer.width - 200) / 2);
-glbOrigin[1] = (renderer.height / 2);
+glbOrigin[1] = ((renderer.height + 30) / 2);
 // Load sprite atlases
 PIXI.loader
     .add("static/img/images-0.json")
     .add("static/img/images-1.json")
+    .add("static/img/images-2.json")
     .load(onImageLoad);
 // Single reference sprite  to be filled later
 var sprMed = null;
@@ -1311,35 +1428,6 @@ cPlayerArray[0].playerOrder = 0;
 cPlayerArray[1] = new Player();
 cPlayerArray[1].playerOrder = 1;
 currPlayer = cPlayerArray[0];
-var plrMsg = null;
-function formPlayerBar() {
-    // Create blank background for player bar
-    var plrBG = new PIXI.Graphics();
-    plrBG.beginFill(0x000000);
-    plrBG.drawRect(0, 0, (renderer.width - 200), 20);
-    plrBG.alpha = 0.8;
-    plrBG.endFill();
-    plrBG.x = 0;
-    plrBG.y = 0;
-    stage.addChild(plrBG);
-    var plrMsgContent = "Empty.";
-    plrMsg = new PIXI.Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
-    plrMsg.position.set(3, 1);
-    stage.addChild(plrMsg);
-    updatePlayerBar();
-}
-function updatePlayerBar() {
-    stage.removeChild(plrMsg);
-    var plrMsgContent = "Month " + (glbMonth);
-    for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
-        plrMsgContent += ("       Player " + (cPlayerArray[tPlr].playerOrder + 1) + ": " +
-            "F-" + cPlayerArray[tPlr].food + " M-" + cPlayerArray[tPlr].material +
-            " T-" + cPlayerArray[tPlr].treasure);
-    }
-    plrMsg = new PIXI.Text(plrMsgContent, { font: "13px sans-serif", fill: "white" });
-    plrMsg.position.set(3, 1);
-    stage.addChild(plrMsg);
-}
 function paintLscp(clkTile) {
     // Simple landscape alteration
     if (glbPainting < glbNumLscps) {
@@ -1356,6 +1444,69 @@ function paintLscp(clkTile) {
     }
 }
 /// <reference path="references.ts" />
+var PlayerBar = (function () {
+    function PlayerBar() {
+        this.banner = [];
+        this.txtPieces = [];
+        this.resIcons = [];
+        this.formPlayerBar();
+    }
+    PlayerBar.prototype.formPlayerBar = function () {
+        // Create blank background for player bar
+        this.background = new PIXI.Sprite(sprMed["playerbar.png"]);
+        this.background.position.set(0, 0);
+        stage.addChild(this.background);
+        this.updatePlayerBar();
+    };
+    PlayerBar.prototype.updatePlayerBar = function () {
+        if (this.txtPieces.length != 0) {
+            for (var iii = 0; iii < this.txtPieces.length; iii++) {
+                stage.removeChild(this.txtPieces[iii]);
+            }
+            this.txtPieces = [];
+        }
+        if (this.resIcons.length != 0) {
+            for (var iii = 0; iii < this.resIcons.length; iii++) {
+                stage.removeChild(this.resIcons[iii]);
+            }
+            this.resIcons = [];
+        }
+        var styleObj = { font: "16px Helvetica Neue, Helvetica, Arial, sans-serif",
+            fill: "black" };
+        this.txtPieces.push(new PIXI.Text(("Month " + glbMonth), styleObj));
+        this.txtPieces[0].position.set(3, 6);
+        for (var tPlr = 0; tPlr < cPlayerArray.length; tPlr++) {
+            this.banner.push(new PIXI.Sprite(sprMed["playerbanner.png"]));
+            this.banner[(this.banner.length - 1)].position.set((83 + 240 * (tPlr)), 0);
+            // this.banner[(this.banner.length - 1)].scale.set(0.6, 0.6);
+            this.banner[(this.banner.length - 1)].tint = rgbToHclr(cPlayerArray[tPlr].color);
+            this.txtPieces.push(new PIXI.Text(("Player " + (cPlayerArray[tPlr].playerOrder + 1)
+                + ": " + cPlayerArray[tPlr].food + "        " + cPlayerArray[tPlr].material
+                + "        " + cPlayerArray[tPlr].treasure), styleObj));
+            this.txtPieces[(this.txtPieces.length - 1)].position.set((85 + 240 * (tPlr)), 6);
+            this.resIcons.push(new PIXI.Sprite(sprMed["foodicon.png"]));
+            this.resIcons[(this.resIcons.length - 1)].scale.set(0.5, 0.5);
+            this.resIcons[(this.resIcons.length - 1)].position.set((162 + 240 * (tPlr)), 2);
+            this.resIcons.push(new PIXI.Sprite(sprMed["materialicon.png"]));
+            this.resIcons[(this.resIcons.length - 1)].scale.set(0.5, 0.5);
+            this.resIcons[(this.resIcons.length - 1)].position.set((207 + 240 * (tPlr)), 2);
+            this.resIcons.push(new PIXI.Sprite(sprMed["treasureicon.png"]));
+            this.resIcons[(this.resIcons.length - 1)].scale.set(0.5, 0.5);
+            this.resIcons[(this.resIcons.length - 1)].position.set((252 + 240 * (tPlr)), 2);
+        }
+        for (var iii = 0; iii < this.banner.length; iii++) {
+            stage.addChild(this.banner[iii]);
+        }
+        for (var iii = 0; iii < this.txtPieces.length; iii++) {
+            stage.addChild(this.txtPieces[iii]);
+        }
+        for (var iii = 0; iii < this.resIcons.length; iii++) {
+            stage.addChild(this.resIcons[iii]);
+        }
+    };
+    return PlayerBar;
+}());
+/// <reference path="references.ts" />
 var SideBar = (function () {
     function SideBar() {
         this.buttonArray = [];
@@ -1371,12 +1522,8 @@ var SideBar = (function () {
     }
     // Create the black background that exists for all sidebars
     SideBar.prototype.formBacking = function () {
-        var designBG = new PIXI.Graphics();
-        designBG.beginFill(0x000000);
-        designBG.drawRect(0, 0, 200, (renderer.height));
-        designBG.endFill();
-        designBG.x = renderer.width - 200;
-        designBG.y = 0;
+        var designBG = new PIXI.Sprite(sprMed["sidebar.png"]);
+        designBG.position.set((renderer.width - 200), 0);
         stage.addChild(designBG);
     };
     SideBar.prototype.baseHoverBar = function () {
@@ -1925,7 +2072,7 @@ var ArcButton = (function () {
         stage.addChild(this.sprFirst);
     };
     ArcButton.prototype.displayTextLayer = function (setText, location) {
-        this.txtLabel = new PIXI.Text(setText, { font: "16px sans-serif", fill: "white" });
+        this.txtLabel = new PIXI.Text(setText, { font: "16px sans-serif", fill: "black" });
         this.txtLabel.position.set(location[0], location[1]);
         stage.addChild(this.txtLabel);
         // Shrink the development's name so that it fits into the button
@@ -2028,7 +2175,7 @@ var ActionButton = (function (_super) {
         this.formStandardBounds(setOrigin);
         var setText = ("Actions: " + currPlayer.actions + "/" +
             (currPlayer.actions + currPlayer.actionHistory.length));
-        this.txtLabel = new PIXI.Text(setText, { font: "18px sans-serif", fill: "white" });
+        this.txtLabel = new PIXI.Text(setText, { font: "18px sans-serif", fill: "black" });
         this.txtLabel.position.set(this.bounds[0][0], this.bounds[0][1]);
         stage.addChild(this.txtLabel);
     };
@@ -2169,7 +2316,7 @@ function buildClick(corPoint) {
                 else {
                     var ahSpot = currPlayer.actionHistory.length;
                     subtractPrice(clkTileID);
-                    updatePlayerBar();
+                    currPlayerBar.updatePlayerBar();
                     currPlayer.actionHistory[ahSpot] = new ArcHistory("build");
                     currPlayer.actionHistory[ahSpot].recordBuildTileId(clkTileID);
                     currPlayer.actions--;
@@ -2231,12 +2378,51 @@ function selDevelClick(corPoint) {
     }
     var clkPoint = [(corPoint[0] - glbOrigin[0]), (corPoint[1] - glbOrigin[1])];
     var clkAxial = pointToHex(clkPoint);
-    var clkTile = currLand.tileArray[currLand.getID(clkAxial)];
+    var clkTileId = currLand.getID(clkAxial);
+    var clkTile = currLand.tileArray[clkTileId];
     if ((clkAxial != undefined) && ((clkPoint[0] + glbOrigin[0]) < (renderer.width - 200))) {
         if (clkTile != undefined) {
             if (clkTile.development != null) {
                 if (currDescCard != null) {
                     currDescCard.selfDestruct();
+                }
+                if ((currReqProcess[eREQ.Destroy] > 0)
+                    && (inArr(glbTileSelArray, clkTileId))) {
+                    // Destroy the selected development
+                    currPlayer.destroyTerritory(clkTileId);
+                    clkTile.reDrawTile();
+                    currReqProcess[eREQ.Destroy]--;
+                    if (currReqProcess[eREQ.Destroy] > 0) {
+                        veClearTint(glbPulseArray);
+                        glbTileSelArray = [];
+                        glbPulseArray = [];
+                        glbState = selDevelSetup;
+                    }
+                    else {
+                        veClearTint(glbPulseArray);
+                        glbTileSelArray = [];
+                        glbPulseArray = [];
+                        glbState = activeSetup;
+                    }
+                }
+                else if ((currResProcess[eRES.Destroy] > 0)
+                    && (inArr(glbTileSelArray, clkTileId))) {
+                    // Destroy the selected development
+                    currPlayer.destroyTerritory(clkTileId);
+                    clkTile.reDrawTile();
+                    currResProcess[eRES.Destroy]--;
+                    if (currReqProcess[eRES.Destroy] > 0) {
+                        veClearTint(glbPulseArray);
+                        glbTileSelArray = [];
+                        glbPulseArray = [];
+                        glbState = selDevelSetup;
+                    }
+                    else {
+                        veClearTint(glbPulseArray);
+                        glbTileSelArray = [];
+                        glbPulseArray = [];
+                        glbState = activeSetup;
+                    }
                 }
             }
         }
@@ -2490,7 +2676,7 @@ function applyDevEffect(tileId, undoing) {
         applyRequirement(tileId, undoing);
         for (var cResult = 0; cResult < glbNumRes; cResult++) {
             if (tDev.result[cResult] != undefined) {
-                applySingleEffect(resultArray, cResult, undoing);
+                applySingleEffect(tileId, resultArray, cResult, undoing);
             }
         }
         // Create visual effect for requirement / result
@@ -2513,7 +2699,7 @@ function applyDevEffect(tileId, undoing) {
     }
 }
 function beforeEffect(tileId, undoing) {
-    glbActingDev = tileId;
+    glbActingTileId = tileId;
     glbSideBar.removeBar();
 }
 function considerPlayerEffects(tDev) {
@@ -2656,7 +2842,7 @@ function requirementCheck(tileId, undoing) {
             }
         }
         else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-            if (currPlayer.ownedDevs.length < 3) {
+            if (currPlayer.territory.length < 3) {
                 return false;
             }
         }
@@ -2683,7 +2869,7 @@ function requirementCheck(tileId, undoing) {
     }
     return true;
 }
-function applySingleEffect(resultArray, cResult, undoing) {
+function applySingleEffect(tileId, resultArray, cResult, undoing) {
     var undModify = 1;
     if (undoing) {
         undModify = -1;
@@ -2707,17 +2893,27 @@ function applySingleEffect(resultArray, cResult, undoing) {
         currPlayer.ships += (resultArray[eRES.Ship] * undModify);
     }
     else if (cResult === eRES.BlueTreasure) {
+        if (currPlayer.activeEffects[eRES.BlueTreasure] === undefined) {
+            currPlayer.activeEffects[eRES.BlueTreasure] = 0;
+        }
         currPlayer.activeEffects[eRES.BlueTreasure] +=
             (resultArray[eRES.BlueTreasure] * undModify);
     }
     else if (cResult === eRES.RedActive) {
+        if (currPlayer.activeEffects[eRES.RedActive] === undefined) {
+            currPlayer.activeEffects[eRES.RedActive] = 0;
+        }
         currPlayer.activeEffects[eRES.RedActive] +=
             (resultArray[eRES.RedActive] * undModify);
     }
     else if (cResult === eRES.Destroy) {
-        currPlayer.activeEffects[eRES.Destroy] = resultArray[eRES.Destroy];
         // Changes game state in order to select a development for destruction
-        glbState = selDevel;
+        if (currResProcess[eRES.Destroy] === undefined) {
+            currResProcess[eRES.Destroy] = resultArray[eRES.Destroy];
+        }
+        if (currResProcess[eRES.Destroy] > 0) {
+            glbState = selDevelSetup;
+        }
     }
 }
 function applyRequirement(tileId, undoing) {
@@ -2738,8 +2934,13 @@ function applyRequirement(tileId, undoing) {
                 currPlayer.actions -= (tDev.requirement[cReq] * undModify);
             }
             else if ((cReq === eREQ.Destroy) && (tDev.requirement[cReq] != undefined)) {
-                glbTileSelArray = currPlayer.territory;
-                glbState = selDevel;
+                // Changes game state in order to select a development for destruction
+                if (currResProcess[eREQ.Destroy] === undefined) {
+                    currResProcess[eREQ.Destroy] = tDev.requirement[eRES.Destroy];
+                }
+                if (currResProcess[eREQ.Destroy] > 0) {
+                    glbState = selDevelSetup;
+                }
             }
             else if ((cReq === eREQ.Food) && (tDev.requirement[cReq] != undefined)) {
                 currPlayer.food -= (tDev.requirement[cReq] * undModify);
@@ -2753,9 +2954,6 @@ function applyRequirement(tileId, undoing) {
             else if ((cReq === eREQ.Treasure) && (tDev.requirement[cReq] != undefined)) {
                 currPlayer.treasure -= (tDev.requirement[cReq] * undModify);
             }
-            else {
-                console.log("Error: unexpected dev requirement value: " + cReq);
-            }
         }
     }
 }
@@ -2766,9 +2964,9 @@ function afterEffect(tileId, undoing) {
     }
     // Account for spent card
     currPlayer.actions += (-1 * undModify);
-    glbActingDev = null;
+    glbActingTileId = null;
     // Update display
-    updatePlayerBar();
+    currPlayerBar.updatePlayerBar();
     currPlayer.removeCard(tileId);
     glbSideBar.formBar();
 }
@@ -2957,7 +3155,7 @@ var BuyButton = (function (_super) {
             }
             var setFill = null;
             if (tDev.checkCost(tResource[iii])) {
-                setFill = "white";
+                setFill = "black";
             }
             else {
                 setFill = "red";
@@ -3086,11 +3284,11 @@ var veResourcelet = (function () {
             imagePath = "treasureicon.png";
         }
         this.sprRsc = new PIXI.Sprite(sprMed[imagePath]);
-        stage.addChild(this.sprRsc);
         this.sprRsc.scale.set(0.5, 0.5);
         this.sprRsc.position.set(setInitPosition[0], setInitPosition[1]);
         this.sprRsc.alpha = 0.1;
         this.sprRsc.tint = tTint;
+        stage.addChild(this.sprRsc);
         this.age = setAge;
     }
     veResourcelet.prototype.ageVeRsc = function () {
@@ -3207,9 +3405,17 @@ function onImageLoad() {
     // Fill sprite reference with texture info
     sprMed = PIXI.loader.resources["static/img/images-0.json"].textures;
     var spr2 = PIXI.loader.resources["static/img/images-1.json"].textures;
+    var spr3 = PIXI.loader.resources["static/img/images-2.json"].textures;
     for (var key in spr2) {
         sprMed[key] = spr2[key];
     }
+    for (var key in spr3) {
+        sprMed[key] = spr3[key];
+    }
+    // Draw parchment background
+    var backgroundParchment = new PIXI.Sprite(sprMed["background.png"]);
+    backgroundParchment.position.set(0, 0);
+    stage.addChild(backgroundParchment);
     // Create the Tink instance
     tb = new Tink(PIXI, renderer.view);
     pointer = tb.makePointer();
@@ -3218,7 +3424,7 @@ function onImageLoad() {
     currLand.displayLand();
     currLand.devSelection = new DevSet();
     currLand.devSelection.genDevSelection();
-    formPlayerBar();
+    currPlayerBar = new PlayerBar();
     glbSideBar = new SideBar();
     glbSideBar.formBacking();
     glbState = editSetup;
@@ -3283,7 +3489,7 @@ function editStateClick() {
 // Applies prior to every game round
 function monthSetup() {
     glbMonth++;
-    updatePlayerBar();
+    currPlayerBar.updatePlayerBar();
     // Months should begin with Player 2, and plrMonSetup switches the current player
     //  Therefore, set the current player to Player 1 here
     currPlayer = cPlayerArray[0];
@@ -3342,6 +3548,30 @@ function active() {
         glbSideBar.hoverOverBar();
     }
 }
+// Logical backing for selecting a development effect's target
+function selDevelSetup() {
+    if (currResProcess[eRES.Destroy] > 0) {
+        var availableTiles = [];
+        for (var cTile = 0; cTile < currPlayer.territory.length; cTile++) {
+            if (currPlayer.territory[cTile] != glbActingTileId) {
+                availableTiles.push(currPlayer.territory[cTile]);
+            }
+        }
+        glbTileSelArray = availableTiles;
+        glbPulseArray = glbTileSelArray;
+    }
+    else if (currReqProcess[eREQ.Destroy] > 0) {
+        var availableTiles = [];
+        for (var cTile = 0; cTile < currPlayer.territory.length; cTile++) {
+            if (currPlayer.territory[cTile] != glbActingTileId) {
+                availableTiles.push(currPlayer.territory[cTile]);
+            }
+        }
+        glbTileSelArray = availableTiles;
+        glbPulseArray = glbTileSelArray;
+    }
+    glbState = selDevel;
+}
 // Choosing a development as a target for another development's effect
 function selDevel() {
     // Click event handling
@@ -3360,7 +3590,10 @@ function selDevel() {
     else {
         glbSideBar.hoverOverBar();
     }
-    applyDevEffect(glbActingDev);
+    // If done destroying, move on to applying the rest of the development's effect
+    if ((currReqProcess[eREQ.Destroy] === 0) || (currResProcess[eRES.Destroy] === 0)) {
+        applyDevEffect(glbActingTileId);
+    }
 }
 // Prepare the logic/visuals for development purchasing
 function buySetup() {
@@ -3453,6 +3686,7 @@ function cleanup() {
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
+/// <reference path="player-bar.ts" />
 /// <reference path="side-bar.ts" />
 /// <reference path="edit-bar.ts" />
 /// <reference path="build-bar.ts" />

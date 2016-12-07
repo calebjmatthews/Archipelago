@@ -93,7 +93,7 @@ class ArcButton {
 
 	displayTextLayer(setText: string, location: number[]) {
 		this.txtLabel = new PIXI.Text(setText, 
-			{font: "16px sans-serif", fill: "white"});
+			{font: "16px sans-serif", fill: "black"});
 		this.txtLabel.position.set(location[0], location[1]);
 		stage.addChild(this.txtLabel);
 

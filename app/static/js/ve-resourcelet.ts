@@ -55,11 +55,11 @@ class veResourcelet {
 		else if (setResource === tEnum.Treasure) { imagePath = "treasureicon.png"; }
 
 		this.sprRsc = new PIXI.Sprite(sprMed[imagePath]);
-		stage.addChild(this.sprRsc);
 		this.sprRsc.scale.set(0.5, 0.5);
 		this.sprRsc.position.set(setInitPosition[0], setInitPosition[1]);
 		this.sprRsc.alpha = 0.1;
 		this.sprRsc.tint = tTint;
+		stage.addChild(this.sprRsc);
 
 		this.age = setAge;
 	}

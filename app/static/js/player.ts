@@ -12,7 +12,7 @@ class Player {
 	treasure: number = 0;
 	ships: number = 0;
 	territory: number[] = [];
-	ownedDevs: number[]= [];
+	ownedTiles: number[] = [];
 	deck: number[] = [];
 	hand: number[] = [];
 	inPlay: number[] = [];
@@ -27,10 +27,10 @@ class Player {
 		playerIncrement ++;
 
 		if (this.playerID === 0) {
-			this.color = [255, 0, 0];
+			this.color = [242, 58, 48];
 		}
 		else if (this.playerID === 1) {
-			this.color = [0, 0, 255];
+			this.color = [66, 134, 244];
 		}
 	}
 
@@ -48,16 +48,17 @@ class Player {
 		else { console.log("Error: Unexpected resource request to Player."); }
 	}
 
-	addTerritory(tTileID) {
-		let tTile = currLand.tileArray[tTileID];
+	addTerritory(tTileId: number) {
+		let tTile = currLand.tileArray[tTileId];
 		tTile.development = glbDevelSel;
 		tTile.ownedBy = currPlayer.playerID;
-		currPlayer.ownedDevs.push(tTile.development);
-		currPlayer.discard.push(tTileID);
-		if (!(inArr(this.territory, tTileID))) {
-			this.territory.push(tTileID)
+		currPlayer.ownedTiles.push(tTileId);
+		currPlayer.discard.push(tTileId);
+		if (!(inArr(this.territory, tTileId))) {
+			this.territory.push(tTileId)
 		}
 		let neighbors = tTile.getNeighbors();
+		this.addNeighboringTerritory(tTileId);
 		for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
 			if (!(inArr(this.territory, neighbors[cNeigh]))) {
 				this.territory.push(currLand.getID(neighbors[cNeigh]));
@@ -68,13 +69,120 @@ class Player {
 					if ((develArray[tNTile.development].color === eDCLR.Black) && 
 						(tNTile.ownedBy === null)) {
 						tNTile.ownedBy = currPlayer.playerID;
-						currPlayer.ownedDevs.push(tNTile.development);
+						this.ownedTiles.push(neighbors[cNeigh]);
 						currPlayer.discard.push(currLand.getID(neighbors[cNeigh]));
+						this.addNeighboringTerritory(currLand.getID(neighbors[cNeigh]));
 						tNTile.reDrawTile();
 					}
 				}
 			}
 		}
+	}
+
+	addNeighboringTerritory(tTileId: number) {
+		let neighbors = currLand.tileArray[tTileId].getNeighbors();
+		for (let cNeigh = 0; cNeigh < neighbors.length; cNeigh++) {
+			if (!(inArr(this.territory, neighbors[cNeigh]))) {
+				this.territory.push(currLand.getID(neighbors[cNeigh]));
+			}
+		}
+	}
+
+	destroyTerritory(tTileId: number) {
+		let tTile = currLand.tileArray[tTileId];
+
+		this.remTerritory(tTileId);
+
+		this.trash.push(tTile.development);
+
+		// Remove properties from the tile
+		tTile.development = null;
+		tTile.reDrawTile();
+
+		// If black developments have become disconnected, remove them from the player's
+		//  control
+		let neighCoordArray: number[][] = tTile.getNeighbors();
+		let neighIdArray: number[] = [];
+		for (let iii = 0; iii < neighCoordArray.length; iii++) {
+			neighIdArray.push(currLand.getID(neighCoordArray[iii]));
+		}
+		for (let tId = 0; tId < neighIdArray.length; tId++) {
+			let tNeigh = currLand.tileArray[tId];
+			if (tNeigh.development != null) {
+				if (develArray[tNeigh.development].color === eDCLR.Black) {
+					if (!this.checkConnected(tId)) {
+						this.remTerritory(tId);
+					}
+				}
+			}
+		}
+	}
+
+	remTerritory(tTileId) {
+		let tTile = currLand.tileArray[tTileId];
+
+		// Remove the development's card from its current location
+		if (this.findDev(tTileId) === "hand") {
+			this.hand = exclMem(this.hand, tTileId);
+			glbSideBar.removeBar();
+			glbSideBar.formBar();
+		}
+		else if (this.findDev(tTileId) === "discard") {
+			this.discard = exclMem(this.discard, tTileId);
+		}
+		else if (this.findDev(tTileId) === "deck") {
+			this.deck = exclMem(this.deck, tTileId);
+		}
+		else {
+			console.log("Unexpected destroyed card location.");
+		}
+
+		// Rebuild the player's owned tiles, excluding the removed tile
+		if (inArr(this.ownedTiles, tTileId)) {
+			this.ownedTiles = exclMem(this.ownedTiles, tTileId);
+		}
+
+		// Remove any now unconnected tiles from the player's territory
+		let neighCoordArray: number[][] = tTile.getNeighbors();
+		for (let iii = 0; iii < neighCoordArray.length; iii++) {
+			let neighborId = currLand.getID(neighCoordArray[iii]);
+			let neighbor = currLand.tileArray[neighborId];
+			if (neighbor.ownedBy != this.playerID) {
+				if (!this.checkConnected(neighborId)) {
+					if (inArr(this.territory, tTileId)) {
+						this.territory = exclMem(this.territory, neighborId);
+					}
+				}
+			}
+		}
+
+		// Remove properties from the tile
+		tTile.ownedBy = null;
+	}
+
+	findDev(tTileId) {
+		if (inArr(this.hand, tTileId)) { return "hand"; }
+		else if (inArr(this.discard, tTileId)) { return "discard"; }
+		else if (inArr(this.deck, tTileId)) { return "deck"; }
+		else { return "unfound"; }
+	}
+
+	// Check whether this development is disconnected from any other developments
+	//  controlled by the player
+	checkConnected(tileId: number) {
+		let neighCoordArray: number[][] = currLand.tileArray[tileId].getNeighbors();
+		let neighIdArray: number[] = [];
+		for (let iii = 0; iii < neighCoordArray.length; iii++) {
+			neighIdArray.push(currLand.getID(neighCoordArray[iii]));
+		}
+		for (let tId = 0; tId < neighIdArray.length; tId++) {
+			let tNeigh: Tile = currLand.tileArray[neighIdArray[tId]];
+			if ((tNeigh.development != null) && (tNeigh.ownedBy === this.playerID)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	shuffleDeck() {

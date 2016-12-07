@@ -190,6 +190,7 @@
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">abundantvessel.png</key>
             <key type="filename">auctionhouse.png</key>
+            <key type="filename">background.png</key>
             <key type="filename">basecamp.png</key>
             <key type="filename">blackcard.png</key>
             <key type="filename">bluecard.png</key>
@@ -218,6 +219,8 @@
             <key type="filename">orangecard.png</key>
             <key type="filename">pass.png</key>
             <key type="filename">peachorchard.png</key>
+            <key type="filename">playerbanner.png</key>
+            <key type="filename">playerbar.png</key>
             <key type="filename">redcard.png</key>
             <key type="filename">ricepaddy.png</key>
             <key type="filename">rocky.png</key>
@@ -225,6 +228,7 @@
             <key type="filename">seasideparade.png</key>
             <key type="filename">shepherdvillage.png</key>
             <key type="filename">shore.png</key>
+            <key type="filename">sidebar.png</key>
             <key type="filename">silvermine.png</key>
             <key type="filename">smokehouse.png</key>
             <key type="filename">steadyvessel.png</key>
@@ -321,6 +325,10 @@
             <filename>foodicon.png</filename>
             <filename>treasureicon.png</filename>
             <filename>materialicon.png</filename>
+            <filename>playerbanner.png</filename>
+            <filename>background.png</filename>
+            <filename>playerbar.png</filename>
+            <filename>sidebar.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

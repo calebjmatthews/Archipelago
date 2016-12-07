@@ -19,7 +19,7 @@ var glbEditBarSel = null;
 var glbTileSelArray = [];
 var glbDevelSel = null;
 
-var glbActingDev = null;
+var glbActingTileId = null;
 var glbSideBar = null;
 
 // Set global button constants
@@ -38,6 +38,9 @@ let currPlayer: Player = null;
 let cPlayerArray: Player[] = [];
 let currDescCard = null;
 let currHovDescCard = null;
+let currPlayerBar: PlayerBar = null;
+let currResProcess: number[] = [];
+let currReqProcess: number[] = [];
 
 // Enumerates the convention of how hex direction is ordered within this program
 enum eHEXD { SouthEast, SouthWest, West, NorthWest, NorthEast, East }
@@ -100,6 +103,16 @@ enum eRES { Food, Material, Treasure, Ship, Active, Destroy, BlueTreasure, RedAc
 			}
 		}
 		return false;
+	}
+
+	function exclMem(array: any[], member: any) {
+		let newArray: any[] = [];
+		for (let iii = 0; iii < array.length; iii++) {
+			if (array[iii] != member) {
+				newArray.push(array[iii]);
+			}
+		}
+		return newArray;
 	}
 
 // ~~~~ Hex functions ~~~~

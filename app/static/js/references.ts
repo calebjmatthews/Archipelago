@@ -7,6 +7,7 @@
 /// <reference path="landscape.ts" />
 /// <reference path="development.ts" />
 /// <reference path="setup.ts" />
+/// <reference path="player-bar.ts" />
 /// <reference path="side-bar.ts" />
 /// <reference path="edit-bar.ts" />
 /// <reference path="build-bar.ts" />

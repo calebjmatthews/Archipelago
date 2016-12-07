@@ -32,7 +32,7 @@ class BuyButton extends ArcButton {
 			}
 			else { setText = labelLetter[iii] + "-" + tDev.cost[tResource[iii]]; }
 			let setFill = null;
-			if (tDev.checkCost(tResource[iii])) { setFill = "white"; }
+			if (tDev.checkCost(tResource[iii])) { setFill = "black"; }
 			else { setFill = "red"; }
 			this.txtCost[iii] = new PIXI.Text(setText, {font: "13px sans-serif", fill: setFill});
 			this.txtCost[iii].position.set(
