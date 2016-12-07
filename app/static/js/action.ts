@@ -159,23 +159,6 @@ function selDevelClick(corPoint) {
 						glbState = activeSetup;
 					}
 				}
-				else if ((currResProcess[eRES.Destroy] > 0) 
-					&& (inArr(glbTileSelArray, clkTileId))) {
-					// Destroy the selected development
-					currPlayer.destroyTerritory(clkTileId);
-					clkTile.reDrawTile();
-					currResProcess[eRES.Destroy]--;
-					if (currReqProcess[eRES.Destroy] > 0) {
-						veClearTint(glbPulseArray);
-						glbTileSelArray = []; glbPulseArray = [];
-						glbState = selDevelSetup;
-					}
-					else {
-						veClearTint(glbPulseArray);
-						glbTileSelArray = []; glbPulseArray = [];
-						glbState = activeSetup;
-					}
-				}
 			}
 		}
 	}

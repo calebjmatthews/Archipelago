@@ -61,13 +61,14 @@ develArray[eDEVEL.BaseCamp].result[eRES.Food] = 1;
 develArray[eDEVEL.BaseCamp].result[eRES.Material] = 1;
 
 develArray[eDEVEL.FireCrew] = new Development(eDEVEL.FireCrew, ["firecrew.png"], 
-	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], "Result: Destroy Development, +1 Active");
+	"Fire Crew", eDCLR.Blue, [eLSCP.Shore], ("Requires: Destroy 1 Development,; " + 
+		"Result: +1 Active"));
 develArray[eDEVEL.FireCrew].cost = [];
 develArray[eDEVEL.FireCrew].cost[eCOST.Food] = 1;
 develArray[eDEVEL.FireCrew].cost[eCOST.Material] = 1;
 develArray[eDEVEL.FireCrew].requirement = [];
+develArray[eDEVEL.FireCrew].requirement[eREQ.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result = [];
-develArray[eDEVEL.FireCrew].result[eRES.Destroy] = 1;
 develArray[eDEVEL.FireCrew].result[eRES.Active] = 1;
 
 develArray[eDEVEL.LaborPort] = new Development(eDEVEL.LaborPort, ["laborport.png"], 

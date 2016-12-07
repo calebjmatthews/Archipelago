@@ -146,17 +146,7 @@ function active() {
 
 // Logical backing for selecting a development effect's target
 function selDevelSetup() {
-	if (currResProcess[eRES.Destroy] > 0) {
-		let availableTiles: number[] = [];
-		for (let cTile = 0; cTile < currPlayer.territory.length; cTile++) {
-			if (currPlayer.territory[cTile] != glbActingTileId) {
-				availableTiles.push(currPlayer.territory[cTile]);
-			}
-		}
-		glbTileSelArray = availableTiles;
-		glbPulseArray = glbTileSelArray;
-	}
-	else if (currReqProcess[eREQ.Destroy] > 0) {
+	if (currReqProcess[eREQ.Destroy] > 0) {
 		let availableTiles: number[] = [];
 		for (let cTile = 0; cTile < currPlayer.territory.length; cTile++) {
 			if (currPlayer.territory[cTile] != glbActingTileId) {
@@ -182,7 +172,7 @@ function selDevel() {
 	else { glbSideBar.hoverOverBar(); }
 
 	// If done destroying, move on to applying the rest of the development's effect
-	if ((currReqProcess[eREQ.Destroy] === 0) || (currResProcess[eRES.Destroy] === 0)) {
+	if (currReqProcess[eREQ.Destroy] === 0) {
 		applyDevEffect(glbActingTileId);
 	}
 }
