@@ -41,4 +41,11 @@ function veAllEffects() {
 			}
 		}
 	}
+	if (glbVeBanArray.length > 0) {
+		for (let tVeNum = 0; tVeNum < glbVeBanArray.length; tVeNum++) {
+			if (glbVeBanArray[tVeNum] != null) {
+				glbVeBanArray[tVeNum].ageBanner();
+			}
+		}
+	}
 }

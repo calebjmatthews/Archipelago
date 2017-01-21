@@ -195,12 +195,12 @@ develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
 
 develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, 
 	["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], 
-	("Requires: 3 Food,; Result: +2 Treasure"));
+	("Requires: 1 Food,; Result: +2 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
 develArray[eDEVEL.SilverMine].cost[eCOST.Food] = 2;
 develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 4;
 develArray[eDEVEL.SilverMine].requirement = [];
-develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 3;
+develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.SilverMine].result = [];
 develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 2;
 

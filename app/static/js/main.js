@@ -31,6 +31,7 @@ var glbBHeight = 30;
 // Initiate visual effect variables
 var glbPulseArray = [];
 var glbVeRscArray = [];
+var glbVeBanArray = [];
 var glbVeRscIncrement = 0;
 // Currently active gameplay parameters
 var currLand = null;
@@ -1270,12 +1271,12 @@ develArray[eDEVEL.Woodcutters].cost[eCOST.Material] = 1;
 develArray[eDEVEL.Woodcutters].requirement = [];
 develArray[eDEVEL.Woodcutters].result = [];
 develArray[eDEVEL.Woodcutters].result[eRES.Material] = 1;
-develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 3 Food,; Result: +2 Treasure"));
+develArray[eDEVEL.SilverMine] = new Development(eDEVEL.SilverMine, ["silvermine.png"], "Silver Mine", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 1 Food,; Result: +2 Treasure"));
 develArray[eDEVEL.SilverMine].cost = [];
 develArray[eDEVEL.SilverMine].cost[eCOST.Food] = 2;
 develArray[eDEVEL.SilverMine].cost[eCOST.Material] = 4;
 develArray[eDEVEL.SilverMine].requirement = [];
-develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 3;
+develArray[eDEVEL.SilverMine].requirement[eREQ.Food] = 1;
 develArray[eDEVEL.SilverMine].result = [];
 develArray[eDEVEL.SilverMine].result[eRES.Treasure] = 2;
 develArray[eDEVEL.StoneQuarry] = new Development(eDEVEL.StoneQuarry, ["stonequarry.png"], "Stone Quarry", eDCLR.Orange, [eLSCP.Rocky], ("Requires: 2 Food,; Result: +5 Material"));
@@ -2678,6 +2679,13 @@ function veAllEffects() {
             }
         }
     }
+    if (glbVeBanArray.length > 0) {
+        for (var tVeNum = 0; tVeNum < glbVeBanArray.length; tVeNum++) {
+            if (glbVeBanArray[tVeNum] != null) {
+                glbVeBanArray[tVeNum].ageBanner();
+            }
+        }
+    }
 }
 /// <reference path="references.ts" />
 function applyDevEffect(tileId, undoing) {
@@ -3426,6 +3434,46 @@ var veResourceletChain = (function () {
     return veResourceletChain;
 }());
 /// <reference path="references.ts" />
+// This describes a visual effect for displaying major information to the player, such as
+//  who is taking a turn, what month it is, who has won the game, etc
+var veBanner = (function () {
+    function veBanner(setId, setColor, setMessage) {
+        // How many frames the effect has existed
+        this.age = 0;
+        this.id = setId;
+        this.sprBg = new PIXI.Graphics();
+        this.sprBg.beginFill(rgbToHclr(setColor));
+        this.sprBg.drawRect(0, 180, (renderer.width - 200), 40);
+        this.sprBg.endFill();
+        this.sprBg.alpha = 0;
+        stage.addChild(this.sprBg);
+        this.sprSh = new PIXI.Graphics();
+        this.sprSh.beginFill(rgbToHclr([0, 0, 0]));
+        this.sprSh.drawRect(0, 220, (renderer.width - 200), 8);
+        this.sprSh.endFill();
+        this.sprSh.alpha = 0;
+        stage.addChild(this.sprSh);
+        this.txtBanner = new PIXI.Text(setMessage, { font: "20px sans-serif", fill: "white" });
+        this.txtBanner.position.set((((glbOrigin[0] - 200) / 2) -
+            (this.txtBanner.width / 2)), 188);
+        stage.addChild(this.txtBanner);
+    }
+    veBanner.prototype.ageBanner = function () {
+        if (this.age < 100) {
+            this.sprBg.alpha += 0.05;
+            this.sprSh.alpha += 0.025;
+        }
+        this.age++;
+    };
+    veBanner.prototype.selfDestruct = function () {
+        stage.removeChild(glbVeBanArray[this.id].sprBg);
+        stage.removeChild(glbVeBanArray[this.id].sprSh);
+        stage.removeChild(glbVeBanArray[this.id].txtBanner);
+        glbVeBanArray[this.id] = null;
+    };
+    return veBanner;
+}());
+/// <reference path="references.ts" />
 function editSetup() {
     if (glbSideBar.buttonArray.length != 0) {
         glbSideBar.removeBar();
@@ -3478,6 +3526,8 @@ function monthSetup() {
     // Months should begin with Player 2, and plrMonSetup switches the current player
     //  Therefore, set the current player to Player 1 here
     currPlayer = cPlayerArray[0];
+    var bannerId = glbVeBanArray.length;
+    glbVeBanArray.push(new veBanner(bannerId, currPlayer.color, ("Month " + glbMonth)));
     glbState = plrMonSetup;
 }
 // Applies prior to each player's round
@@ -3678,4 +3728,5 @@ function cleanup() {
 /// <reference path="arc-history.ts" />
 /// <reference path="ve-resourcelet.ts" />
 /// <reference path="ve-resourcelet-chain.ts" />
+/// <reference path="ve-banner.ts" />
 /// <reference path="state.ts" /> 

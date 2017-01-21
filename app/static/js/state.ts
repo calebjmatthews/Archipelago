@@ -50,6 +50,9 @@ function monthSetup() {
 	// Months should begin with Player 2, and plrMonSetup switches the current player
 	//  Therefore, set the current player to Player 1 here
 	currPlayer = cPlayerArray[0];
+
+	let bannerId: number = glbVeBanArray.length;
+	glbVeBanArray.push(new veBanner(bannerId, currPlayer.color, ("Month " + glbMonth)));
 	glbState = plrMonSetup;
 }
 

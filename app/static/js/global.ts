@@ -30,6 +30,7 @@ let glbBHeight = 30;
 // Initiate visual effect variables
 var glbPulseArray = [];
 var glbVeRscArray: veResourceletChain[] = [];
+var glbVeBanArray: veBanner[] = [];
 var glbVeRscIncrement = 0;
 
 // Currently active gameplay parameters

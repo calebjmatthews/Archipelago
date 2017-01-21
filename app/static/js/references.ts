@@ -23,4 +23,5 @@
 /// <reference path="arc-history.ts" />
 /// <reference path="ve-resourcelet.ts" />
 /// <reference path="ve-resourcelet-chain.ts" />
+/// <reference path="ve-banner.ts" />
 /// <reference path="state.ts" />

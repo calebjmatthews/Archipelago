@@ -8,10 +8,6 @@ class veResourcelet {
 	id: number;
 	// The position of the parent resourcelet chain within the global array
 	parentId: number;
-	// // The type of resource transaction occurring, i.e. "Build", "Requirement", or "Result"
-	// type: string;
-	// // Type resource this effect represents
-	// resource: number;
 	// Whether this literal resource value was negative (opposite from what its type would 
 	//  typically suggest)
 	negative: boolean;
